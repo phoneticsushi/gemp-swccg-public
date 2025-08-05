@@ -178,6 +178,7 @@ var CardFilter = Class.extend({
             + "<option value='premiere'>Premiere</option>"
             + "<option value='scavenger_premiere_ds2'>Scavenger</option>"
             + "<option value='utinni'>Utinni! (Jawas Only)</option>"
+            + "<option value='beezer_bowl'>Beezer Bowl</option>"
             + "</select>");
 
         this.setLabel = $("<label for='setSelect' class='filterLabel'>Set:</label>");
@@ -237,6 +238,7 @@ var CardFilter = Class.extend({
             + "<option value='225'>Set 25</option>"
             + "<option value='301'>Virtual Premium Set</option>"
             + "<option value='601'>Legacy</option>"
+            + "<option value='701'>Beezer Bowl 2025</option>"
             //+ "<option value='401'>Dream Cards</option>"
             + "<option value='501'>Playtesting</option>"
             + "</select>");
@@ -354,6 +356,7 @@ var CardFilter = Class.extend({
         this.iconSelect = $("<select id='iconSelect' class='filterInput'>"
             + "<option value='' selected='selected'>(Not specified)</option>"
             + "<option value='A_NEW_HOPE'>A New Hope</option>"
+            + "<option value='BEEZER_BOWL_2025'>Beezer Bowl 2025</option>"
             + "<option value='CLONE_ARMY'>Clone Army</option>"
             + "<option value='CLOUD_CITY'>Cloud City</option>"
             + "<option value='CORUSCANT'>Coruscant</option>"

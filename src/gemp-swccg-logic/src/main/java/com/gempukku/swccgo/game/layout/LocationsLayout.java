@@ -55,6 +55,7 @@ public class LocationsLayout implements Snapshotable<LocationsLayout> {
         findSystemsAndStarshipsAndVehiclesForLayout(library, CardCounts.DREAM_CARD_SETS_CARD_COUNTS, 401, systems, starshipsAndVehicles);
         findSystemsAndStarshipsAndVehiclesForLayout(library, CardCounts.PLAYTESTING_SETS_CARD_COUNTS, 501, systems, starshipsAndVehicles);
         findSystemsAndStarshipsAndVehiclesForLayout(library, CardCounts.LEGACY_SETS_CARD_COUNTS, 601, systems, starshipsAndVehicles);
+        findSystemsAndStarshipsAndVehiclesForLayout(library, CardCounts.MEME_SETS_CARD_COUNTS, 701, systems, starshipsAndVehicles);
 
 
         // Add a layout for holosites

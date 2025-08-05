@@ -42,6 +42,7 @@ public class CollectionsManager {
         addCardsToDefaultCollection(library, CardCounts.VIRTUAL_PREMIUM_SETS_CARD_COUNTS, 301, _defaultCollection);
         addCardsToDefaultCollection(library, CardCounts.DREAM_CARD_SETS_CARD_COUNTS, 401, _defaultCollection);
         addCardsToDefaultCollection(library, CardCounts.LEGACY_SETS_CARD_COUNTS, 601, _defaultCollection);
+        addCardsToDefaultCollection(library, CardCounts.MEME_SETS_CARD_COUNTS, 701, _defaultCollection);
 
         // Add cards to default collection with playtesting
         addCardsToDefaultCollection(library, CardCounts.FULL_SETS_CARD_COUNTS, 1, _defaultCollectionWithPlaytesting);
@@ -51,6 +52,7 @@ public class CollectionsManager {
         addCardsToDefaultCollection(library, CardCounts.DREAM_CARD_SETS_CARD_COUNTS, 401, _defaultCollectionWithPlaytesting);
         addCardsToDefaultCollection(library, CardCounts.PLAYTESTING_SETS_CARD_COUNTS, 501, _defaultCollectionWithPlaytesting);
         addCardsToDefaultCollection(library, CardCounts.LEGACY_SETS_CARD_COUNTS, 601, _defaultCollectionWithPlaytesting);
+        addCardsToDefaultCollection(library, CardCounts.MEME_SETS_CARD_COUNTS, 701, _defaultCollectionWithPlaytesting);
 
         _collectionReadyLatch.countDown();
     }

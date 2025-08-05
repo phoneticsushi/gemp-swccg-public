@@ -18,4 +18,6 @@ public interface CardCounts {
     int[] PLAYTESTING_SETS_CARD_COUNTS = {300};
 
     int[] LEGACY_SETS_CARD_COUNTS = {999};
+
+    int[] MEME_SETS_CARD_COUNTS = {999};  // Not actually 999 but if LEGACY_SETS_CARD_COUNTS can get away with it...
 }
