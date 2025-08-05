@@ -66,7 +66,9 @@ public enum ExpansionSet {
 
     PLAYTESTING("Playtesting", 501),
 
-    LEGACY("Legacy", 601);
+    LEGACY("Legacy", 601),
+
+    BEEZER_BOWL_2025("Beezer Bowl 2025", 701);
 
     private String _humanReadable;
     private int _setNumber;

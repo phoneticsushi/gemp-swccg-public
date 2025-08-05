@@ -929,6 +929,7 @@ public enum GameTextActionId {
     TARFFUL__TAKE_YODA_INTO_HAND(false, true),
     TANTIVE_IV_CONSULAR_SHIP__EXCLUDE_LEADER_FROM_BATTLE(false, true),
     TATOOINE_GREAT_PIT_OF_CARKOON__DEPLOY_BOBA(true, true),
+    TEEBO_YOUNG_APPRENTICE__POTION_OF_LIFE(false, true),
     TEMMIN_SNAP_WEXLEY__STEAL_BATTLE_DROID_INTO_HAND(false, true),
     TENTACLE_V__SHUFFLE_PILE(false, true),
     SIL_UNCH__DOWNLOAD_DEVICE(true, true),
@@ -1226,5 +1227,3 @@ public enum GameTextActionId {
         return _actionReason != null && actionReason == _actionReason;
     }
 }
-
-

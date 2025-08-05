@@ -158,6 +158,7 @@ public enum Persona implements Filterable {
     TALLIE_LINTRA("Tallie"),
     TARKIN("Tarkin"),
     TEDN_DAHAI("Tedn Dahai"),
+    TEEBO("Teebo"),
     THEDIT("Thedit"),
     THE_GRAND_INQUISITOR("The Grand Inquisitor"),
     THRAWN("Thrawn"),
