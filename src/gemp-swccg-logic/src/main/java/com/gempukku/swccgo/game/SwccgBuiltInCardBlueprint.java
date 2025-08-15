@@ -5,6 +5,7 @@ import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.logic.actions.FireWeaponAction;
+import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 
 import java.util.List;
@@ -80,6 +81,12 @@ public interface SwccgBuiltInCardBlueprint {
      * @return true or false
      */
     boolean isWeapon();
+    
+    /**
+     * Determines if the built-in is a permanent device.
+     * @return true or false
+     */
+    boolean isDevice();
 
     /**
      * Determines if the built-in is a permanent pilot.
@@ -122,4 +129,13 @@ public interface SwccgBuiltInCardBlueprint {
      * @return the fire weapon actions
      */
     List<FireWeaponAction> getGameTextFireWeaponActions(String playerId, SwccgGame game, PhysicalCard self, boolean forFree, int extraForceRequired, PhysicalCard sourceCard, boolean repeatedFiring, Filter targetedAsCharacter, Float defenseValueAsCharacter, Filter fireAtTargetFilter, boolean ignorePerAttackOrBattleLimit);
+
+    /**
+     * Gets the top-level game text actions for the permanent device listed on self, if one exists.
+     * @param playerId the player
+     * @param game the game
+     * @param self the card
+     * @return the actions, or null
+     */
+    public List<TopLevelGameTextAction> getPermanentDeviceTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self);
 }
