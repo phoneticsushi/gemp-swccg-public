@@ -52,6 +52,7 @@ public interface CardTraits extends BaseQuery, Limits, Piloting, Weapons {
 	default boolean isUniquenessOnTableLimitReached(GameState gameState, PhysicalCard card) {
 		SwccgCardBlueprint blueprint = card.getBlueprint();
 		SwccgBuiltInCardBlueprint permanentWeapon = null;
+		SwccgBuiltInCardBlueprint permanentDevice = null;
 
 		// Get any personas (including any permanents aboard).
 		Set<Persona> personas = new HashSet<Persona>(getPersonas(gameState, card));
@@ -70,10 +71,14 @@ public interface CardTraits extends BaseQuery, Limits, Piloting, Weapons {
 					return true;
 				}
 			}
-			// Add any permanent weapon personas
+			// Add any permanent weapon and device personas
 			permanentWeapon = getPermanentWeapon(gameState, card);
 			if (permanentWeapon != null) {
 				personas.addAll(permanentWeapon.getPersonas(game()));
+			}
+			permanentDevice = getPermanentDevice(gameState, card);
+			if (permanentDevice != null) {
+				personas.addAll(permanentDevice.getPersonas(game()));
 			}
 		}
 
@@ -458,5 +463,13 @@ public interface CardTraits extends BaseQuery, Limits, Piloting, Weapons {
 			return CardSubtype.USED;
 
 		return card.getBlueprint().getCardSubtype();
+	}
+
+	default SwccgBuiltInCardBlueprint getPermanentDevice(GameState gameState, PhysicalCard physicalCard) {
+        // Disarming doesn't apply to devices,
+        // and getPermanentDevice() will return null for anything that doesn't have one,
+        // so this is a trivial passthrough:
+		SwccgBuiltInCardBlueprint permDevice = physicalCard.getBlueprint().getPermanentDevice(physicalCard);
+        return permDevice;
 	}
 }

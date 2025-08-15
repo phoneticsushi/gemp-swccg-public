@@ -2105,7 +2105,14 @@ public class ModifiersLogic implements ModifiersEnvironment, ModifiersState, Mod
         return (locationCardId != null && locationCardId != location.getCardId());
     }
 
-    public void deviceUsedBy(PhysicalCard user, PhysicalCard device) {
+    /**
+     * Records that the specified card has used the specified device.
+     *
+     * @param user the card holding the device
+     * @param device the device
+     */
+    @Override
+    public void markDeviceUsedBy(PhysicalCard user, PhysicalCard device) {
         if (user==null)
             return;
 
@@ -2115,6 +2122,34 @@ public class ModifiersLogic implements ModifiersEnvironment, ModifiersState, Mod
             _usedDevicesMap.put(user.getCardId(), usedDevices);
         }
         usedDevices.add(device.getCardId());
+    }
+
+    /**
+     * Records that the specified card has used its permanent device.
+     *
+     * @param owner the card holding the device
+     * @param device the device
+     */
+    @Override
+    public void markPermanentDeviceUsedByOwner(PhysicalCard owner) {
+        if (owner == null)
+            return;
+
+        List<Integer> usedDevices = _usedDevicesMap.get(owner.getCardId());
+        if (usedDevices == null) {
+            usedDevices = new LinkedList<Integer>();
+            _usedDevicesMap.put(owner.getCardId(), usedDevices);
+        }
+        // Assumption is the user is the same card whose text defines the permanent device,
+        // so we track the permanent device by the Card ID of the owner, who must be the user
+        usedDevices.add(owner.getCardId());
+    }
+
+    public List<Integer> allDevicesUsed(PhysicalCard user) {
+        List<Integer> usedDevices = _usedDevicesMap.get(user.getCardId());
+        List<Integer> usedDevicesClone = new LinkedList<Integer>();
+        usedDevicesClone.addAll(usedDevices);
+        return usedDevicesClone;
     }
 
     public List<Integer> otherDevicesUsed(PhysicalCard user, PhysicalCard device) {

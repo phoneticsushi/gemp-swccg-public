@@ -9,6 +9,7 @@ import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgBuiltInCardBlueprint;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.actions.FireWeaponAction;
+import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 
 import java.util.Collections;
@@ -206,6 +207,15 @@ public abstract class AbstractPermanent implements SwccgBuiltInCardBlueprint {
     }
 
     /**
+     * Determines if the built-in is a permanent device.
+     * @return true or false
+     */
+    @Override
+    public boolean isDevice() {
+        return false;
+    }
+
+    /**
      * Determines if the built-in is a permanent pilot.
      * @return true or false
      */
@@ -249,5 +259,17 @@ public abstract class AbstractPermanent implements SwccgBuiltInCardBlueprint {
     @Override
     public List<FireWeaponAction> getGameTextFireWeaponActions(String playerId, SwccgGame game, PhysicalCard self, boolean forFree, int extraForceRequired, PhysicalCard sourceCard, boolean repeatedFiring, Filter targetedAsCharacter, Float defenseValueAsCharacter, Filter fireAtTargetFilter, boolean ignorePerAttackOrBattleLimit) {
         throw new UnsupportedOperationException("This method, getGameTextFireWeaponActions(), should not be called on this build-in: " + _title);
+    }
+
+    /**
+     * Gets the top-level game text actions for the permanent device listed on self, if one exists.
+     * @param playerId the player
+     * @param game the game
+     * @param self the card
+     * @return the actions, or null
+     */
+    @Override
+    public List<TopLevelGameTextAction> getPermanentDeviceTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self) {
+        throw new UnsupportedOperationException("This method, getPermanentDeviceTopLevelActions(), should not be called on this build-in: " + _title);
     }
 }

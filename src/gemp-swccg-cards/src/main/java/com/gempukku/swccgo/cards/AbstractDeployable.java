@@ -143,6 +143,21 @@ public abstract class AbstractDeployable extends AbstractNonLocationPlaysToTable
         }
         return permanentWeapon;
     }
+    
+    /**
+     * Gets the card blueprint of the permanent device.
+     * @param self the card
+     * @return the card blueprint
+     */
+    @Override
+    public final SwccgBuiltInCardBlueprint getPermanentDevice(PhysicalCard self) {
+        SwccgBuiltInCardBlueprint permanentDevice = getGameTextPermanentDevice();
+        if (permanentDevice != null) {
+            permanentDevice.setPhysicalCard(self);
+            permanentDevice.setBuiltInId(1);
+        }
+        return permanentDevice;
+    }
 
     /**
      * Gets the card blueprints of permanent pilots and astromechs aboard.
@@ -2163,6 +2178,14 @@ public abstract class AbstractDeployable extends AbstractNonLocationPlaysToTable
                 return null;
             }
         }
+        // Check that character does not have a permanent device that is already on table
+        SwccgBuiltInCardBlueprint permanentDevice = self.getBlueprint().getPermanentDevice(self);
+        if (permanentDevice != null) {
+            if (Filters.canSpot(game, self, SpotOverride.INCLUDE_ALL,
+                    Filters.or(Filters.samePersonaAs(permanentDevice), Filters.hasPermanentDevice(Filters.samePersonaAs(permanentDevice))))) {
+                return null;
+            }
+        }
         // Determine the target and if character is not disallowed by own game text
         PhysicalCard characterToReplace = characterInPlay.iterator().next();
         PhysicalCard target = characterToReplace.getAttachedTo() != null ? characterToReplace.getAttachedTo() : characterToReplace.getAtLocation();
@@ -2223,6 +2246,13 @@ public abstract class AbstractDeployable extends AbstractNonLocationPlaysToTable
         SwccgBuiltInCardBlueprint permanentWeapon = self.getBlueprint().getPermanentWeapon(self);
         if (permanentWeapon != null) {
             if (Filters.canSpot(game, self, SpotOverride.INCLUDE_ALL, Filters.or(Filters.samePersonaAs(permanentWeapon), Filters.hasPermanentWeapon(Filters.samePersonaAs(permanentWeapon))))) {
+                return null;
+            }
+        }
+        // Check that character does not have a permanent device that is already on table
+        SwccgBuiltInCardBlueprint permanentDevice = self.getBlueprint().getPermanentDevice(self);
+        if (permanentDevice != null) {
+            if (Filters.canSpot(game, self, SpotOverride.INCLUDE_ALL, Filters.or(Filters.samePersonaAs(permanentDevice), Filters.hasPermanentDevice(Filters.samePersonaAs(permanentDevice))))) {
                 return null;
             }
         }
@@ -2453,6 +2483,13 @@ public abstract class AbstractDeployable extends AbstractNonLocationPlaysToTable
      * This method is overridden by individual cards to define the permanent weapon.
      */
     protected AbstractPermanentWeapon getGameTextPermanentWeapon() {
+        return null;
+    }
+
+    /**
+     * This method is overridden by individual cards to define the permanent device.
+     */
+    protected AbstractPermanentDevice getGameTextPermanentDevice() {
         return null;
     }
 

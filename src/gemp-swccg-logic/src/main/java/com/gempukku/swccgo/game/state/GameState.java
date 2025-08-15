@@ -437,8 +437,9 @@ public class GameState implements Snapshotable<GameState> {
 
         int cardId = nextCardId();
         PhysicalCard result = new PhysicalCardImpl(cardId, blueprintId, backBlueprintId, playerId, cardFront, cardBack);
-        // Set the physical card in the permanent weapons and permanents aboard
+        // Set the physical card in the permanents attached and aboard
         result.getBlueprint().getPermanentWeapon(result);
+        result.getBlueprint().getPermanentDevice(result);
         result.getBlueprint().getPermanentsAboard(result);
 
         _allCards.put(cardId, result);

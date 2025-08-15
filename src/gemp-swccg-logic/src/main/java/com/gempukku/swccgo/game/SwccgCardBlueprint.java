@@ -136,6 +136,13 @@ public interface SwccgCardBlueprint {
     SwccgBuiltInCardBlueprint getPermanentWeapon(PhysicalCard self);
 
     /**
+     * Gets the card blueprint of the permanent device.
+     * @param self the card
+     * @return the card blueprint
+     */
+    SwccgBuiltInCardBlueprint getPermanentDevice(PhysicalCard self);
+
+    /**
      * Gets the card blueprints of permanent pilots and astromechs aboard.
      * @param self the card
      * @return list of card blueprints

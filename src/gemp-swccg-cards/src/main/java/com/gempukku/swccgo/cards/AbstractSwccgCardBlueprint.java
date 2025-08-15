@@ -861,6 +861,16 @@ public abstract class AbstractSwccgCardBlueprint implements SwccgCardBlueprint {
     }
 
     /**
+     * Gets the card blueprint of the permanent device.
+     * @param self the card
+     * @return the card blueprint
+     */
+    @Override
+    public SwccgBuiltInCardBlueprint getPermanentDevice(PhysicalCard self) {
+        return null;
+    }
+
+    /**
      * Gets the card blueprints of permanent pilots and astromechs aboard.
      * @return list of card blueprints
      */

@@ -10318,6 +10318,23 @@ public class Filters {
     }
 
     /**
+     * Filter that accepts cards that have a built-in permanent device accepted by the specified filter.
+     *
+     * @param filters the filters
+     * @return Filter
+     */
+    public static Filter hasPermanentDevice(final Filter filters) {
+        return new Filter() {
+            @Override
+            public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+                SwccgBuiltInCardBlueprint permanentDevice = modifiersQuerying.getPermanentDevice(gameState, physicalCard);
+                return (permanentDevice != null
+                        && Filters.and(filters).accepts(gameState, modifiersQuerying, permanentDevice));
+            }
+        };
+    }
+
+    /**
      * Filter that accepts permanent weapons of the specified card.
      *
      * @param card the card
