@@ -92,6 +92,7 @@ public enum Icon implements Filterable {
 
     // Skills
     NAV_COMPUTER("Nav Computer"),
+    PERMANENT_DEVICE("Permanent Device"),
     PERMANENT_WEAPON("Permanent Weapon"),
     PILOT("Pilot"),
     PRESENCE("Presence"),

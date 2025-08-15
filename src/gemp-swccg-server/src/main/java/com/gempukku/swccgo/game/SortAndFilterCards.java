@@ -622,6 +622,7 @@ public class SortAndFilterCards {
             return false;
 
         SwccgBuiltInCardBlueprint permanentWeapon = blueprint.getPermanentWeapon(null);
+        SwccgBuiltInCardBlueprint permanentDevice = blueprint.getPermanentDevice(null);
         List<SwccgBuiltInCardBlueprint> permanentsAboard = blueprint.getPermanentsAboard(null);
 
         for (Persona persona : personas) {
@@ -629,6 +630,9 @@ public class SortAndFilterCards {
                 continue;
 
             if (permanentWeapon != null && permanentWeapon.hasPersona(null, persona))
+                continue;
+
+            if (permanentDevice != null && permanentDevice.hasPersona(null, persona))
                 continue;
 
             boolean foundMatch = false;
