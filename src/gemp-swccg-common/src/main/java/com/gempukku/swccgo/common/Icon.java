@@ -104,6 +104,7 @@ public enum Icon implements Filterable {
     INTERIOR_SITE("Interior Site"),
     LIGHT_FORCE("Force (Light)"),
     MOBILE("Mobile"),
+    MOUNTAIN_SITE("Mountain Site"),
     PLANET("Planet"),
     SPACE("Space"),
     STARSHIP_SITE("Starship Site"),
