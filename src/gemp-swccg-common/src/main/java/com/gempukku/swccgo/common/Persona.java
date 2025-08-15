@@ -56,6 +56,7 @@ public enum Persona implements Filterable {
     ELIS("Elis"),
     EZRA("Ezra"),
     GALEN("Galen"),
+    GRACCA("Gracca"),
     FENNEC_SHAND("Fennec Shand"),
     FENSON("Fenson"),
     FIGRIN_DAN("Figrin D'an"),
@@ -188,6 +189,9 @@ public enum Persona implements Filterable {
     YUTANI("Yutani"),
     ZEV("Zev Senesca"),
     ZUCKUSS("Zuckuss"),
+
+    // Devices
+    CRYSTAL_CLOAK("Crystal Cloak"),
 
     // Starships
     BESTOON_LEGACY("Bestoon Legacy"),
