@@ -205,9 +205,14 @@ public interface ModifiersState {
 
 	List<Integer> otherWeaponsUsed(PhysicalCard user, SwccgBuiltInCardBlueprint permanentWeapon);
 
-	void deviceUsedBy(PhysicalCard user, PhysicalCard device);
+	void markDeviceUsedBy(PhysicalCard user, PhysicalCard device);
 
-	List<Integer> otherDevicesUsed(PhysicalCard user, PhysicalCard weapon);
+	void markPermanentDeviceUsedByOwner(PhysicalCard user);
+
+	List<Integer> allDevicesUsed(PhysicalCard user);
+
+	List<Integer> otherDevicesUsed(PhysicalCard user, PhysicalCard device);
+
 	/**
 	 * Records that the specified weapon has been fired in attack.
 	 * @param card the card

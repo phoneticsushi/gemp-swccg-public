@@ -32,7 +32,7 @@ public class UseDeviceEffect extends AbstractStandardEffect implements UsageEffe
     @Override
     protected FullEffectResult playEffectReturningResult(SwccgGame game) {
         if (isPlayableInFull(game)) {
-            game.getModifiersQuerying().deviceUsedBy(_user, _device);
+            game.getModifiersQuerying().markDeviceUsedBy(_user, _device);
             return new FullEffectResult(true);
         }
 
