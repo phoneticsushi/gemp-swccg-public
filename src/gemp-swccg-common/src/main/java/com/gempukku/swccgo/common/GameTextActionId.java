@@ -990,6 +990,9 @@ public enum GameTextActionId {
     YOUVE_GOT_A_LOT_OF_GUTS_COMING_HERE__RELOCATE(false, true),
     ZUCKUSS_WITH_SNARE_RIFLE__PEEK_AT_TOP_CARD_OF_RESERVE_DECK(false, true),
 
+    // Actions belonging to Permanent Devices
+    GRACCA__PERMANENT_DEVICE_CRYSTAL_CLOAK,
+
     // Per captive
     DUNGEON__RETRIEVE_FORCE(false, false, true, false),
     SPECIAL_DELIVERY__SEARCH_LOST_PILE(true, false, true, false),

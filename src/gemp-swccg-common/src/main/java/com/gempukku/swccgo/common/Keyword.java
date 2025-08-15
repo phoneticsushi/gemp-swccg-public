@@ -176,6 +176,7 @@ public enum Keyword implements Filterable {
     SMUGGLER("Smuggler", true, true),
     SNOWSPEEDER("Snowspeeder", false),
     SNOWTROOPER("Snowtrooper", true, true),
+    SORCEROR("Sorcerer", false, true),
     SPACEPORT_SITE("Spaceport Site", false),
     SPEEDER("Speeder", false),
     SPICE_RUNNER("Spice runner", true),
