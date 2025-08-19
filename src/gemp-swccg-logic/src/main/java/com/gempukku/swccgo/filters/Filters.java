@@ -18992,6 +18992,12 @@ public class Filters {
     public static final Filter Someone_Who_Loves_You = Filters.title(Title.Someone_Who_Loves_You);
     public static final Filter Sonic_Bombardment = Filters.title(Title.Sonic_Bombardment);
     public static final Filter Sorry_About_The_Mess = Filters.title(Title.Sorry_About_The_Mess);
+    public static final Filter Sorcery_Test = Filters.type(CardType.SORCERY_TEST);
+    public static final Filter Sorcery_Test_0 = Filters.keyword(Keyword.SORCERY_TEST_0);
+    public static final Filter Sorcery_Test_1 = Filters.keyword(Keyword.SORCERY_TEST_1);
+    public static final Filter Sorcery_Test_2 = Filters.keyword(Keyword.SORCERY_TEST_2);
+    public static final Filter Sorcery_Test_3 = Filters.keyword(Keyword.SORCERY_TEST_3);
+    public static final Filter Sorcery_Test_4 = Filters.keyword(Keyword.SORCERY_TEST_4);
     public static final Filter Sound_The_Attack = Filters.title(Title.Sound_The_Attack);
     public static final Filter space_creature = Filters.and(CardType.CREATURE, ModelType.SPACE);
     public static final Filter Spaceport_Speeders = Filters.title(Title.Spaceport_Speeders);

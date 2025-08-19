@@ -27,6 +27,7 @@ public enum CardType implements Filterable {
     REPUBLIC("Republic"),
     RESISTANCE("Resistance"),
     SITH("Sith"),
+    SORCERY_TEST("Sorcery Test"),
     STARSHIP("Starship"),
     VEHICLE("Vehicle"),
     WEAPON("Weapon");
