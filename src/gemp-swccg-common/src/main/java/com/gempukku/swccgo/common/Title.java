@@ -904,6 +904,7 @@ public interface Title {
     String Quiggold = "Quiggold";
     String Radar_Scanner = "Radar Scanner";
     String Raithal = "Raithal";
+    String Rakazzak_Beast = "Rakazzak Beast";
     String Ralltiir = "Ralltiir";
     String Ralltiir_Operations = "Ralltiir Operations";
     String Rancor = "Rancor";
