@@ -21,6 +21,7 @@ def main():
     parser.add_argument('-c', '--csv_file', type=str, required=True)
     parser.add_argument('-i', '--card_index', type=str, required=False)
     parser.add_argument('-f', '--force', action=argparse.BooleanOptionalAction)
+    parser.add_argument('-t', '--title_explicit', action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
     
     if args.force and not args.card_index:
@@ -31,9 +32,9 @@ def main():
         reader = csv.DictReader(f)
         for record in reader:
             if args.card_index is None or record['card_index'] == args.card_index:
-                try_generate_classfile_from_record(record, args.force)
+                try_generate_classfile_from_record(record, args.force, args.title_explicit)
 
-def try_generate_classfile_from_record(record: dict, force: bool):
+def try_generate_classfile_from_record(record: dict, force: bool, use_explicit_title: bool):
     # acquire metadata
     card_side = record['card_side']
     card_class_name = generate_card_class_name(record)
@@ -60,7 +61,7 @@ def try_generate_classfile_from_record(record: dict, force: bool):
         print(f'[{card_class_name}] creating: new file')
 
     # ...(re)generate the file, in advance of file creation in case it fails...
-    codegen = generate_class(record)
+    codegen = generate_class(record, use_explicit_title)
 
     # ...and write it out, ensuring directory exists:
     os.makedirs(card_directory, exist_ok=True)
@@ -99,7 +100,7 @@ def generate_card_class_name(record) -> str:
 
     return '_'.join(output_parts)
 
-def generate_class(record) -> str:
+def generate_class(record, use_explicit_title) -> str:
     card_type = record['card_type']
 
     card_class_name = generate_card_class_name(record)
@@ -124,7 +125,7 @@ def generate_class(record) -> str:
         indent(0, f'public class {card_class_name} extends {card_interface_name} {{'),
         indent(1, f'public {card_class_name}() {{'),
         # instantiation
-        indent(2, generate_super(record)),
+        indent(2, generate_super(record, use_explicit_title)),
         # attributes - card text
         indent(2, opt_generate_text_declaration(record, 'setLore', 'lore_text')),
         indent(2, opt_generate_text_declaration(record, 'setGameText', 'game_text')),
@@ -218,15 +219,16 @@ def to_title_enum(card_title: str) -> str:
     # reasonable guess; all uppercase, all spaces to underscores, strip non-alphanumerics
     return ''.join(ch if ch.isalpha() else '_' for ch in card_title.replace(' ', '_')).upper()
 
-def generate_super(record) -> str:
+def generate_super(record, use_explicit_title: bool) -> str:
     # all rarities are "V" (Virtual)
     # super() implementation is dependent on card type:
     card_type = record['card_type']
+    card_title = f'"{record["card_title"]}"' if use_explicit_title else f'Title.{to_title_enum(record["card_title"])}'
 
     if card_type == 'CHARACTER_ALIEN':
-        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, Title.{to_title_enum(record["card_title"])}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
     elif card_type == 'LOCATION_SITE':
-        return f'super(Side.{record["card_side"]}, Title.{to_title_enum(record["card_title"])}, Title.{record["system_name"]}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
+        return f'super(Side.{record["card_side"]}, {card_title}, Title.{record["system_name"]}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
     else:
         raise RuntimeError(f'Missing generate_super() implementation for card type: {card_type}')
 
@@ -239,17 +241,19 @@ def opt_generate_text_declaration(record, func_name, record_index) -> str:
         return f'{func_name}("{text.strip()}");'
 
 def multi_generate_force_gen_icons_declation(record) -> list[str]:
-    # N.B. assumption here is these are integers;
-    # if not, generated file will fail to compile,
-    # but that's probably a good canary
-    force_gen_light = record.get('force_gen_light')
+    # N.B. assumption here is these are integers
     force_gen_dark = record.get('force_gen_dark')
+    force_gen_light = record.get('force_gen_light')
 
     res = []
-    if force_gen_light:
-        res.append(f'addIcon(Icon.DARK_FORCE, {force_gen_dark});')
     if force_gen_dark:
-        res.append(f'addIcon(Icon.LIGHT_FORCE, {force_gen_light});')
+        num_dark_force = int(force_gen_dark)
+        if num_dark_force > 0:
+            res.append(f'addIcon(Icon.DARK_FORCE, {num_dark_force});')
+    if force_gen_light:
+        num_light_force = int(force_gen_light)
+        if num_light_force > 0:
+            res.append(f'addIcon(Icon.LIGHT_FORCE, {num_light_force});')
     return res
 
 def opt_generate_enum_declaration(record, func_name, enum_name, record_index):
