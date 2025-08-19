@@ -18948,6 +18948,7 @@ public class Filters {
     public static final Filter S_foils = Filters.title(Title.S_foils);
     public static final Filter SFS_Lx93_Laser_Cannons = Filters.title(Title.SFS_Lx93_Laser_Cannons);
     public static final Filter Shadow_Collective = Filters.title(Title.Shadow_Collective);
+    public static final Filter Shaman = Filters.keyword(Keyword.SHAMAN);
     public static final Filter Shawn = Filters.persona(Persona.SHAWN);
     public static final Filter Shield_Gate = Filters.title(Title.Shield_Gate);
     public static final Filter Shmi = Filters.title(Title.Shmi);
