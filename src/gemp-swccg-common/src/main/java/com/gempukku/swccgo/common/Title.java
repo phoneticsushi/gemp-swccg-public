@@ -1345,6 +1345,7 @@ public interface Title {
     String Youre_All_Clear_Kid = "You're All Clear Kid!";
     String YT_1300_Transport = "YT-1300 Transport";
     String Yularen = "Colonel Wullf Yularen";
+    String Zarraks_Hideout = "Endor: Zarrak's Hideout";
     String Zeb = "Zeb Orrelios";
     String Zev = "Zev Senesca";
     String Zutton = "Zutton";
