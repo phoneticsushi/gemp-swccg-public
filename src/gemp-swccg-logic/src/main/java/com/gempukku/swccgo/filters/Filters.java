@@ -17966,6 +17966,7 @@ public class Filters {
     public static final Filter Bravo_Squadron_starfigher = Filters.and(Keyword.BRAVO_SQUADRON, CardSubtype.STARFIGHTER);
     public static final Filter Breached_Defenses = Filters.title(Title.Breached_Defenses);
     public static final Filter Bring_Him_Before_Me = Filters.title(Title.Bring_Him_Before_Me);
+    public static final Filter Bright_Tree_Village = Filters.title(Title.Bright_Tree_Village);
     public static final Filter Brisky_Morning_Munchen = Filters.title(Title.Brisky_Morning_Munchen);
     public static final Filter Broken_Concentration = Filters.title(Title.Broken_Concentration);
     public static final Filter Bubo = Filters.title(Title.Bubo);
@@ -18053,6 +18054,7 @@ public class Filters {
     public static final Filter Communing = Filters.title(Title.Communing);
     public static final Filter Concussion_Grenade = Filters.title(Title.Concussion_Grenade);
     public static final Filter Concussion_Missiles = Filters.title(Title.Concussion_Missiles);
+    public static final Filter completed_Sorcery_Test = Filters.title("TODO");  // TODO!
     public static final Filter cannon = Filters.or(Keyword.CANNON, Keyword.ION_CANNON, Keyword.LASER_CANNON, Keyword.AT_AT_CANNON);
     public static final Filter Connix = Filters.persona(Persona.CONNIX);
     public static final Filter Control = Filters.title(Title.Control);
@@ -18117,6 +18119,7 @@ public class Filters {
     public static final Filter Dark_Maneuvers = Filters.title(Title.Dark_Maneuvers);
     public static final Filter Dark_Side = Filters.side(Side.DARK);
     public static final Filter Dark_Strike = Filters.title(Title.Dark_Strike);
+    public static final Filter Dark_Tree_Village = Filters.title(Title.Dark_Tree_Village);
     public static final Filter Dark_Waters = Filters.title(Title.Dark_Waters);
     public static final Filter Darklighter_Spin = Filters.title(Title.Darklighter_Spin);
     public static final Filter Darksaber = Filters.title(Title.Darksaber);
@@ -19202,6 +19205,7 @@ public class Filters {
     public static final Filter S_foils = Filters.title(Title.S_foils);
     public static final Filter SFS_Lx93_Laser_Cannons = Filters.title(Title.SFS_Lx93_Laser_Cannons);
     public static final Filter Shadow_Collective = Filters.title(Title.Shadow_Collective);
+    public static final Filter Shaman = Filters.keyword(Keyword.SHAMAN);
     public static final Filter Shawn = Filters.persona(Persona.SHAWN);
     public static final Filter Shield_Gate = Filters.title(Title.Shield_Gate);
     public static final Filter Shmi = Filters.title(Title.Shmi);

@@ -164,6 +164,7 @@ public interface Title {
     String Bravo_5 = "Bravo 5";
     String Bravo_Fighter = "Bravo Fighter";
     String Breached_Defenses = "Breached Defenses";
+    String Bright_Tree_Village = "Endor: Bright Tree Village";
     String BlockadeFlagshipBridge = "Blockade Flagship: Bridge";
     String Blockade_Support_Ship = "Blockade Support Ship";
     String Bring_Him_Before_Me = "Bring Him Before Me";
@@ -278,6 +279,7 @@ public interface Title {
     String Dark_Jedi_Presence = "Dark Jedi Presence";
     String Dark_Maneuvers = "Dark Maneuvers";
     String Dark_Strike = "Dark Strike";
+    String Dark_Tree_Village = "Endor: Dark Tree Village";
     String Dark_Waters = "Dark Waters";
     String Darklighter_Spin = "Darklighter Spin";
     String Darksaber = "Darksaber";
