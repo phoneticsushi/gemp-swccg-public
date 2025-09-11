@@ -86,7 +86,7 @@ public class Card4_076 extends AbstractJediTest {
 
         // Check condition(s)
         if (timingSatisfied
-                && !GameConditions.isJediTestCompleted(game, self)) {
+                && !GameConditions.isCharacterTestCompleted(game, self)) {
             ModifiersQuerying modifiersQuerying = game.getModifiersQuerying();
             if (modifiersQuerying.getNumBattlesInitiatedThisTurn(playerId) == 0
                     && (modifiersQuerying.getNumForceDrainsInitiatedThisTurn() == 0 || GameConditions.isOpponentsTurn(game, playerId))
@@ -171,7 +171,7 @@ public class Card4_076 extends AbstractJediTest {
         GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
 
         // Check condition(s)
-        if (GameConditions.isJediTestCompleted(game, self)
+        if (GameConditions.isCharacterTestCompleted(game, self)
                 && TriggerConditions.isDestinyJustDrawnBy(game, effectResult, opponent)) {
 
             int perBattleLimit = Integer.MAX_VALUE;

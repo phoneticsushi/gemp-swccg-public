@@ -47,7 +47,7 @@ public class Card4_019 extends AbstractImmediateEffect {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new MayNotAttemptJediTestsModifier(self, Filters.apprentice, new InPlayDataSetCondition(self)));
+        modifiers.add(new MayNotAttemptJediTestsModifier(self, Filters.jedi_test_apprentice, new InPlayDataSetCondition(self)));
         modifiers.add(new EachTrainingDestinyModifier(self, Filters.hasAttached(self),  3));
         return modifiers;
     }
@@ -56,8 +56,8 @@ public class Card4_019 extends AbstractImmediateEffect {
     protected List<PlayCardAction> getGameTextOptionalAfterActions(final String playerId, SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
         // Check condition(s)
         if (TriggerConditions.isStartOfYourTurn(game, effectResult, self)
-            && GameConditions.canSpot(game, self, SpotOverride.INCLUDE_ALL, Filters.apprentice)) {
-            PlayCardAction action = getPlayCardAction(playerId, game, self, self, true, 0, null, null, null, null, null, false, 0, Filters.apprentice, null);
+            && GameConditions.canSpot(game, self, SpotOverride.INCLUDE_ALL, Filters.jedi_test_apprentice)) {
+            PlayCardAction action = getPlayCardAction(playerId, game, self, self, true, 0, null, null, null, null, null, false, 0, Filters.jedi_test_apprentice, null);
             if (action != null) {
                 self.setWhileInPlayData(new WhileInPlayData(game.getGameState().getPlayersLatestTurnNumber(playerId)));
                 return Collections.singletonList(action);

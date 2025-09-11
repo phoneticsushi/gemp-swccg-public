@@ -102,7 +102,7 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     private List<ModifierHook> _modifierHooks = new LinkedList<ModifierHook>();
     private WhileInPlayData _whileInPlayData;
     private boolean _leavingTable;
-    private JediTestStatus _jediTestStatus;
+    private CharacterTestStatus _characterTestStatus;
     private UtinniEffectStatus _utinniEffectStatus;
     private Map<TargetId, Integer> _targetGroupIds = new HashMap<TargetId, Integer>();
     private Map<TargetId, Integer> _targetedCardIds = new HashMap<TargetId, Integer>();
@@ -227,7 +227,7 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
         }
         snapshot._whileInPlayData = snapshotData.getDataForSnapshot(_whileInPlayData);
         snapshot._leavingTable = _leavingTable;
-        snapshot._jediTestStatus = _jediTestStatus;
+        snapshot._characterTestStatus = _characterTestStatus;
         snapshot._utinniEffectStatus = _utinniEffectStatus;
         snapshot._targetGroupIds.putAll(_targetGroupIds);
         snapshot._targetedCardIds.putAll(_targetedCardIds);
@@ -1008,21 +1008,21 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     }
 
     /**
-     * Sets the Jedi Test status. This is only relevant if the card is a Jedi Test in play.
-     * @param status the Jedi Test status
+     * Sets the Character Test status. This is only relevant if the card is a Jedi Test / Sorcery Test in play.
+     * @param status the Character Test status
      */
     @Override
-    public void setJediTestStatus(JediTestStatus status) {
-        _jediTestStatus = status;
+    public void setCharacterTestStatus(CharacterTestStatus status) {
+        _characterTestStatus = status;
     }
 
     /**
-     * Gets the Jedi Test status. This is only relevant if the card is a Jedi Test in play.
-     * @return the Jedi Test status
+     * Gets the Character Test status. This is only relevant if the card is a Jedi Test / Sorcery Test in play.
+     * @return the Character Test status
      */
     @Override
-    public JediTestStatus getJediTestStatus() {
-        return _jediTestStatus;
+    public CharacterTestStatus getCharacterTestStatus() {
+        return _characterTestStatus;
     }
 
     /**

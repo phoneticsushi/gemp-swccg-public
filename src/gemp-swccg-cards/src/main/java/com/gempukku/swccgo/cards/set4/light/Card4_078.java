@@ -2,12 +2,12 @@ package com.gempukku.swccgo.cards.set4.light;
 
 import com.gempukku.swccgo.cards.AbstractJediTest;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.conditions.JediTestCompletedCondition;
+import com.gempukku.swccgo.cards.conditions.CharacterTestCompletedCondition;
 import com.gempukku.swccgo.cards.effects.RevealTopCardsOfReserveDeckEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
-import com.gempukku.swccgo.common.JediTestStatus;
+import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.PlayCardOptionId;
@@ -96,7 +96,7 @@ public class Card4_078 extends AbstractJediTest {
         
         // Check condition(s)
         if (timingSatisfied) {
-            if (!GameConditions.isJediTestBeingAttempted(game, self) && !GameConditions.isJediTestCompleted(game, self)) {
+            if (!GameConditions.isCharacterTestBeingAttempted(game, self) && !GameConditions.isCharacterTestCompleted(game, self)) {
                 final GameState gameState = game.getGameState();
                 final ModifiersQuerying modifiersQuerying = game.getModifiersQuerying();
                 final PhysicalCard apprentice = Filters.findFirstActive(game, self, Filters.and(Filters.mayAttemptJediTest(self), Filters.present(self)));
@@ -110,7 +110,7 @@ public class Card4_078 extends AbstractJediTest {
                             new PassthruEffect(action) {
                                 @Override
                                 protected void doPlayEffect(SwccgGame game) {
-                                    self.setJediTestStatus(JediTestStatus.ATTEMPTING);
+                                    self.setCharacterTestStatus(CharacterTestStatus.ATTEMPTING);
                                     modifiersQuerying.attemptedJediTest(self, apprentice);
                                 }
                             });
@@ -137,7 +137,7 @@ public class Card4_078 extends AbstractJediTest {
                                             // Check condition(s)
                                             if (TriggerConditions.isEndOfYourTurn(game, effectResult, playerId)
                                                     && self.getCardId() == cardId
-                                                    && GameConditions.isJediTestBeingAttempted(game, self)
+                                                    && GameConditions.isCharacterTestBeingAttempted(game, self)
                                                     && GameConditions.isTurnNumber(game, nextTurnNumber)
                                                     && GameConditions.canSpot(game, self, SpotOverride.INCLUDE_ALL, apprentice)) {
 
@@ -164,7 +164,7 @@ public class Card4_078 extends AbstractJediTest {
         if (TriggerConditions.isAboutToDrawDestiny(game, effectResult, playerId)
                 && GameConditions.canSubstituteDestiny(game)) {
             final GameState gameState = game.getGameState();
-            if (GameConditions.isJediTestCompleted(game, self)) {
+            if (GameConditions.isCharacterTestCompleted(game, self)) {
                 final PhysicalCard stackedDestinyCard = Filters.findFirstFromStacked(game, Filters.and(Filters.stackedViaJediTest5,
                         Filters.stackedOn(self, Filters.or(self.getTargetedCard(gameState, TargetId.JEDI_TEST_APPRENTICE), Filters.Jedi_Test_5))));
                 if (stackedDestinyCard != null) {
@@ -194,7 +194,7 @@ public class Card4_078 extends AbstractJediTest {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new ImmuneToAttritionLessThanModifier(self, Filters.apprenticeTargetedByJediTest(self), new JediTestCompletedCondition(self), 4));
+        modifiers.add(new ImmuneToAttritionLessThanModifier(self, Filters.apprenticeTargetedByJediTest(self), new CharacterTestCompletedCondition(self), 4));
         return modifiers;
     }
 

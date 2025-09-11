@@ -2,7 +2,7 @@ package com.gempukku.swccgo.cards.set4.light;
 
 import com.gempukku.swccgo.cards.AbstractJediTest;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.conditions.JediTestCompletedCondition;
+import com.gempukku.swccgo.cards.conditions.CharacterTestCompletedCondition;
 import com.gempukku.swccgo.cards.effects.usage.OncePerPhaseEffect;
 import com.gempukku.swccgo.common.DestinyType;
 import com.gempukku.swccgo.common.ExpansionSet;
@@ -90,7 +90,7 @@ public class Card4_079 extends AbstractJediTest {
         
         // Check condition(s)
         if (timingSatisfied
-                && !GameConditions.isJediTestCompleted(game, self)) {
+                && !GameConditions.isCharacterTestCompleted(game, self)) {
             final PhysicalCard apprentice = Filters.findFirstActive(game, self, Filters.and(Filters.mayAttemptJediTest(self), Filters.present(self)));
             if (apprentice != null) {
 
@@ -172,7 +172,7 @@ public class Card4_079 extends AbstractJediTest {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new ImmuneToAttritionLessThanModifier(self, Filters.apprenticeTargetedByJediTest(self), new JediTestCompletedCondition(self), 3));
+        modifiers.add(new ImmuneToAttritionLessThanModifier(self, Filters.apprenticeTargetedByJediTest(self), new CharacterTestCompletedCondition(self), 3));
         return modifiers;
     }
 
@@ -184,7 +184,7 @@ public class Card4_079 extends AbstractJediTest {
         int forceToUse = isFree ? 0 : 2;
 
         // Check condition(s)
-        if (GameConditions.isJediTestCompleted(game, self)
+        if (GameConditions.isCharacterTestCompleted(game, self)
                 && GameConditions.isOnceDuringYourPhase(game, self, playerId, gameTextSourceCardId, gameTextActionId, Phase.CONTROL)
                 && (isFree || GameConditions.canUseForce(game, playerId, forceToUse))
                 && GameConditions.canTakeCardsIntoHandFromReserveDeck(game, playerId, self, gameTextActionId)) {

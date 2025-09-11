@@ -8,7 +8,7 @@ import com.gempukku.swccgo.common.Filterable;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.InactiveReason;
 import com.gempukku.swccgo.common.IonizationType;
-import com.gempukku.swccgo.common.JediTestStatus;
+import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.ModelType;
 import com.gempukku.swccgo.common.Persona;
@@ -12134,7 +12134,7 @@ public class Filters {
     /**
      * Filter that accepts cards that are mentors.
      */
-    public static final Filter mentor = new Filter() {
+    public static final Filter jedi_test_mentor = new Filter() {
         @Override
         public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
             return mentorTargetedByJediTest(Filters.any).accepts(gameState, modifiersQuerying, physicalCard);
@@ -12143,8 +12143,8 @@ public class Filters {
     /**
      * Wrapper method to allow other static filters to access the wrapped filter.
      */
-    private static Filter mentor() {
-        return mentor;
+    private static Filter jedi_test_mentor() {
+        return jedi_test_mentor;
     }
 
     /**
@@ -12191,7 +12191,7 @@ public class Filters {
     /**
      * Filter that accepts cards that are apprentices.
      */
-    public static final Filter apprentice = new Filter() {
+    public static final Filter jedi_test_apprentice = new Filter() {
         @Override
         public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
             if (physicalCard.getBlueprint().getCardCategory() != CardCategory.CHARACTER)
@@ -12207,8 +12207,8 @@ public class Filters {
     /**
      * Wrapper method to allow other static filters to access the wrapped filter.
      */
-    private static Filter apprentice() {
-        return apprentice;
+    private static Filter jedi_test_apprentice() {
+        return jedi_test_apprentice;
     }
 
     /**
@@ -12300,7 +12300,7 @@ public class Filters {
     public static final Filter completed_Jedi_Test = new Filter() {
         @Override
         public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
-            return Filters.Jedi_Test.accepts(gameState, modifiersQuerying, physicalCard) && physicalCard.getJediTestStatus() == JediTestStatus.COMPLETED;
+            return Filters.Jedi_Test.accepts(gameState, modifiersQuerying, physicalCard) && physicalCard.getCharacterTestStatus() == CharacterTestStatus.COMPLETED;
         }
     };
     /**
@@ -12316,7 +12316,7 @@ public class Filters {
     public static final Filter uncompleted_Jedi_Test = new Filter() {
         @Override
         public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
-            return Filters.Jedi_Test.accepts(gameState, modifiersQuerying, physicalCard) && physicalCard.getJediTestStatus() != JediTestStatus.COMPLETED;
+            return Filters.Jedi_Test.accepts(gameState, modifiersQuerying, physicalCard) && physicalCard.getCharacterTestStatus() != CharacterTestStatus.COMPLETED;
         }
     };
     /**

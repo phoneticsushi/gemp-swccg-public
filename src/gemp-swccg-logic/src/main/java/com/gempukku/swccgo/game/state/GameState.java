@@ -1526,7 +1526,7 @@ public class GameState implements Snapshotable<GameState> {
         card.setPlayCardOptionId(null);
         card.setLatestInPlayForfeitValue(0);
         card.setMovementDirection(MovementDirection.NONE);
-        card.setJediTestStatus(null);
+        card.setCharacterTestStatus(null);
         card.setUtinniEffectStatus(null);
         card.setRaceDestinyForPlayer(null);
     }
@@ -4551,6 +4551,8 @@ public class GameState implements Snapshotable<GameState> {
 
     /**
      * Removes a card as being an apprentice.
+     * 
+     * FIXME: this function is never called?
      */
     public void removeApprentice(PhysicalCard card) {
         Set<Persona> personas = card.getBlueprint().getPersonas();
