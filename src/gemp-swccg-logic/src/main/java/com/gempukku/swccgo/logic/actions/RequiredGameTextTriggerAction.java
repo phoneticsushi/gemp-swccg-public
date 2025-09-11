@@ -29,7 +29,24 @@ public class RequiredGameTextTriggerAction extends AbstractGameTextAction implem
      * @param gameTextActionId the identifier for the card's specific action to check the limit of
      */
     public RequiredGameTextTriggerAction(PhysicalCard physicalCard, int gameTextSourceCardId, GameTextActionId gameTextActionId) {
-        super(physicalCard, null, gameTextSourceCardId, gameTextActionId);
+        this(physicalCard, null, gameTextSourceCardId, gameTextActionId);
+    }
+
+    /**
+     * Creates a required trigger action with the specified card as the source,
+     * as if the specified player was performing it.
+     * 
+     * Without specifying the performingPlayer, some actions cause a NullPointerException,
+     * such as trying to deploy a card from outside the game,
+     * which needs a player for which to pull the card list.
+     * 
+     * @param physicalCard the card
+     * @param performingPlayer the player to use for context of the action being performed
+     * @param gameTextSourceCardId the card id of the card the game text is originally from
+     * @param gameTextActionId the identifier for the card's specific action to check the limit of
+     */
+    public RequiredGameTextTriggerAction(PhysicalCard physicalCard, String performingPlayer, int gameTextSourceCardId, GameTextActionId gameTextActionId) {
+        super(physicalCard, performingPlayer, gameTextSourceCardId, gameTextActionId);
         _triggerIdentifierUsingCardId = physicalCard.getCardId()+"||"+gameTextSourceCardId+"|"+ gameTextActionId;
         _triggerIdentifierUsingBlueprintId = physicalCard.getBlueprintId(true)+"||"+gameTextSourceCardId+"|"+ gameTextActionId;
         _text = "Required response from " + GameUtils.getCardLink(physicalCard);

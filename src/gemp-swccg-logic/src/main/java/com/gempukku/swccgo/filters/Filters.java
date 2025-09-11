@@ -2131,6 +2131,22 @@ public class Filters {
     }
 
     /**
+     * Filter that accepts cards that have ability < the ability of the referenced card.
+     *
+     * @param referenceCard the card whose ability we're going to compare against
+     * @return Filter
+     */
+    public static Filter abilityLessThanCard(final PhysicalCard referenceCard) {
+        return new Filter() {
+            @Override
+            public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+                final float referenceAbility = modifiersQuerying.getAbility(gameState, referenceCard);
+                return modifiersQuerying.hasAbilityLessThan(gameState, physicalCard, referenceAbility);
+            }
+        };
+    }
+
+    /**
      * Filter that accepts cards that have ability <= X.
      *
      * @param ability the value of X
@@ -12346,6 +12362,43 @@ public class Filters {
         return stackedViaJediTest5;
     }
 
+    //
+    //
+    // Filters for Sorcery Tests
+    //
+    //
+
+    /**
+     * Filter that accepts cards that are completed Sorcery Tests.
+     */
+    public static final Filter completed_Sorcery_Test = new Filter() {
+        @Override
+        public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+            return Filters.Sorcery_Test.accepts(gameState, modifiersQuerying, physicalCard) && physicalCard.getCharacterTestStatus() == CharacterTestStatus.COMPLETED;
+        }
+    };
+
+    /**
+     * Filter that accepts apprentices that are targeted by a Sorcery Test accepted by the Sorcery Test filter.
+     *
+     * @param sorceryTestFilter the Sorcery Test filter
+     * @return Filter
+     */
+    public static Filter apprenticeTargetedBySorceryTest(final Filter sorceryTestFilter) {
+        return new Filter() {
+            @Override
+            public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+                Collection<PhysicalCard> sorceryTests = Filters.filterActive(gameState.getGame(), null, Filters.and(Filters.Sorcery_Test, sorceryTestFilter));
+                for (PhysicalCard sorceryTest : sorceryTests) {
+                    PhysicalCard apprentice = sorceryTest.getTargetedCard(gameState, TargetId.SORCERY_TEST_APPRENTICE);
+                    if (apprentice != null && Filters.sameCardId(physicalCard).accepts(gameState, modifiersQuerying, apprentice)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+    }
 
     //
     //
@@ -18054,7 +18107,6 @@ public class Filters {
     public static final Filter Communing = Filters.title(Title.Communing);
     public static final Filter Concussion_Grenade = Filters.title(Title.Concussion_Grenade);
     public static final Filter Concussion_Missiles = Filters.title(Title.Concussion_Missiles);
-    public static final Filter completed_Sorcery_Test = Filters.title("TODO");  // TODO!
     public static final Filter cannon = Filters.or(Keyword.CANNON, Keyword.ION_CANNON, Keyword.LASER_CANNON, Keyword.AT_AT_CANNON);
     public static final Filter Connix = Filters.persona(Persona.CONNIX);
     public static final Filter Control = Filters.title(Title.Control);
@@ -18838,6 +18890,7 @@ public class Filters {
     public static final Filter Mon_Mothma = Filters.persona(Persona.MON_MOTHMA);
     public static final Filter Monnok = Filters.title(Title.Monnok);
     public static final Filter More_Dangerous_Than_You_Realize = Filters.title(Title.More_Dangerous_Than_You_Realize);
+    public static final Filter Morag = Filters.persona(Persona.MORAG);
     public static final Filter Mos_Eisley = Filters.title(Title.Mos_Eisley);
     public static final Filter Mos_Espa = Filters.title(Title.Mos_Espa);
     public static final Filter Mosep = Filters.title(Title.Mosep);
@@ -18847,6 +18900,7 @@ public class Filters {
     public static final Filter Mournful_Roar = Filters.title(Title.Mournful_Roar);
     public static final Filter mouse_droid = Filters.title(Title.Mouse_Droid);
     public static final Filter Momaw_Nadon = Filters.title(Title.Momaw_Nadon);
+    public static final Filter Mt_Thunderstone_site = Filters.and(Filters.titleContains("Mt. Thunderstone"), CardSubtype.SITE);
     public static final Filter MTT = Filters.modelType(ModelType.MTT);
     public static final Filter Mudhorn_Location = Filters.and(Filters.icon(Icon.MUDHORN), Filters.location);
     public static final Filter musician = Filters.keyword(Keyword.MUSICIAN);
@@ -19252,6 +19306,7 @@ public class Filters {
     public static final Filter Someone_Who_Loves_You = Filters.title(Title.Someone_Who_Loves_You);
     public static final Filter Sonic_Bombardment = Filters.title(Title.Sonic_Bombardment);
     public static final Filter Sorry_About_The_Mess = Filters.title(Title.Sorry_About_The_Mess);
+    public static final Filter sorcerer = Filters.keyword(Keyword.SORCERER);
     public static final Filter Sorcery_Test = Filters.type(CardType.SORCERY_TEST);
     public static final Filter Sorcery_Test_0 = Filters.keyword(Keyword.SORCERY_TEST_0);
     public static final Filter Sorcery_Test_1 = Filters.keyword(Keyword.SORCERY_TEST_1);
@@ -19269,6 +19324,13 @@ public class Filters {
     public static final Filter Special_Modifications = Filters.title(Title.Special_Modifications);
     public static final Filter speeder = Filters.or(ModelType.SPEEDER_BIKE, Keyword.SPEEDER, Keyword.LANDSPEEDER, Keyword.SANDSPEEDER, Keyword.SNOWSPEEDER);
     public static final Filter speeder_bike = Filters.modelType(ModelType.SPEEDER_BIKE);
+    public static final Filter Spellbook = Filters.title(Title.Spellbook);
+    // Right now, "Spell" is defined as "A Sorcery Test attached to the Spellbook" as nothing else in the game references the contept of a "Spell";
+    // YAGNI: maintain it as a keyword?
+    // Need to define "Spell" after "Spellbook" since it references Filters.Spellbook:
+    public static final Filter Spell = Filters.and(Filters.Sorcery_Test, Filters.attachedTo(Filters.Spellbook));
+    // "Spellcaster" similarly to "Spell"
+    public static final Filter Spellcaster = Filters.and(Filters.character, Filters.hasAttached(Filters.Spellbook));
     public static final Filter Spice_Mines_Of_Kessel = Filters.title(Title.Spice_Mines_Of_Kessel);
     public static final Filter spy = Filters.keyword(Keyword.SPY);
     public static final Filter squadron = Filters.subtype(CardSubtype.SQUADRON);
@@ -19288,7 +19350,9 @@ public class Filters {
     public static final Filter Starship_Graveyard = Filters.title(Title.Starship_Graveyard);
     public static final Filter Strike_Planning = Filters.title(Title.Strike_Planning);
     public static final Filter Super_class_Star_Destroyer = Filters.modelType(ModelType.SUPER_CLASS_STAR_DESTROYER);
-    
+    public static final Filter Sunstar = Filters.title(Title.Sunstar);
+    public static final Filter Teebo = Filters.persona(Persona.TEEBO);
+
     /**
      * Wrapper method to allow other static filters to access the wrapped filter.
      */

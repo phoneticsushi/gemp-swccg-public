@@ -10,18 +10,23 @@ EMPTY_LINE = ''
 GENERATED_PLACEHOLDER_SENTINEL_TEXT = 'GENERATED_PLACEHOLDER_SENTINEL_TEXT'
 
 CARD_INTERFACE_MAP = {
+    'ARTIFACT': 'AbstractArtifact',
     'CHARACTER_ALIEN': 'AbstractAlien',
     'CHARACTER_REBEL': 'AbstractRebel',
     'LOCATION_SITE': 'AbstractSite',
     'LOCATION_SYSTEM': 'AbstractSystem',
+    'OBJECTIVE': 'AbstractObjective',
+    'SORCERY_TEST': 'AbstractSorceryTest',
 }
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--csv_file', type=str, required=True)
-    parser.add_argument('-i', '--card_index', type=str, required=False)
     parser.add_argument('-f', '--force', action=argparse.BooleanOptionalAction)
     parser.add_argument('-t', '--title_explicit', action=argparse.BooleanOptionalAction)
+    indexSelectionGroup = parser.add_mutually_exclusive_group(required=True)
+    indexSelectionGroup.add_argument('-i', '--card_index', type=str)
+    indexSelectionGroup.add_argument('-a', '--all', action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
     
     if args.force and not args.card_index:
@@ -216,19 +221,26 @@ def generate_multi_doc_comment(record) -> list[str]:
     ]
 
 def to_title_enum(card_title: str) -> str:
-    # reasonable guess; all uppercase, all spaces to underscores, strip non-alphanumerics
-    return ''.join(ch if ch.isalpha() else '_' for ch in card_title.replace(' ', '_')).upper()
+    # reasonable guess; first letter of each word uppercase, all spaces to underscores, strip non-alphanumerics
+    return ''.join(ch if ch.isalpha() else '_' for ch in card_title.title().replace(' ', '_'))
 
 def generate_super(record, use_explicit_title: bool) -> str:
-    # all rarities are "V" (Virtual)
-    # super() implementation is dependent on card type:
     card_type = record['card_type']
     card_title = f'"{record["card_title"]}"' if use_explicit_title else f'Title.{to_title_enum(record["card_title"])}'
+    card_interface = CARD_INTERFACE_MAP[card_type]
+    card_rarity = 'V'  # all rarities are hardcoded to "V" (Virtual)
 
-    if card_type == 'CHARACTER_ALIEN':
-        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
-    elif card_type == 'LOCATION_SITE':
-        return f'super(Side.{record["card_side"]}, {card_title}, Title.{record["system_name"]}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.V);'
+    # super() implementation is dependent on card type:
+    if card_interface == 'AbstractAlien':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    if card_interface == 'AbstractArtifact':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    if card_interface == 'AbstractObjective':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    elif card_interface == 'AbstractSorceryTest':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    elif card_interface == 'AbstractSite':
+        return f'super(Side.{record["card_side"]}, {card_title}, Title.{record["system_name"]}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     else:
         raise RuntimeError(f'Missing generate_super() implementation for card type: {card_type}')
 

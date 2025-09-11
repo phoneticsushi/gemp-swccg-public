@@ -6,6 +6,7 @@ package com.gempukku.swccgo.common;
 public enum CardCategory implements Filterable {
 
     ADMIRALS_ORDER("Admiral's Order"),
+    ARTIFACT("Artifact"),
     CHARACTER("Character"),
     CREATURE("Creature"),
     DEFENSIVE_SHIELD("Defensive Shield"),
@@ -18,6 +19,7 @@ public enum CardCategory implements Filterable {
     LOCATION("Location"),
     OBJECTIVE("Objective"),
     PODRACER("Podracer"),
+    SORCERY_TEST("Sorcery Test"),
     STARSHIP("Starship"),
     VEHICLE("Vehicle"),
     WEAPON("Weapon");

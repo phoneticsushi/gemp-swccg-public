@@ -50,6 +50,11 @@ public interface Attacks extends BaseQuery, Defense, LocationControl {
 		if (!getModifiersAffectingCard(gameState, ModifierType.MAY_NOT_BE_ATTACKED, target).isEmpty()) {
 			return true;
 		}
+        for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.MAY_NOT_ATTACK_CHARACTERS_OWNED_BY_PLAYER, target)) {
+            if (modifier.isAffectedTarget(gameState, query(), card)) {
+                return true;
+            }
+        }
 		return false;
 	}
 

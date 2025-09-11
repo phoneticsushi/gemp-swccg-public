@@ -148,6 +148,9 @@ public class SortAndFilterCards {
                 if (filterValue.startsWith("ADMIRALS_ORDER")) {
                     return CardCategory.ADMIRALS_ORDER;
                 }
+                if (filterValue.startsWith("ARTIFACT")) {
+                    return CardCategory.ARTIFACT;
+                }
                 if (filterValue.startsWith("CHARACTER")) {
                     return CardCategory.CHARACTER;
                 }
@@ -184,6 +187,9 @@ public class SortAndFilterCards {
                 if (filterValue.startsWith("PODRACER")) {
                     return CardCategory.PODRACER;
                 }
+                if (filterValue.startsWith("SORCERY_TEST")) {
+                    return CardCategory.SORCERY_TEST;
+                }
                 if (filterValue.startsWith("STARSHIP")) {
                     return CardCategory.STARSHIP;
                 }
@@ -209,6 +215,9 @@ public class SortAndFilterCards {
                 String filterValue = filterParam.substring("cardType:".length());
                 if (filterValue.startsWith("ADMIRALS_ORDER")) {
                     return CardType.ADMIRALS_ORDER;
+                }
+                if (filterValue.startsWith("ARTIFACT")) {
+                    return CardType.ARTIFACT;
                 }
                 if (filterValue.startsWith("CHARACTER_ALIEN")) {
                     return CardType.ALIEN;
@@ -269,6 +278,9 @@ public class SortAndFilterCards {
                 }
                 if (filterValue.startsWith("PODRACER")) {
                     return CardType.PODRACER;
+                }
+                if (filterValue.startsWith("SORCERY_TEST")) {
+                    return CardType.SORCERY_TEST;
                 }
                 if (filterValue.startsWith("STARSHIP")) {
                     return CardType.STARSHIP;

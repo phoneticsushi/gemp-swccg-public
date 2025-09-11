@@ -42,7 +42,7 @@ public class Card701_022 extends AbstractAlien {
     public Card701_022() {
         super(Side.DARK, 2, 2, 2, 3, 5, "Teebo, Young Apprentice", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Ewok shaman and musician. Childhood crush on Latara. Student of Logray's. Tempted by the dark arts into learning flashy magic.");
-        setGameText("Deploys only on Endor. Power +1 for each [LS] icon at same Endor site. Once per game, if your character present was just lost, may use 'potion of life' to deploy that character from Lost Pile to same site for free. Opponent’s non-alien characters deploy +1 here.");
+        setGameText("Deploys only on Endor. Power +1 for each [LS] icon at same Endor site. Once per game, if your character present was just lost, may use 'potion of life' to deploy that character from Lost Pile to same site for free. Opponent's non-alien characters deploy +1 here.");
         addIcons(Icon.BEEZER_BOWL_2025);
         addKeywords(Keyword.DARK_ARTS, Keyword.MUSICIAN, Keyword.SHAMAN);
         addPersonas(Persona.TEEBO);
@@ -93,7 +93,7 @@ public class Card701_022 extends AbstractAlien {
             new ForceIconsAtLocationEvaluator(siteWherePresent, false, true)
         ));
 
-        // Opponent’s non-alien characters deploy +1 here
+        // Opponent's non-alien characters deploy +1 here
         modifiers.add(new DeployCostToLocationModifier(self,
             Filters.and(Filters.opponents(self), Filters.not(Filters.alien)),
             1,

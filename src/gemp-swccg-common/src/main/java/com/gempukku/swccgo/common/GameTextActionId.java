@@ -1054,7 +1054,10 @@ public enum GameTextActionId {
     // Special action done for deploying cards (per game)
     DEPLOY_CARD_ACTION(false, true),
 
-
+    // Actions associated with Sorcery Tests and Spellcasting
+    SORCERY_TEST__ATTEMPT_TEST,                                             // optional action to attempt a Sorcery Test (see Sorcery Tests)
+    SORCERY_TEST__EXCHANGE_SORCERY_TEST_IN_LOST_PILE(true),  // optional action available as Sorcery Test is Completed (see AbstractSorceryTest)
+    SPELLCASTING_ACTION,                                                    // optional action designated as a "spell" associated with the "cast" action (see Spellbook)
 
     // Legacy
     LEGACY__SLAVING_CAMP_HEADQUARTERS__DEPLOY_SITE_AND_OR_OTHER_CARD(true),

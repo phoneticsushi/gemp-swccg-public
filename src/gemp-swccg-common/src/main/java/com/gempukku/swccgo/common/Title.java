@@ -845,6 +845,7 @@ public interface Title {
     String Ommni_Box_Its_Worse = "Ommni Box & It's Worse";
     String On_Target = "On Target";
     String On_The_Verge_Of_Greatness = "On The Verge Of Greatness";
+    String Once_The_Sunstar_Is_Mine = "Once The Sunstar Is Mine...";
     String One_In_A_Million = "One In A Million";
     String One_More_Pass = "One More Pass";
     String Onyx_2 = "Onyx 2";
@@ -1087,6 +1088,7 @@ public interface Title {
     String Special_Delivery = "Special Delivery";
     String Special_Modifications = "Special Modifications";
     String Spice_Mines_Of_Kessel = "Spice Mines Of Kessel";
+    String Spellbook = "Spellbook";
     String Staging_Areas = "Staging Areas";
     String Stalker = "Stalker";
     String Stardust = "Stardust";
@@ -1102,6 +1104,7 @@ public interface Title {
     String Strike_Planning = "Strike Planning";
     String Stunning_Leader = "Stunning Leader";
     String Sullust = "Sullust";
+    String Sunstar = "Sunstar";
     String Sunsdown = "Sunsdown";
     String Superlaser = "Superlaser";
     String Superlaser_Mark_II = "Superlaser Mark II";
