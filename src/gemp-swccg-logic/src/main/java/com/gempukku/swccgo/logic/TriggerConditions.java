@@ -5701,6 +5701,19 @@ public class TriggerConditions {
         return false;
     }
 
+    /**
+     * Determines the details of a Sorcery Test just completed, 
+     * @param game the game
+     * @param effectResult the effect result
+     * @return Details about the completion, or null if the effect result is unrelated.
+     */
+    public static SorceryTestCompletedResult tryGetAsSorceryTestCompletedResult(SwccgGame game, EffectResult effectResult) {
+        if (effectResult.getType() == EffectResult.Type.SORCERY_TEST_COMPLETED) {
+            SorceryTestCompletedResult completedResult = (SorceryTestCompletedResult) effectResult;
+            return completedResult;
+        }
+        return null;
+    }
 
     public static boolean forEachAsteroidCaveOrSpaceSlugBellyChanged(SwccgGame game, EffectResult effectResult) {
         return (effectResult.getType() == EffectResult.Type.CHANGED_ASTEROID_CAVE_OR_SPACE_SLUG_BELLY);

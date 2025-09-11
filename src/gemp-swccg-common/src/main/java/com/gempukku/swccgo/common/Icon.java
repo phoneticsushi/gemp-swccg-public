@@ -65,6 +65,7 @@ public enum Icon implements Filterable {
 
     // Card types
     ADMIRALS_ORDER("Admiral's Order"),
+    ARTIFACT("Artifact"),
     ALIEN("Alien"),
     CREATURE("Creature"),
     DARK_JEDI_MASTER("Dark Jedi Master"),
@@ -85,6 +86,7 @@ public enum Icon implements Filterable {
     REPUBLIC("Republic"),
     RESISTANCE("Resistance"),
     SITH("Sith"),
+    SORCERY_TEST("Sorcery Test"),
     STARSHIP("Starship"),
     VEHICLE("Vehicle"),
     WEAPON("Weapon"),

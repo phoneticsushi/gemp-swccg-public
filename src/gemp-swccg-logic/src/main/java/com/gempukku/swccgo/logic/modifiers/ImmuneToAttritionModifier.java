@@ -14,7 +14,16 @@ public class ImmuneToAttritionModifier extends ImmuneToAttritionLessThanModifier
      * @param source the card that is the source of the modifier and that is given immunity
      */
     public ImmuneToAttritionModifier(PhysicalCard source) {
-        super(source, source, null, Float.MAX_VALUE);
+        this(source, source);
+    }
+
+    /**
+     * Creates an "Immune to attrition" modifier.
+     * @param source the card that is the source of the modifier
+     * @param target the card that is given immunity
+     */
+    public ImmuneToAttritionModifier(PhysicalCard source, PhysicalCard target) {
+        super(source, target, null, Float.MAX_VALUE);
     }
 
     /**

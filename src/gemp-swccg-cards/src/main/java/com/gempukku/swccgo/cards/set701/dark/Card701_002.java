@@ -24,7 +24,7 @@ import com.gempukku.swccgo.logic.modifiers.Modifier;
 public class Card701_002 extends AbstractSite {
     public Card701_002() {
         super(Side.DARK, "Endor: Mt. Thunderstone Talus", Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
-        setLocationLightSideGameText("Your Ewok may deploy here from Reserve Deck as a ‘react’.");
+        setLocationLightSideGameText("Your Ewok may deploy here from Reserve Deck as a 'react'.");
         setLocationDarkSideGameText("Your Rakazzak Beast may deploy here from Reserve Deck as a 'react'.");
         addIcon(Icon.DARK_FORCE, 2);
         addIcon(Icon.LIGHT_FORCE, 1);
@@ -43,7 +43,7 @@ public class Card701_002 extends AbstractSite {
     @Override
     protected List<Modifier> getGameTextLightSideWhileActiveModifiers(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        // Your Ewok may deploy here from Reserve Deck as a ‘react’
+        // Your Ewok may deploy here from Reserve Deck as a 'react'
         modifiers.add(new MayDeployOtherCardsAsReactToLocationModifier(self, "Deploy Ewok as a 'react'",
                 playerOnLightSideOfLocation, Filters.and(Filters.your(playerOnLightSideOfLocation), Filters.Ewok), self));
         return modifiers;

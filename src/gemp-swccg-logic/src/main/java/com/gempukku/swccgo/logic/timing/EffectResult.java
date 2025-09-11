@@ -354,6 +354,9 @@ public abstract class EffectResult implements Snapshotable<EffectResult> {
         // Exploding Program Trap
         EXPLODING_PROGRAM_TRAP,
 
+        // Sorcery Testing
+        SORCERY_TEST_COMPLETED,
+
         // Special Delivery
         SPECIAL_DELIVERY_COMPLETED,
 

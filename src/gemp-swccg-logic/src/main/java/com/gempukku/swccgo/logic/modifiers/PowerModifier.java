@@ -21,7 +21,17 @@ public class PowerModifier extends AbstractModifier {
      * @param modifierAmount the amount of the modifier
      */
     public PowerModifier(PhysicalCard source, float modifierAmount) {
-        this(source, source, null, modifierAmount);
+        this(source, source, modifierAmount);
+    }
+
+    /**
+     * Creates a power modifier.
+     * @param source the card that is the source of the modifier
+     * @param target the card whose power is modified
+     * @param modifierAmount the amount of the modifier
+     */
+    public PowerModifier(PhysicalCard source, PhysicalCard target, float modifierAmount) {
+        this(source, target, null, modifierAmount);
     }
 
     /**

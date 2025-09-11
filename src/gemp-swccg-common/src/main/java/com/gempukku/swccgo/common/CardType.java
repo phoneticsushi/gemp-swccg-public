@@ -6,6 +6,7 @@ package com.gempukku.swccgo.common;
 public enum CardType implements Filterable {
 
     ADMIRALS_ORDER("Admiral's Order"),
+    ARTIFACT("Artifact"),
     ALIEN("Alien"),
     CREATURE("Creature"),
     DARK_JEDI_MASTER("Dark Jedi Master"),

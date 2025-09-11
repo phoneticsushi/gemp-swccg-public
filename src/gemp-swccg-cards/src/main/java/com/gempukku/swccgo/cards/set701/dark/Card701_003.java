@@ -27,7 +27,7 @@ import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 public class Card701_003 extends AbstractSite {
     public Card701_003() {
         super(Side.DARK, "Endor: Mt. Thunderstone Castle", Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
-        setLocationDarkSideGameText("During your move phase, ‘dark arts’ characters may move between here and any Endor battleground site.");
+        setLocationDarkSideGameText("During your move phase, 'dark arts' characters may move between here and any Endor battleground site.");
         addIcon(Icon.DARK_FORCE, 2);
         addIcons(Icon.BEEZER_BOWL_2025, Icon.EXTERIOR_SITE, Icon.MOUNTAIN_SITE, Icon.PLANET);
         // Unusually, Mt. Thunderstone Castle is actually vertical, despite being a site, so we have to set this back...
@@ -39,7 +39,7 @@ public class Card701_003 extends AbstractSite {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
         Filter otherEndorBattlegroundSites = Filters.and(Filters.other(self), Filters.Endor_site, Filters.battleground);
 
-        // During your move phase, ‘dark arts’ characters may move between here and any Endor battleground site.
+        // During your move phase, 'dark arts' characters may move between here and any Endor battleground site.
         if (GameConditions.isDuringYourPhase(game, playerOnDarkSideOfLocation, Phase.MOVE)
                 && GameConditions.canSpotLocation(game, otherEndorBattlegroundSites)) {
             if (GameConditions.canPerformMovementUsingLocationText(playerOnDarkSideOfLocation, game, Filters.Dark_Arts, self, otherEndorBattlegroundSites, false)) {

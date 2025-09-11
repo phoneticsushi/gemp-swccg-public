@@ -27,7 +27,7 @@ import com.gempukku.swccgo.logic.timing.EffectResult;
 /**
 * Set: BEEZER_BOWL_2025
 * Type: LOCATION_SITE
-* Title: Endor: Zarrak’s Hideout
+* Title: Endor: Zarrak's Hideout
 */
 public class Card701_004 extends AbstractSite {
     public Card701_004() {

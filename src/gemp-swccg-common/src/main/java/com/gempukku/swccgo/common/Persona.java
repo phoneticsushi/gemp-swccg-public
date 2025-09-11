@@ -115,6 +115,7 @@ public enum Persona implements Filterable {
     MCQUARRIE("McQuarrie"),
     MELSHI("Melshi"),
     MON_MOTHMA("Mon Mothma"),
+    MORAG("Morag"),
     MOTTI("Motti"),
     NALAN_CHEEL("Nalan Cheel"),
     NARTHAX("Narthax"),
