@@ -17,7 +17,7 @@ import com.gempukku.swccgo.common.Filterable;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.InactiveReason;
-import com.gempukku.swccgo.common.JediTestStatus;
+import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.PlayCardOptionId;
@@ -4328,23 +4328,23 @@ public class GameConditions {
     }
 
     /**
-     * Determines if the specified Jedi Test being attempted.
+     * Determines if the specified Character Test being attempted.
      * @param game the game
-     * @param jediTest the Jedi Test
+     * @param characterTest the Jedi Test
      * @return true or false
      */
-    public static boolean isJediTestBeingAttempted(SwccgGame game, PhysicalCard jediTest) {
-        return jediTest.getJediTestStatus() == JediTestStatus.ATTEMPTING;
+    public static boolean isCharacterTestBeingAttempted(SwccgGame game, PhysicalCard characterTest) {
+        return characterTest.getCharacterTestStatus() == CharacterTestStatus.ATTEMPTING;
     }
 
     /**
-     * Determines if the specified Jedi Test is completed.
+     * Determines if the specified Character Test is completed.
      * @param game the game
-     * @param jediTest the Jedi Test
+     * @param CharacterTest the Jedi Test
      * @return true or false
      */
-    public static boolean isJediTestCompleted(SwccgGame game, PhysicalCard jediTest) {
-        return jediTest.getJediTestStatus() == JediTestStatus.COMPLETED;
+    public static boolean isCharacterTestCompleted(SwccgGame game, PhysicalCard CharacterTest) {
+        return CharacterTest.getCharacterTestStatus() == CharacterTestStatus.COMPLETED;
     }
 
     /**

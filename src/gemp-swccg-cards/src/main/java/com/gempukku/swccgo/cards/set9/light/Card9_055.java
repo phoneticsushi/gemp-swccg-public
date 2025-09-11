@@ -2,7 +2,7 @@ package com.gempukku.swccgo.cards.set9.light;
 
 import com.gempukku.swccgo.cards.AbstractJediTest;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.conditions.JediTestCompletedCondition;
+import com.gempukku.swccgo.cards.conditions.CharacterTestCompletedCondition;
 import com.gempukku.swccgo.cards.conditions.OnCondition;
 import com.gempukku.swccgo.cards.effects.CancelBattleEffect;
 import com.gempukku.swccgo.cards.effects.usage.OncePerPhaseEffect;
@@ -85,7 +85,7 @@ public class Card9_055 extends AbstractJediTest {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         String playerId = self.getOwner();
-        Condition jediTestCompleted = new JediTestCompletedCondition(self);
+        Condition jediTestCompleted = new CharacterTestCompletedCondition(self);
         Condition apprenticeOnDagobah = new OnCondition(self, Filters.apprenticeTargetedByJediTest(self), Title.Dagobah);
 
         List<Modifier> modifiers = new LinkedList<Modifier>();
@@ -101,7 +101,7 @@ public class Card9_055 extends AbstractJediTest {
 
         String playerId = self.getOwner();
         String opponent = game.getOpponent(playerId);
-        if (GameConditions.isJediTestCompleted(game, self)) {
+        if (GameConditions.isCharacterTestCompleted(game, self)) {
             return null;
         }
 
@@ -137,7 +137,7 @@ public class Card9_055 extends AbstractJediTest {
 
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
-        if (GameConditions.isJediTestCompleted(game, self)) {
+        if (GameConditions.isCharacterTestCompleted(game, self)) {
             return null;
         }
 
@@ -235,7 +235,7 @@ public class Card9_055 extends AbstractJediTest {
 
     @Override
     protected List<OptionalGameTextTriggerAction> getGameTextOptionalAfterTriggers(final String playerId, final SwccgGame game, EffectResult effectResult, final PhysicalCard self, final int gameTextSourceCardId) {
-        if (GameConditions.isJediTestCompleted(game, self)) {
+        if (GameConditions.isCharacterTestCompleted(game, self)) {
             return null;
         }
 

@@ -1,9 +1,9 @@
 package com.gempukku.swccgo.common;
 
 /**
- * Represents the status of a Jedi Test.
+ * Represents the status of a Jedi Test / Sorcery Test.
  */
-public enum JediTestStatus {
+public enum CharacterTestStatus {
     NOT_COMPLETED,
     ATTEMPTING,
     COMPLETED

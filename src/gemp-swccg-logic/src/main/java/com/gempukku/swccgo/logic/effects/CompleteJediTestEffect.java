@@ -1,6 +1,6 @@
 package com.gempukku.swccgo.logic.effects;
 
-import com.gempukku.swccgo.common.JediTestStatus;
+import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.TargetId;
 import com.gempukku.swccgo.common.Zone;
 import com.gempukku.swccgo.game.PhysicalCard;
@@ -34,7 +34,7 @@ public class CompleteJediTestEffect extends AbstractSuccessfulEffect {
         GameState gameState = game.getGameState();
         ModifiersQuerying modifiersQuerying = game.getModifiersQuerying();
 
-        if (_jediTest.getJediTestStatus() != JediTestStatus.COMPLETED) {
+        if (_jediTest.getCharacterTestStatus() != CharacterTestStatus.COMPLETED) {
             PhysicalCard apprentice = _jediTest.getTargetedCard(gameState, TargetId.JEDI_TEST_APPRENTICE);
             gameState.sendMessage(GameUtils.getCardLink(_jediTest) + " is 'completed' by " + GameUtils.getCardLink(apprentice));
             if (_jediTest.getZone() == Zone.ATTACHED) {
@@ -45,7 +45,7 @@ public class CompleteJediTestEffect extends AbstractSuccessfulEffect {
                     gameState.moveCardToAttached(_jediTest, apprentice);
                 }
             }
-            _jediTest.setJediTestStatus(JediTestStatus.COMPLETED);
+            _jediTest.setCharacterTestStatus(CharacterTestStatus.COMPLETED);
             modifiersQuerying.completedJediTest(_jediTest, apprentice);
 
             game.getActionsEnvironment().emitEffectResult(new JediTestCompletedResult(_action, _jediTest, apprentice));

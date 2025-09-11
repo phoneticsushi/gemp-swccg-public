@@ -66,7 +66,7 @@ public class Card9_045 extends AbstractNormalEffect {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         String playerId = self.getOwner();
-        Filter apprenticeOnDagobah = Filters.and(Filters.apprentice, Filters.on(Title.Dagobah));
+        Filter apprenticeOnDagobah = Filters.and(Filters.jedi_test_apprentice, Filters.on(Title.Dagobah));
 
         List<Modifier> modifiers = new LinkedList<Modifier>();
         modifiers.add(new MayNotPlayModifier(self, Filters.Surprise_Assault, playerId));

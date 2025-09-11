@@ -5,7 +5,7 @@ import com.gempukku.swccgo.common.CardType;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
-import com.gempukku.swccgo.common.JediTestStatus;
+import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.PlayCardZoneOption;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -259,7 +259,7 @@ public abstract class AbstractJediTest extends AbstractDeployable {
      */
     protected Filter getValidMentorFilter(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard deployTarget) {
         return Filters.and(Filters.your(playerId), Filters.character, Filters.abilityMoreThan(2),
-                Filters.not(Filters.or(Filters.mentorTargetedByJediTest(Filters.uncompleted_Jedi_Test), Filters.apprentice)),
+                Filters.not(Filters.or(Filters.mentorTargetedByJediTest(Filters.uncompleted_Jedi_Test), Filters.jedi_test_apprentice)),
                 getGameTextValidMentorFilter(playerId, game, self, deployTarget));
     }
 
@@ -376,7 +376,7 @@ public abstract class AbstractJediTest extends AbstractDeployable {
                                 && !Filters.canSpot(game, self, SpotOverride.INCLUDE_EXCLUDED_FROM_BATTLE, Filters.apprenticeTargetedByJediTest(self))) {
                             return true;
                         }
-                        if (targetsMentor() && self.getJediTestStatus() != JediTestStatus.COMPLETED) {
+                        if (targetsMentor() && self.getCharacterTestStatus() != CharacterTestStatus.COMPLETED) {
                             boolean canSpotMentorFromAll = Filters.canSpotFromAllOnTable(game, Filters.mentorTargetedByJediTest(self));
                             if (!canSpotMentorFromAll
                                     && game.getModifiersQuerying().isJediTestSuspendedInsteadOfLost(game.getGameState(), self)) {
@@ -411,7 +411,7 @@ public abstract class AbstractJediTest extends AbstractDeployable {
         List<TriggerAction> actions = super.getRequiredAfterTriggers(game, effectResult, self);
 
         // Uncompleted Jedi Test is lost if mentor or apprentice leaves table
-        if (self.getJediTestStatus() != JediTestStatus.COMPLETED) {
+        if (self.getCharacterTestStatus() != CharacterTestStatus.COMPLETED) {
             Filter targetFilter = Filters.or(Filters.apprenticeTargetedByJediTest(self), Filters.mentorTargetedByJediTest(self));
             if (TriggerConditions.leavesTable(game, effectResult, targetFilter)
                     && !game.getModifiersQuerying().isJediTestSuspendedInsteadOfLost(game.getGameState(), self)) {
@@ -427,7 +427,7 @@ public abstract class AbstractJediTest extends AbstractDeployable {
         }
 
         // Completed Jedi Test is lost if apprentice leaves table (not mentor)
-        if (self.getJediTestStatus() == JediTestStatus.COMPLETED) {
+        if (self.getCharacterTestStatus() == CharacterTestStatus.COMPLETED) {
             Filter targetFilter = Filters.apprenticeTargetedByJediTest(self);
             if (TriggerConditions.leavesTable(game, effectResult, targetFilter)
                     && !game.getModifiersQuerying().isJediTestSuspendedInsteadOfLost(game.getGameState(), self)) {

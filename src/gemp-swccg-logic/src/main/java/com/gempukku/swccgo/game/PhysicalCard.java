@@ -241,16 +241,16 @@ public interface PhysicalCard extends Filterable, Snapshotable<PhysicalCard> {
     boolean isLeavingTable();
 
     /**
-     * Sets the Jedi Test status. This is only relevant if the card is a Jedi Test in play.
-     * @param status the Jedi Test status
+     * Sets the Character Test status. This is only relevant if the card is a Jedi / Sorcery Test in play.
+     * @param status the completion status of this Character Test
      */
-    void setJediTestStatus(JediTestStatus status);
+    void setCharacterTestStatus(CharacterTestStatus status);
 
     /**
-     * Gets the Jedi Test status. This is only relevant if the card is a Jedi Test in play.
-     * @return the Jedi Test status
+     * Gets the Character Test status. This is only relevant if the card is a Jedi / Sorcery Test in play.
+     * @return the completion status of this Character Test
      */
-    JediTestStatus getJediTestStatus();
+    CharacterTestStatus getCharacterTestStatus();
 
     /**
      * Sets the Utinni Effect status. This is only relevant if the card is an Utinni Effect in play.

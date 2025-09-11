@@ -2,7 +2,7 @@ package com.gempukku.swccgo.cards.set4.light;
 
 import com.gempukku.swccgo.cards.AbstractJediTest;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.conditions.JediTestCompletedCondition;
+import com.gempukku.swccgo.cards.conditions.CharacterTestCompletedCondition;
 import com.gempukku.swccgo.common.DestinyType;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
@@ -88,7 +88,7 @@ public class Card4_075 extends AbstractJediTest {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         String opponent = game.getOpponent(self.getOwner());
-        Condition jediTestCompleted = new JediTestCompletedCondition(self);
+        Condition jediTestCompleted = new CharacterTestCompletedCondition(self);
 
         List<Modifier> modifiers = new LinkedList<Modifier>();
         modifiers.add(new MayOnlyMoveUsingLandspeedModifier(self, Filters.apprenticeTargetedByJediTest(self), new NotCondition(jediTestCompleted)));
@@ -104,7 +104,7 @@ public class Card4_075 extends AbstractJediTest {
         // Check condition(s)
         if (TriggerConditions.isStartOfYourPhase(game, self, effectResult, Phase.MOVE)) {
             Filter adjacentSiteFilter = Filters.adjacentSite(self);
-            if (!GameConditions.isJediTestCompleted(game, self)
+            if (!GameConditions.isCharacterTestCompleted(game, self)
                     && GameConditions.canSpotLocation(game, adjacentSiteFilter)
                     && !GameConditions.hasGameTextModification(game, self, ModifyGameTextType.JEDI_TEST_2__MAY_NOT_MOVE)) {
 
@@ -138,7 +138,7 @@ public class Card4_075 extends AbstractJediTest {
         
         // Check condition(s)
         if (timingSatisfied
-                && !GameConditions.isJediTestCompleted(game, self)) {
+                && !GameConditions.isCharacterTestCompleted(game, self)) {
             final PhysicalCard apprentice = Filters.findFirstActive(game, self, Filters.and(Filters.mayAttemptJediTest(self), Filters.present(self)));
             if (apprentice != null) {
 

@@ -2,7 +2,7 @@ package com.gempukku.swccgo.cards.set4.light;
 
 import com.gempukku.swccgo.cards.AbstractJediTest;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.conditions.JediTestCompletedCondition;
+import com.gempukku.swccgo.cards.conditions.CharacterTestCompletedCondition;
 import com.gempukku.swccgo.common.DestinyType;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
@@ -92,7 +92,7 @@ public class Card4_077 extends AbstractJediTest {
         // Check condition(s)
         if (timingSatisfied) {
             GameState gameState = game.getGameState();
-            if (!GameConditions.isJediTestCompleted(game, self)
+            if (!GameConditions.isCharacterTestCompleted(game, self)
                     && GameConditions.canSpot(game, self, Filters.and(self.getTargetedCard(gameState, TargetId.JEDI_TEST_MENTOR), Filters.present(self)))) {
                 final PhysicalCard apprentice = Filters.findFirstActive(game, self, Filters.and(Filters.mayAttemptJediTest(self), Filters.present(self)));
                 if (apprentice != null) {
@@ -176,7 +176,7 @@ public class Card4_077 extends AbstractJediTest {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new CancelOpponentsForceDrainBonusesModifier(self, new JediTestCompletedCondition(self)));
+        modifiers.add(new CancelOpponentsForceDrainBonusesModifier(self, new CharacterTestCompletedCondition(self)));
         return modifiers;
     }
 }

@@ -58,7 +58,7 @@ public class Card4_120 extends AbstractUtinniEffect {
 
     @Override
     protected Filter getGameTextValidUtinniEffectTargetFilter(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard deployTarget, TargetId targetId) {
-        return Filters.and(Filters.apprentice, Filters.on(Title.Dagobah));
+        return Filters.and(Filters.jedi_test_apprentice, Filters.on(Title.Dagobah));
     }
 
     @Override
