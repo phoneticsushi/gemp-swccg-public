@@ -249,8 +249,11 @@ def opt_generate_text_declaration(record, func_name, record_index) -> str:
     if not text:
         return None
     else:
-        # text is quoted; strip whitespace in case of inconsistent input
-        return f'{func_name}("{text.strip()}");'
+        # clean input as follows:
+        # - strip whitespace in case of inconsistent input
+        # - replace both types of fancy quotes with normal quotes
+        # - replace newlines with spaces
+        return f'{func_name}("{text.strip().replace("‘", "\'").replace("’", "\'").replace("\n", " ")}");'
 
 def multi_generate_force_gen_icons_declation(record) -> list[str]:
     # N.B. assumption here is these are integers
@@ -287,7 +290,7 @@ def multi_generate_todos_section_from_game_text(record) -> list[str]:
 
     res = [EMPTY_LINE]
     if game_text:
-        # remove trailing period and put on multiple linesfor swag and no other reason
+        # remove trailing period and put on multiple lines for swag and no other reason
         res.extend([f'// TODO: {sentence}' for sentence in game_text.split('. ')])
     if dark_side_text:
         res.append(f'// DARK SIDE TODO: {dark_side_text}')

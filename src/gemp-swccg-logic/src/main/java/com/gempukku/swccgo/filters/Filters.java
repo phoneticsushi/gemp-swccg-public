@@ -18896,6 +18896,7 @@ public class Filters {
     public static final Filter Mosep = Filters.title(Title.Mosep);
     public static final Filter Mostly_Armless = Filters.title(Title.Mostly_Armless);
     public static final Filter Motti = Filters.persona(Persona.MOTTI);
+    public static final Filter mountain_site = Filters.icon(Icon.MOUNTAIN_SITE);
     public static final Filter Mountains = Filters.title(Title.Mountains);
     public static final Filter Mournful_Roar = Filters.title(Title.Mournful_Roar);
     public static final Filter mouse_droid = Filters.title(Title.Mouse_Droid);
@@ -19698,6 +19699,7 @@ public class Filters {
     public static final Filter Yularen = Filters.persona(Persona.YULAREN);
     public static final Filter Yuzzum = Filters.species(Species.YUZZUM);
     public static final Filter Z_95 = Filters.or(ModelType.MODIFIED_Z_95_HEADHUNTER, ModelType.Z_95_HEADHUNTER);
+    public static final Filter Zarrak = Filters.persona(Persona.ZARRAK);
     public static final Filter Zeb = Filters.title(Title.Zeb);
     public static final Filter Zev = Filters.persona(Persona.ZEV);
     public static final Filter Zuckuss = Filters.persona(Persona.ZUCKUSS);

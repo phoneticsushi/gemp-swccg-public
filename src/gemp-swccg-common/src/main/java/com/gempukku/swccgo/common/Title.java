@@ -744,6 +744,7 @@ public interface Title {
     String Make_Ready_To_Land_Our_Troops = "Make Ready To Land Our Troops";
     String Malachor = "Malachor";
     String Malastare = "Malastare";
+    String Master_Zarrak = "Master Zarrak";
     String Mandalore = "Mandalore";
     String Mandalorian_Armor = "Mandalorian Armor";
     String Mandalorian_Covert = "Mandalorian Covert";
@@ -1348,7 +1349,9 @@ public interface Title {
     String Youre_All_Clear_Kid = "You're All Clear Kid!";
     String YT_1300_Transport = "YT-1300 Transport";
     String Yularen = "Colonel Wullf Yularen";
+    String Zarraks_Hang_Glider = "Zarrak's Hang Glider";
     String Zarraks_Hideout = "Endor: Zarrak's Hideout";
+    String Zarraks_Medallion = "Zarrak's Medallion";
     String Zeb = "Zeb Orrelios";
     String Zev = "Zev Senesca";
     String Zutton = "Zutton";
