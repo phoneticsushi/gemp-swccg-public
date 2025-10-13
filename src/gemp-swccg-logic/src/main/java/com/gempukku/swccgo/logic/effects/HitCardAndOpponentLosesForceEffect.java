@@ -12,6 +12,7 @@ import com.gempukku.swccgo.logic.timing.Action;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.PassthruEffect;
 import com.gempukku.swccgo.logic.timing.results.AboutToBeHitResult;
+import com.gempukku.swccgo.logic.timing.results.HitPreventedResult;
 import com.gempukku.swccgo.logic.timing.results.HitResult;
 
 import java.util.ArrayList;
@@ -87,7 +88,10 @@ public class HitCardAndOpponentLosesForceEffect extends AbstractSubActionEffect 
                                 new PassthruEffect(subAction) {
                                     @Override
                                     protected void doPlayEffect(SwccgGame game) {
-                                        if (!isEffectOnCardPrevented(_cardHit) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHit)) {
+                                        if (isEffectOnCardPrevented(_cardHit) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHit)) {
+                                            gameState.sendMessage(GameUtils.getCardLink(_cardHit) + " averted being 'hit' by " + GameUtils.getCardLink(_hitByCard));
+                                            game.getActionsEnvironment().emitEffectResult(new HitPreventedResult(_cardHit, _hitByCard, _hitByPermanentWeapon, _cardFiringWeapon));
+                                        } else {
                                             gameState.sendMessage(GameUtils.getCardLink(_cardHit) + " is 'hit' by " + GameUtils.getCardLink(_hitByCard));
                                             game.getGameState().cardAffectsCard(_hitByCard.getOwner(), _hitByCard, _cardHit);
                                             game.getModifiersQuerying().hitOrMadeLostByWeapon(_cardHit, _hitByCard);
