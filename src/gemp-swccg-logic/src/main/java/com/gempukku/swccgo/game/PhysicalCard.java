@@ -239,6 +239,9 @@ public interface PhysicalCard extends Filterable, Snapshotable<PhysicalCard> {
     void setLeavingTable(boolean leavingTable);
     boolean isLeavingTable();
 
+    void setIsCurse(boolean isCurse);
+    boolean isCurse();
+
     /**
      * Sets the Character Test status. This is only relevant if the card is a Jedi / Sorcery Test in play.
      * @param status the completion status of this Character Test

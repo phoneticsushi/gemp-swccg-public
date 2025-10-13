@@ -388,6 +388,7 @@ public interface Title {
     String Endor_Occupation = "Endor Occupation";
     String Endor_Operations = "Endor Operations";
     String Endor_Shield = "Endor Shield";
+    String Endor_Will_Bow_To_Me = "Endor Will Bow TO ME!";
     String Energy_Shell_Launchers = "Energy Shell Launchers";
     String Entrance_Cavern = "Jabba's Palace: Entrance Cavern";
     String Ephant_Mon = "Ephant Mon";

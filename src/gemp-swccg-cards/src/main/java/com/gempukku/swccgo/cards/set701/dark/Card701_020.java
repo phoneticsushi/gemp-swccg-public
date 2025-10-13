@@ -120,7 +120,7 @@ public class Card701_020 extends AbstractArtifact {
             // See YAGNI note in AbstractSorceryTest regarding an explicit spell interface; for now:
             // - only AbstractSorceryTests can be Spells
             // - All AbstractSorceryTests attached to the Spellbook must be Spells
-            for (PhysicalCard spell : Filters.filterActive(game, self, Filters.and(Filters.Spell, Filters.attachedTo(self)))) {
+            for (PhysicalCard spell : Filters.filterActive(game, self, Filters.spell_not_cast_this_turn)) { 
                 AbstractSorceryTest sorceryTest = (AbstractSorceryTest) spell.getBlueprint();
 
                 OptionalGameTextTriggerAction spellAction = sorceryTest.getGameTextSpellcastingAction(playerId, game, effectResult, spell, self, spellbookHolder, spellcasterEffectivePresenceFilter);
