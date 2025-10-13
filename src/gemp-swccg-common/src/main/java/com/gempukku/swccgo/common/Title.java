@@ -633,6 +633,7 @@ public interface Title {
     String Jabbas_Trophies = "Jabba's Trophies";
     String Jabiim = "Jabiim";
     String Jabiim_Starship_Hangar = "Jabiim: Starship Hangar";
+    String Jadru_Enchantress = "Jadru, Enchantress";
     String Jakku = "Jakku";
     String Jakku_Landing_Site = "Jakku: Landing Site";
     String Jango_Fett = "Jango Fett";
