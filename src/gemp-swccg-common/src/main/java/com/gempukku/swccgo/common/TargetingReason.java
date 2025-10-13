@@ -14,6 +14,7 @@ public enum TargetingReason {
     TO_BE_CHOKED("to be 'choked'"),
     TO_BE_COLLAPSED("to be 'collapsed'"),
     TO_BE_CRASHED("to be 'crashed'"),
+    TO_BE_CURSED("to be 'cursed'"),
     TO_BE_DEPLOYED_ON("to be deployed on"),
     TO_BE_DISARMED("to be Disarmed"),
     TO_BE_DUELED("to be dueled"),

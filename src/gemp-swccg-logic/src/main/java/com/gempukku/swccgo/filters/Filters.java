@@ -5,6 +5,7 @@ import com.gempukku.swccgo.common.CardCategory;
 import com.gempukku.swccgo.common.CardSubtype;
 import com.gempukku.swccgo.common.CardType;
 import com.gempukku.swccgo.common.Filterable;
+import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.InactiveReason;
 import com.gempukku.swccgo.common.IonizationType;
@@ -15089,6 +15090,33 @@ public class Filters {
             }
         };
     }
+
+    //
+    //
+    // Filters for the spellcasting and 'curse' mechanics
+    //
+    //
+
+    /**
+     * Filter that accepts cards that are Spells and have not been cast this turn
+     */
+    public static final Filter spell_not_cast_this_turn = new Filter() {
+        @Override
+        public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+            return Filters.Spell.accepts(gameState, modifiersQuerying, physicalCard)
+                && modifiersQuerying.getUntilEndOfTurnLimitCounter(physicalCard, physicalCard.getOwner(), physicalCard.getCardId(), GameTextActionId.SPELLCASTING_ACTION).getUsedLimit() > 0;
+        }
+    };
+
+    /**
+     * Filter that accepts cards that are currently 'curses'
+     */
+    public static final Filter curse = new Filter() {
+        @Override
+        public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+            return physicalCard.isCurse();
+        }
+    };
 
     //
     //

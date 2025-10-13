@@ -102,6 +102,7 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     private List<ModifierHook> _modifierHooks = new LinkedList<ModifierHook>();
     private WhileInPlayData _whileInPlayData;
     private boolean _leavingTable;
+    private boolean _isCurse;
     private CharacterTestStatus _characterTestStatus;
     private UtinniEffectStatus _utinniEffectStatus;
     private Map<TargetId, Integer> _targetGroupIds = new HashMap<TargetId, Integer>();
@@ -227,6 +228,7 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
         }
         snapshot._whileInPlayData = snapshotData.getDataForSnapshot(_whileInPlayData);
         snapshot._leavingTable = _leavingTable;
+        snapshot._isCurse = _isCurse;
         snapshot._characterTestStatus = _characterTestStatus;
         snapshot._utinniEffectStatus = _utinniEffectStatus;
         snapshot._targetGroupIds.putAll(_targetGroupIds);
@@ -1001,6 +1003,27 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     @Override
     public void setLeavingTable(boolean leavingTable) {
         _leavingTable = leavingTable;
+    }
+
+    /**
+     * Determines whether or not this card is currently a 'curse'.
+     * 'curse' cards cancel the game text of the card to which they're attached.
+     * 
+     * @return true or false
+     */
+    @Override
+    public boolean isCurse() {
+        return _isCurse;
+    }
+    /**
+     * Sets that the card is or is not a 'curse'.
+     * 'curse' cards cancel the game text of the card to which they're attached.
+     *
+     * @param isCurse true or false
+     */
+    @Override
+    public void setIsCurse(boolean isCurse) {
+        _isCurse = isCurse;
     }
 
     /**
