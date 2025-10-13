@@ -18800,6 +18800,7 @@ public class Filters {
     public static final Filter Main_Power_Generators = Filters.title(Title.Main_Power_Generators);
     public static final Filter maintenance_droid = Filters.modelType(ModelType.MAINTENANCE);
     public static final Filter Major_Panno = Filters.title(Title.Major_Panno);
+    public static final Filter Makrit = Filters.persona(Persona.MAKRIT);
     public static final Filter Malachor_location = Filters.partOfSystem(Title.Malachor);
     public static final Filter Malachor_system = Filters.and(CardSubtype.SYSTEM, Filters.title(Title.Malachor));
     public static final Filter Malakili = Filters.title(Title.Malakili);
@@ -18948,6 +18949,7 @@ public class Filters {
     public static final Filter On_Target = Filters.title(Title.On_Target);
     public static final Filter On_Tatooine = Filters.on(Title.Tatooine);
     public static final Filter On_The_Verge_Of_Greatness = Filters.title(Title.On_The_Verge_Of_Greatness);
+    public static final Filter Once_The_Sunstar_Is_Mine = Filters.title(Title.Once_The_Sunstar_Is_Mine);
     public static final Filter One_In_A_Million = Filters.title(Title.One_In_A_Million);
     public static final Filter One_More_Pass = Filters.title(Title.One_More_Pass);
     public static final Filter Onyx_1 = Filters.persona(Persona.ONYX_1);
@@ -19668,6 +19670,7 @@ public class Filters {
     public static final Filter Yuzzum = Filters.species(Species.YUZZUM);
     public static final Filter Z_95 = Filters.or(ModelType.MODIFIED_Z_95_HEADHUNTER, ModelType.Z_95_HEADHUNTER);
     public static final Filter Zarrak = Filters.persona(Persona.ZARRAK);
+    public static final Filter Zarraks_Hideout = Filters.title(Title.Zarraks_Hideout);
     public static final Filter Zeb = Filters.title(Title.Zeb);
     public static final Filter Zev = Filters.persona(Persona.ZEV);
     public static final Filter Zuckuss = Filters.persona(Persona.ZUCKUSS);
