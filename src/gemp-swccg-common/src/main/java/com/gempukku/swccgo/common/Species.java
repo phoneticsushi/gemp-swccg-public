@@ -20,6 +20,7 @@ public enum Species implements Filterable {
     BITH("Bith", true),
     BOTHAN("Bothan", true),
     BRIZZIT("Brizzit", true),
+    CATHAR("Cathar", true),
     CEREAN("Cerean", true),
     CHADRAFAN("Chadra-Fan", true),
     CHAGRIAN("Chagrian", true),

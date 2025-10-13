@@ -75,6 +75,7 @@ public enum Persona implements Filterable {
     IG11("IG-11"),
     IG88("IG-88"),
     JABBA("Jabba"),
+    JADRU("Jadru"),
     JAINA("Jaina"),
     JANGO_FETT("Jango"),
     JANNAH("Jannah"),
@@ -189,6 +190,7 @@ public enum Persona implements Filterable {
 
     // Devices
     CRYSTAL_CLOAK("Crystal Cloak"),
+    JADRUS_CRYSTAL_BALL("Jadru's Crystal Ball"),
 
     // Starships
     BESTOON_LEGACY("Bestoon Legacy"),
