@@ -109,6 +109,7 @@ public enum Species implements Filterable {
     TOYDARIAN("Toydarian", true),
     TRANDOSHAN("Trandoshan", true),
     TUSKEN_RAIDER("Tusken Raider", true),
+    TULGAH("Tulgah", true),
     TWILEK("Twi'lek", true),
     UGNAUGHT("Ugnaught", true),
     VUVRIAN("Vuvrian", true),

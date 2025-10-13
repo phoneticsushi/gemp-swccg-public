@@ -780,6 +780,7 @@ public interface Title {
     String Molator = "Molator";
     String Mon_Calamari = "Mon Calamari";
     String Monnok = "Monnok";
+    String Morag_Sorceress = "Morag, Sorceress";
     String More_Dangerous_Than_You_Realize = "More Dangerous Than You Realize";
     String Mos_Eisley = "Tatooine: Mos Eisley";
     String Mos_Espa = "Tatooine: Mos Espa";
@@ -1045,6 +1046,7 @@ public interface Title {
     String S_foils = "S-foils";
     String SFS_Lx93_Laser_Cannons = "SFS L-s9.3 Laser Cannons";
     String Shadow_Collective = "Shadow Collective";
+    String Shadowstone_Staff = "Shadowstone Staff";
     String Shield_Gate = "Shield Gate";
     String Shmi = "Shmi Skywalker";
     String Shocking_Information = "Shocking Information";
