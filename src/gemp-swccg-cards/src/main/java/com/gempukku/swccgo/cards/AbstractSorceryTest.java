@@ -183,7 +183,10 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
     protected abstract Filter getGameTextAdditionalApprenticeFilter(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard deployTarget);
 
     /**
-     * Helper method that can be called by Sorcery Tests that do a Training Destiny check to pass.
+     * Helper method that must be called by Sorcery Tests that do a Training Destiny check to pass.
+     * Note that this logic implements the following game text from "Once the Sunstar is Mine...":
+    // - "Sorcery Test destiny draws are +1 for each sorcerer on table"
+    // - "Whenever you draw sorcery training destiny, draw two and choose one"
      * 
      * @param playerId the player attempting the Sorcery Test
      * @param game the game
@@ -193,16 +196,32 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
      */
     protected OptionalGameTextTriggerAction getGameTextTrainingDestinyAttemptAction(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard apprentice, float thresholdToPass, float opponentForceLossIfPassed) {
         final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, self.getCardId(), GameTextActionId.SORCERY_TEST__ATTEMPT_TEST);
+        final boolean objectiveOnTable = Filters.canSpot(game, null, Filters.Once_The_Sunstar_Is_Mine);
+        
+        int numDestinyDraws;
+        if (objectiveOnTable) {
+            numDestinyDraws = 2;
+        } else {
+            numDestinyDraws = 1;
+        }
 
-        // Draw training destiny (== drawn destiny + number of Mt. Thunderstone Sites on Table + Apprentice's Power)
+        // Draw training destiny (== drawn destiny + number of Mt. Thunderstone Sites on Table + Apprentice's Power + (1 for each sorcerer on table IF "Once the Sunstar Is Mine..." is on table))
         action.appendEffect(
-            new DrawDestinyEffect(action, playerId) {
+            new DrawDestinyEffect(action, playerId, numDestinyDraws, 1) {
                 @Override
                 protected void destinyDraws(SwccgGame game, List<PhysicalCard> destinyCardDraws, List<Float> destinyDrawValues, Float totalDestiny) {
                     final int numThunderstoneSites = Filters.countActive(game, self, Filters.Mt_Thunderstone_site);
                     final float apprenticePower = game.getModifiersQuerying().getPower(game.getGameState(), apprentice);
+                    final float numSorcerersOnTable = Filters.countActive(game, self, Filters.sorcerer);
 
-                    final float trainingDestiny = totalDestiny + numThunderstoneSites + apprenticePower;
+                    float destinyFromObjective;
+                    if (objectiveOnTable) {
+                        destinyFromObjective = numSorcerersOnTable;
+                    } else {
+                        destinyFromObjective = 0;
+                    }
+
+                    final float trainingDestiny = totalDestiny + numThunderstoneSites + apprenticePower + destinyFromObjective;
                     if (Float.compare(trainingDestiny, thresholdToPass) > 0) {
                         // Sorcery Test is 'completed'
                         if (opponentForceLossIfPassed > 0) {
