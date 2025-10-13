@@ -4548,6 +4548,23 @@ public class TriggerConditions {
     }
 
     /**
+     * Determines if a card accepted by cardAvertingHitFilter was just prevented from being 'hit'.
+     * @param game the game
+     * @param effectResult the effect result
+     * @param cardAvertingHitFilter the filter to check for 
+     * @return true or false
+     */
+    public static boolean justAvertedBeingHit(SwccgGame game, EffectResult effectResult, Filterable cardAvertingHitFilter) {
+        if (effectResult.getType() == EffectResult.Type.HIT_PREVENTED) {
+            HitPreventedResult hitResult = (HitPreventedResult) effectResult;
+            PhysicalCard cardAvertingHit = hitResult.getCardPreventedFromBeingHit();
+
+            return Filters.and(cardAvertingHitFilter).accepts(game.getGameState(), game.getModifiersQuerying(), cardAvertingHit);
+        }
+        return false;
+    }
+
+    /**
      * Determines if a card accepted by cardHitFilter was just Disarmed.
      * @param game the game
      * @param effectResult the effect result

@@ -210,7 +210,8 @@ public abstract class EffectResult implements Snapshotable<EffectResult> {
 
         // Hit
         ABOUT_TO_BE_HIT,
-        HIT,
+        HIT_PREVENTED,  // Target was about to be hit, but hit was prevented
+        HIT,  // Target was about to be hit, and was hit
 
         // Restored to normal
         RESTORED_TO_NORMAL,

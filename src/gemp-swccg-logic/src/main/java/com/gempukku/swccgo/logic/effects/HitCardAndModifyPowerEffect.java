@@ -14,6 +14,7 @@ import com.gempukku.swccgo.logic.modifiers.querying.ModifiersEnvironment;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.timing.*;
 import com.gempukku.swccgo.logic.timing.results.AboutToBeHitResult;
+import com.gempukku.swccgo.logic.timing.results.HitPreventedResult;
 import com.gempukku.swccgo.logic.timing.results.HitResult;
 import com.gempukku.swccgo.logic.timing.results.ResetOrModifyCardAttributeResult;
 
@@ -90,7 +91,10 @@ public class HitCardAndModifyPowerEffect extends AbstractSubActionEffect impleme
                                 new PassthruEffect(subAction) {
                                     @Override
                                     protected void doPlayEffect(SwccgGame game) {
-                                        if (!isEffectOnCardPrevented(_cardHitAndReset) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHitAndReset)) {
+                                        if (isEffectOnCardPrevented(_cardHitAndReset) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHitAndReset)) {
+                                            gameState.sendMessage(GameUtils.getCardLink(_cardHitAndReset) + " averted being 'hit' by " + GameUtils.getCardLink(_hitByCard));
+                                            game.getActionsEnvironment().emitEffectResult(new HitPreventedResult(_cardHitAndReset, _hitByCard, _hitByPermanentWeapon, _cardFiringWeapon));
+                                        } else {
                                             boolean modifyPower = !modifiersQuerying.isProhibitedFromHavingPowerReduced(gameState, _cardHitAndReset, _hitByCard.getOwner());
                                             String message = GameUtils.getCardLink(_cardHitAndReset) + " is 'hit' by " + GameUtils.getCardLink(_hitByCard);
 

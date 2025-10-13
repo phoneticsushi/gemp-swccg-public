@@ -15,6 +15,7 @@ import com.gempukku.swccgo.logic.modifiers.querying.ModifiersEnvironment;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.timing.*;
 import com.gempukku.swccgo.logic.timing.results.AboutToBeHitResult;
+import com.gempukku.swccgo.logic.timing.results.HitPreventedResult;
 import com.gempukku.swccgo.logic.timing.results.HitResult;
 import com.gempukku.swccgo.logic.timing.results.ResetOrModifyCardAttributeResult;
 
@@ -95,7 +96,10 @@ public class HitCardModifyForfeitAndOpponentLosesForceEffect extends AbstractSub
                                 new PassthruEffect(subAction) {
                                     @Override
                                     protected void doPlayEffect(SwccgGame game) {
-                                        if (!isEffectOnCardPrevented(_cardHitAndReset) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHitAndReset)) {
+                                        if (isEffectOnCardPrevented(_cardHitAndReset) && Filters.or(Filters.onTable, Filters.canBeTargetedByWeaponAsIfPresent).accepts(game, _cardHitAndReset)) {
+                                            gameState.sendMessage(GameUtils.getCardLink(_cardHitAndReset) + " averted being 'hit' by " + GameUtils.getCardLink(_hitByCard));
+                                            game.getActionsEnvironment().emitEffectResult(new HitPreventedResult(_cardHitAndReset, _hitByCard, _hitByPermanentWeapon, _cardFiringWeapon));
+                                        } else {
                                             boolean modifyForfeit = true;
                                             if (_modifierAmount < 0) {
                                                 // Check if card's forfeit may not be reduced
