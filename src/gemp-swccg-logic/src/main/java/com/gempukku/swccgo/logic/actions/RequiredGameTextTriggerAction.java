@@ -29,7 +29,7 @@ public class RequiredGameTextTriggerAction extends AbstractGameTextAction implem
      * @param gameTextActionId the identifier for the card's specific action to check the limit of
      */
     public RequiredGameTextTriggerAction(PhysicalCard physicalCard, int gameTextSourceCardId, GameTextActionId gameTextActionId) {
-        super(physicalCard, null, gameTextSourceCardId, gameTextActionId);
+        super(physicalCard, physicalCard.getOwner(), gameTextSourceCardId, gameTextActionId);
         _triggerIdentifierUsingCardId = physicalCard.getCardId()+"||"+gameTextSourceCardId+"|"+ gameTextActionId;
         _triggerIdentifierUsingBlueprintId = physicalCard.getBlueprintId(true)+"||"+gameTextSourceCardId+"|"+ gameTextActionId;
         _text = "Required response from " + GameUtils.getCardLink(physicalCard);
