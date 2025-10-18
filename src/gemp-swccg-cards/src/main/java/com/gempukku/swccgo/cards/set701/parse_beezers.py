@@ -17,6 +17,7 @@ CARD_INTERFACE_MAP = {
     'LOCATION_SYSTEM': 'AbstractSystem',
     'OBJECTIVE': 'AbstractObjective',
     'SORCERY_TEST': 'AbstractSorceryTest',
+    'WEAPON_CHARACTER': 'AbstractCharacterWeapon',
 }
 
 def main():
@@ -234,6 +235,8 @@ def generate_super(record, use_explicit_title: bool) -> str:
     if card_interface == 'AbstractAlien':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractArtifact':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    if card_interface == 'AbstractCharacterWeapon':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractObjective':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
