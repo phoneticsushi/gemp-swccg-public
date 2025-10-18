@@ -19731,6 +19731,7 @@ public class Filters {
     public static final Filter Z_95 = Filters.or(ModelType.MODIFIED_Z_95_HEADHUNTER, ModelType.Z_95_HEADHUNTER);
     public static final Filter Zarrak = Filters.persona(Persona.ZARRAK);
     public static final Filter Zarraks_Hideout = Filters.title(Title.Zarraks_Hideout);
+    public static final Filter Zarraks_Medallion = Filters.title(Title.Zarraks_Medallion);
     public static final Filter Zeb = Filters.title(Title.Zeb);
     public static final Filter Zev = Filters.persona(Persona.ZEV);
     public static final Filter Zuckuss = Filters.persona(Persona.ZUCKUSS);

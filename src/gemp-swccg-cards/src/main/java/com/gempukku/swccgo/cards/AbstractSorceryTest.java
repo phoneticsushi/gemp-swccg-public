@@ -196,16 +196,22 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
      */
     protected OptionalGameTextTriggerAction getGameTextTrainingDestinyAttemptAction(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard apprentice, float thresholdToPass, float opponentForceLossIfPassed) {
         final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, self.getCardId(), GameTextActionId.SORCERY_TEST__ATTEMPT_TEST);
-        final boolean objectiveOnTable = Filters.canSpot(game, null, Filters.Once_The_Sunstar_Is_Mine);
+        final boolean isSunstarObjectiveOnTable = Filters.canSpot(game, null, Filters.Once_The_Sunstar_Is_Mine);
         
         int numDestinyDraws;
-        if (objectiveOnTable) {
+        if (isSunstarObjectiveOnTable) {
             numDestinyDraws = 2;
         } else {
             numDestinyDraws = 1;
         }
 
-        // Draw training destiny (== drawn destiny + number of Mt. Thunderstone Sites on Table + Apprentice's Power + (1 for each sorcerer on table IF "Once the Sunstar Is Mine..." is on table))
+        // Draw training destiny, computed as the sum of:
+        //   drawn destiny
+        //   + number of Mt. Thunderstone Sites on Table
+        //   + Apprentice's Power
+        //   + 1 for each sorcerer on table, if "Once the Sunstar Is Mine..." is on table
+        //   + 2, if "Zarrak's Medallion" is on table and attached to the mentor associated with this Sorcery Test
+        // YAGNI: implement this via modifiers instead of all here, since the game text appears on various other cards?
         action.appendEffect(
             new DrawDestinyEffect(action, playerId, numDestinyDraws, 1) {
                 @Override
@@ -215,13 +221,23 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
                     final float numSorcerersOnTable = Filters.countActive(game, self, Filters.sorcerer);
 
                     float destinyFromObjective;
-                    if (objectiveOnTable) {
+                    if (isSunstarObjectiveOnTable) {
                         destinyFromObjective = numSorcerersOnTable;
                     } else {
                         destinyFromObjective = 0;
                     }
+                    
+                    final PhysicalCard mentor = self.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_MENTOR);
+                    final boolean isMedallionOnTableAndAttachedToMentor = Filters.hasAttached(Filters.Zarraks_Medallion).accepts(game.getGameState(), game.getModifiersQuerying(), mentor);
 
-                    final float trainingDestiny = totalDestiny + numThunderstoneSites + apprenticePower + destinyFromObjective;
+                    float destinyFromMedallion;
+                    if (isMedallionOnTableAndAttachedToMentor) {
+                        destinyFromMedallion = 2;
+                    } else {
+                        destinyFromMedallion = 0;
+                    }
+
+                    final float trainingDestiny = totalDestiny + numThunderstoneSites + apprenticePower + destinyFromObjective + destinyFromMedallion;
                     if (Float.compare(trainingDestiny, thresholdToPass) > 0) {
                         // Sorcery Test is 'completed'
                         if (opponentForceLossIfPassed > 0) {
