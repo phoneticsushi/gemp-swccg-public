@@ -61,7 +61,7 @@ public class Card225_058 extends AbstractNormalEffect {
         String opponent = game.getOpponent(playerId);
         Condition opponentsDeployPhaseCondition = new PlayersPhaseCondition(opponent, Phase.DEPLOY);
 
-        modifiers.add(new EachTrainingDestinyModifier(self, Filters.any, 1));
+        modifiers.add(new EachTrainingDestinyModifier(self, Filters.Jedi_Test, 1));
         modifiers.add(new ModifyGameTextModifier(self, Filters.Jedi_Test, ModifyGameTextType.JEDI_TESTS__MAY_ATTEMPT_IN_OPPONENTS_DEPLOY_PHASE));
         modifiers.add(new SpecialFlagModifier(self, opponentsDeployPhaseCondition, ModifierFlag.DRAW_TWO_AND_CHOOSE_ONE_FOR_TRAINING_DESTINY, playerId));
         return modifiers;

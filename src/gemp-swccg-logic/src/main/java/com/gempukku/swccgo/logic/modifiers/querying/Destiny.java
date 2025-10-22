@@ -950,15 +950,15 @@ public interface Destiny extends BaseQuery {
 	/**
 	 * Gets the total training destiny value after applying modifiers to the base training destiny.
 	 * @param gameState the game state
-	 * @param jediTest the Jedi Test
+	 * @param jediOrSorceryTest the Jedi or Sorcery Test
 	 * @param baseTotalDestiny the base total training destiny
 	 * @return the total battle destiny
 	 */
-	default float getTotalTrainingDestiny(GameState gameState, PhysicalCard jediTest, float baseTotalDestiny) {
+	default float getTotalTrainingDestiny(GameState gameState, PhysicalCard jediOrSorceryTest, float baseTotalDestiny) {
 		float result = baseTotalDestiny;
 
-		for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.TOTAL_TRAINING_DESTINY, jediTest)) {
-			result += modifier.getValue(gameState, query(), jediTest);
+		for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.TOTAL_TRAINING_DESTINY, jediOrSorceryTest)) {
+			result += modifier.getValue(gameState, query(), jediOrSorceryTest);
 		}
 
 		return Math.max(0, result);
