@@ -1,7 +1,6 @@
 package com.gempukku.swccgo.logic.modifiers;
 
 import com.gempukku.swccgo.common.Filterable;
-import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.conditions.Condition;
@@ -19,30 +18,11 @@ public class TotalTrainingDestinyModifier extends AbstractModifier {
     /**
      * Creates a modifier that affects total training destiny.
      * @param source the source of the modifier
-     * @param modifierAmount the amount of the modifier
-     */
-    public TotalTrainingDestinyModifier(PhysicalCard source, int modifierAmount) {
-        this(source, Filters.any, null, modifierAmount);
-    }
-
-    /**
-     * Creates a modifier that affects total training destiny.
-     * @param source the source of the modifier
-     * @param condition the condition that must be fulfilled for the modifier to be in effect
-     * @param modifierAmount the amount of the modifier
-     */
-    public TotalTrainingDestinyModifier(PhysicalCard source, Condition condition, int modifierAmount) {
-        this(source, Filters.any, condition, modifierAmount);
-    }
-
-    /**
-     * Creates a modifier that affects total training destiny.
-     * @param source the source of the modifier
      * @param jediTestFilter the filter for Jedi Test whose training destiny is modified
      * @param modifierAmount the amount of the modifier
      */
-    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable jediTestFilter, int modifierAmount) {
-        this(source, jediTestFilter, null, modifierAmount);
+    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable testFilter, int modifierAmount) {
+        this(source, testFilter, null, modifierAmount);
     }
 
     /**
@@ -52,29 +32,29 @@ public class TotalTrainingDestinyModifier extends AbstractModifier {
      * @param condition the condition that must be fulfilled for the modifier to be in effect
      * @param modifierAmount the amount of the modifier
      */
-    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable jediTestFilter, Condition condition, int modifierAmount) {
-        this(source, jediTestFilter, condition, new ConstantEvaluator(modifierAmount));
+    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable testFilter, Condition condition, int modifierAmount) {
+        this(source, testFilter, condition, new ConstantEvaluator(modifierAmount));
     }
 
     /**
      * Creates a modifier that affects total training destiny.
      * @param source the source of the modifier
-     * @param jediTestFilter the filter for Jedi Test whose training destiny is modified
+     * @param testFilter the filter for cards whose training destiny is modified, i.e. Jedi or Sorcery Tests
      * @param evaluator the evaluator that calculates the amount of the modifier
      */
-    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable jediTestFilter, Evaluator evaluator) {
-        this(source, jediTestFilter, null, evaluator);
+    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable testFilter, Evaluator evaluator) {
+        this(source, testFilter, null, evaluator);
     }
 
     /**
      * Creates a modifier that affects total training destiny.
      * @param source the source of the modifier
-     * @param jediTestFilter the filter for Jedi Test whose training destiny is modified
+     * @param testFilter the filter for cards whose training destiny is modified, i.e. Jedi or Sorcery Tests
      * @param condition the condition that must be fulfilled for the modifier to be in effect
      * @param evaluator the evaluator that calculates the amount of the modifier
      */
-    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable jediTestFilter, Condition condition, Evaluator evaluator) {
-        super(source, null, Filters.and(Filters.Jedi_Test, jediTestFilter), condition, ModifierType.TOTAL_TRAINING_DESTINY, false);
+    public TotalTrainingDestinyModifier(PhysicalCard source, Filterable testFilter, Condition condition, Evaluator evaluator) {
+        super(source, null, testFilter, condition, ModifierType.TOTAL_TRAINING_DESTINY, false);
         _evaluator = evaluator;
     }
 
@@ -89,7 +69,7 @@ public class TotalTrainingDestinyModifier extends AbstractModifier {
     }
 
     @Override
-    public float getValue(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard jediTest) {
-        return _evaluator.evaluateExpression(gameState, modifiersQuerying, jediTest);
+    public float getValue(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+        return _evaluator.evaluateExpression(gameState, modifiersQuerying, physicalCard);
     }
 }

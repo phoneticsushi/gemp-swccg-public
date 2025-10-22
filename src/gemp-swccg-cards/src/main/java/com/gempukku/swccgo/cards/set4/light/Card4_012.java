@@ -51,7 +51,7 @@ public class Card4_012 extends AbstractCharacterDevice {
         List<Modifier> modifiers = new LinkedList<Modifier>();
         modifiers.add(new MayUseAnyNumberOfDevicesModifier(self, Filters.hasAttached(self)));
         modifiers.add(new MayCarryPassengerAsIfCreatureVehicleModifier(self, Filters.or(Filters.Yoda, Filters.Kabe, Filters.Jawa, Filters.Ewok)));
-        modifiers.add(new TotalTrainingDestinyModifier(self, new HasAttachedCondition(self, Filters.jedi_test_mentor), 1));
+        modifiers.add(new TotalTrainingDestinyModifier(self, Filters.your(self), new HasAttachedCondition(self, Filters.jedi_test_mentor), 1));
         return modifiers;
     }
 }

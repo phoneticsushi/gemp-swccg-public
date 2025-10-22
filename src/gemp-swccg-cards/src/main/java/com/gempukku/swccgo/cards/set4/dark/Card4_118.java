@@ -44,7 +44,7 @@ public class Card4_118 extends AbstractNormalEffect {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        modifiers.add(new TotalTrainingDestinyModifier(self, Filters.any,
+        modifiers.add(new TotalTrainingDestinyModifier(self, Filters.Jedi_Test,
                 new NegativeEvaluator(
                         new CalculateCardVariableEvaluator(self, Variable.X) {
                                 @Override
