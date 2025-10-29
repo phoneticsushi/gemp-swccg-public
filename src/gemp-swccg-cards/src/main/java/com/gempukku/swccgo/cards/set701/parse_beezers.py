@@ -14,6 +14,7 @@ CARD_INTERFACE_MAP = {
     'CHARACTER_ALIEN': 'AbstractAlien',
     'CHARACTER_REBEL': 'AbstractRebel',
     'DEVICE': 'AbstractDevice',
+    'EFFECT': 'AbstractNormalEffect',
     'LOCATION_SITE': 'AbstractSite',
     'LOCATION_SYSTEM': 'AbstractSystem',
     'OBJECTIVE': 'AbstractObjective',
@@ -239,7 +240,7 @@ def generate_super(record, use_explicit_title: bool) -> str:
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractCharacterWeapon':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
-    if card_interface == 'AbstractDevice':
+    if card_interface in ['AbstractDevice', 'AbstractNormalEffect']:
         # not bothering to represent the target play card zone for now since this is game text dependent...
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, PlayCardZoneOption.TODO_ASSIGN_A_ZONE, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractObjective':

@@ -936,6 +936,7 @@ public interface Title {
     String Ravager_Crash_Site = "Jakku: Ravager Crash Site";
     String Reactor_Core = "Death Star II: Reactor Core";
     String Reactor_Terminal = "Reactor Terminal";
+    String Realm_Of_Spirits = "Realm Of Spirits";
     String Rebel_Ambush = "Rebel Ambush";
     String Rebel_Artillery = "Rebel Artillery";
     String Rebel_Barrier = "Rebel Barrier";
