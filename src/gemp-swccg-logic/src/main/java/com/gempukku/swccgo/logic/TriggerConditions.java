@@ -3863,6 +3863,23 @@ public class TriggerConditions {
     }
 
     /**
+     * Determines if drawing training destiny is about to complete,
+     * and if the active player is the player drawing the destiny.
+     * This is when the training destiny total can be modified.
+     * @param game the game
+     * @param effectResult the effect result
+     * @return true or false
+     */
+    public static boolean isAboutToCompleteYourOwnTrainingDestinyDraw(SwccgGame game, EffectResult effectResult) {
+        if (effectResult.getType() == EffectResult.Type.DRAWING_DESTINY_COMPLETE) {
+            AboutToCompleteDrawingDestinyResult result = (AboutToCompleteDrawingDestinyResult) effectResult;
+            return result.getDestinyType() == DestinyType.TRAINING_DESTINY
+                && result.getPerformingPlayerId().equals(game.getGameState().getCurrentPlayerId());
+        }
+        return false;
+    }
+
+    /**
      * Determines if a duel destiny was just drawn (and was not canceled).
      * @param game the game
      * @param effectResult the effect result

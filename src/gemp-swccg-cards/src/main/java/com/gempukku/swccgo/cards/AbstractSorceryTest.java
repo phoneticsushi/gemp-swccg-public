@@ -3,6 +3,7 @@ package com.gempukku.swccgo.cards;
 import com.gempukku.swccgo.common.CardCategory;
 import com.gempukku.swccgo.common.CardType;
 import com.gempukku.swccgo.common.CharacterTestStatus;
+import com.gempukku.swccgo.common.DestinyType;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
@@ -211,9 +212,9 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
         //   + Apprentice's Power
         //   + 1 for each sorcerer on table, if "Once the Sunstar Is Mine..." is on table
         //   + 2, if "Zarrak's Medallion" is on table and attached to the mentor associated with this Sorcery Test
-        // YAGNI: implement this via modifiers instead of all here, since the game text appears on various other cards?
+        // FIXME: reimplement those last two via modifiers instead of all here, since the game text appears on those cards
         action.appendEffect(
-            new DrawDestinyEffect(action, playerId, numDestinyDraws, 1) {
+            new DrawDestinyEffect(action, playerId, numDestinyDraws, 1, DestinyType.TRAINING_DESTINY) {
                 @Override
                 protected void destinyDraws(SwccgGame game, List<PhysicalCard> destinyCardDraws, List<Float> destinyDrawValues, Float totalDestiny) {
                     final int numThunderstoneSites = Filters.countActive(game, self, Filters.Mt_Thunderstone_site);
