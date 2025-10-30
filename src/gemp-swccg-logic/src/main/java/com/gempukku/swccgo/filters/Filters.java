@@ -18700,6 +18700,7 @@ public class Filters {
     public static final Filter Jabbas_Trophies = Filters.title(Title.Jabbas_Trophies);
     public static final Filter Jabiim_location = Filters.partOfSystem(Title.Jabiim);
     public static final Filter Jabiim_site = Filters.and(Filters.partOfSystem(Title.Jabiim), CardSubtype.SITE);
+    public static final Filter Jadru = Filters.persona(Persona.JADRU);
     public static final Filter Jakku_battleground = Filters.and(Filters.partOfSystem(Title.Jakku), Filters.battleground());
     public static final Filter Jakku_battleground_site = Filters.and(Filters.partOfSystem(Title.Jakku), CardSubtype.SITE, Filters.battleground());
     public static final Filter Jakku_Landing_Site = Filters.title(Title.Jakku_Landing_Site);
