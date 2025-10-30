@@ -20,6 +20,7 @@ CARD_INTERFACE_MAP = {
     'OBJECTIVE': 'AbstractObjective',
     'SORCERY_TEST': 'AbstractSorceryTest',
     'WEAPON_CHARACTER': 'AbstractCharacterWeapon',
+    'VEHICLE_CREATURE': 'AbstractCreatureVehicle',
 }
 
 def main():
@@ -231,6 +232,7 @@ def generate_super(record, use_explicit_title: bool) -> str:
     card_type = record['card_type']
     card_title = f'"{record["card_title"]}"' if use_explicit_title else f'Title.{to_title_enum(record["card_title"])}'
     card_interface = CARD_INTERFACE_MAP[card_type]
+    card_armor = record['armor'] if record['armor'] else 'null'
     card_rarity = 'V'  # all rarities are hardcoded to "V" (Virtual)
 
     # super() implementation is dependent on card type:
@@ -240,6 +242,8 @@ def generate_super(record, use_explicit_title: bool) -> str:
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractCharacterWeapon':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
+    if card_interface == 'AbstractCreatureVehicle':
+        return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {card_armor}, {record["maneuver"]}, {record["landspeed"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface in ['AbstractDevice', 'AbstractNormalEffect']:
         # not bothering to represent the target play card zone for now since this is game text dependent...
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, PlayCardZoneOption.TODO_ASSIGN_A_ZONE, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
