@@ -169,6 +169,7 @@ public enum Keyword implements Filterable {
     SEEKER("Seeker", true),
     SENATOR("Senator", true, true),
     SHAMAN("Shaman", false, true),
+    SHAPESHIFTER("Shapeshifter", true),
     SHIP_DOCKING_CAPABILITY("Ship-docking Capability", false),
     SITH_APPRENTICE("Sith Apprentice", true),
     SKIFF("Skiff", false),
