@@ -7,6 +7,7 @@ package com.gempukku.swccgo.common;
 public enum Keyword implements Filterable {
     ACCOUNTANT("Accountant", true, true),
     ADMIRAL("Admiral", true, true),
+    ARACHNID("Arachnid", true),
     ASSASSIN("Assassin", true, true),
     ASTEROID("Asteroid", true),
     AT_AT_CANNON("AT-AT Cannon",false),
