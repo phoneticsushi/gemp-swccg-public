@@ -915,6 +915,7 @@ public interface Title {
     String Profundity = "Profundity";
     String Projection_Of_A_Skywalker = "Projection Of A Skywalker";
     String Prophecy_Of_The_Force = "Prophecy Of The Force";
+    String Prophecy_Pool = "Prophecy Pool";
     String Program_Trap = "Program Trap";
     String Proton_Bombs = "Proton Bombs";
     String Proxima = "Lady Proxima";
