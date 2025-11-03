@@ -8,6 +8,7 @@ import com.gempukku.swccgo.cards.evaluators.ForceIconsAtLocationEvaluator;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -43,6 +44,7 @@ public class Card8_020 extends AbstractAlien {
         setGameText("Deploys only on Endor. Power and forfeit +1 for each Light side icon at same Endor site. When on Endor, adds 1 to total battle destiny wherever you have any Ewok at an Endor site.");
         addIcons(Icon.ENDOR);
         addKeywords(Keyword.MUSICIAN);
+        addPersona(Persona.LOGRAY);
         setSpecies(Species.EWOK);
     }
 
