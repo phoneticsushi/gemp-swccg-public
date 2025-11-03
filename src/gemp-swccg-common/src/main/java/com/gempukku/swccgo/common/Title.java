@@ -744,6 +744,7 @@ public interface Title {
     String Main_Power_Generators = "Hoth: Main Power Generators (1st Marker)";
     String Major_Panno = "Major Panno";
     String Make_Ready_To_Land_Our_Troops = "Make Ready To Land Our Troops";
+    String Makrit = "Makrit";
     String Malachor = "Malachor";
     String Malastare = "Malastare";
     String Master_Zarrak = "Master Zarrak";
@@ -897,6 +898,7 @@ public interface Title {
     String Phasma = "Captain Phasma";
     String Phennir = "Major Turr Phennir";
     String Physical_Choke = "Physical Choke";
+    String Pile_Of_Bones = "Pile Of Bones";
     String Planet_Defender_Ion_Cannon = "Planet Defender Ion Cannon";
     String Plastoid_Armor = "Plastoid Armor";
     String Plea_To_The_Court = "Plea To The Court";

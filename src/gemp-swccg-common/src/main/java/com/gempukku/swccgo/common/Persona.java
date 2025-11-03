@@ -105,6 +105,7 @@ public enum Persona implements Filterable {
     LAUDICA("Laudica"),
     LEIA("Leia"),
     LOBOT("Lobot"),
+    LOGRAY("Logray"),
     LOTT("Lott"),
     LUKE("Luke"),
     MAAREK_STELE("Maarek Stele"),

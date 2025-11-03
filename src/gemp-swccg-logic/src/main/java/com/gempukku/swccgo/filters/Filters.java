@@ -18829,7 +18829,7 @@ public class Filters {
     public static final Filter Local_Uprising = Filters.title(Title.Local_Uprising);
     public static final Filter location = Filters.category(CardCategory.LOCATION);
     public static final Filter Logistical_Delay = Filters.title(Title.Logistical_Delay);
-    public static final Filter Logray = Filters.title(Title.Logray);
+    public static final Filter Logray = Filters.persona(Persona.LOGRAY);
     public static final Filter Lone_Pilot = Filters.title(Title.Lone_Pilot);
     public static final Filter Lone_Rogue = Filters.title(Title.Lone_Rogue);
     public static final Filter Look_Sir_Droids = Filters.title(Title.Look_Sir_Droids);
@@ -19058,6 +19058,7 @@ public class Filters {
     public static final Filter Phennir = Filters.title(Title.Phennir);
     public static final Filter Phoenix_Squadron_character = Filters.and(CardCategory.CHARACTER, Filters.or(Keyword.PHOENIX_SQUADRON, Filters.piloting(Filters.keyword(Keyword.PHOENIX_SQUADRON))));
     public static final Filter Piett = Filters.persona(Persona.PIETT);
+    public static final Filter Pile_Of_Bones = Filters.title(Title.Pile_Of_Bones);
     public static final Filter pilot = Filters.and(CardCategory.CHARACTER, Icon.PILOT);
     public static final Filter pilot_character = Filters.and(CardCategory.CHARACTER, Icon.PILOT);
     public static final Filter pirate = Filters.keyword(Keyword.PIRATE);
