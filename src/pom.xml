@@ -25,9 +25,11 @@
         <surefire.version>2.22.2</surefire.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
+        <build.output>target</build.output>
     </properties>
 
     <build>
+        <directory>${build.output}</directory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -41,6 +43,7 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
             <id>maven2-repository.java.net</id>
@@ -49,4 +52,16 @@
             <layout>default</layout>
         </repository>
     </repositories>
+    
+    <profiles>
+      <profile>
+        <activation>
+          <property><name>m2e.version</name></property>
+        </activation>
+        <properties>
+          <build.output>target-ide</build.output>
+        </properties>
+      </profile>
+    </profiles>
+
 </project>
