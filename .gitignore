@@ -32,6 +32,7 @@ hs_err_pid*
 # Built file targets
 target/
 **/target/*
+**/target-ide/*
 
 # Mac OS filesystem
 .DS_Store
