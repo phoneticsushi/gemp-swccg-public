@@ -142,13 +142,14 @@ public interface Presence extends BaseQuery, Keywords {
 	 * @return location that the specified card is "at", otherwise null
 	 */
 	default PhysicalCard getLocationThatCardIsAt(GameState gameState, PhysicalCard card) {
-		// An Effect or Epic Event is "at" a location if:
+		// A Shield, Effect, Epic Event, or Character Test is "at" a location if:
 		// (1) Its "atLocation" or "attachedTo" is that location
 		// (2) It is attached to a card that is at that location
 		if (card.getBlueprint().getCardCategory()==CardCategory.DEFENSIVE_SHIELD
 				|| card.getBlueprint().getCardCategory()==CardCategory.EFFECT
 				|| card.getBlueprint().getCardCategory()==CardCategory.EPIC_EVENT
-				|| card.getBlueprint().getCardCategory()==CardCategory.JEDI_TEST) {
+				|| card.getBlueprint().getCardCategory()==CardCategory.JEDI_TEST
+				|| card.getBlueprint().getCardCategory()==CardCategory.SORCERY_TEST) {
 			PhysicalCard atLocation = card.getAtLocation();
 			if (atLocation!=null) {
 				if (atLocation.getBlueprint().getCardCategory()==CardCategory.LOCATION)
