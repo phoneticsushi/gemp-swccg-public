@@ -44,6 +44,7 @@ public class Card701_008 extends AbstractSorceryTest {
     }
     @Override
     protected boolean checkGameTextDeployRequirements(String playerId, SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
+        super.checkGameTextDeployRequirements(playerId, game, self, playCardOptionId, asReact);
         // ...if Morag alone at an Endor site
         return Filters.canSpotFromAllOnTable(
             game,
