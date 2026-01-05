@@ -87,15 +87,18 @@ public class Card701_023 extends AbstractSorceryTest {
             final PhysicalCard apprentice = self.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_APPRENTICE);
 
             // ...attempt when targets are present
-            // Technically, this implements "present together with each other", not "present with the Sorcery Test".
-            // but it's unclear how to check for the latter as the Sorcery Test doesn't match when checking "presence".
-            // In practice, this should be no issue, as it's not possible to re-attach the test without deploying it again.
+            //
+            // A Sorcery Test doesn't have "presence" in the ability sense, so interpreting this as
+            // "when both targets are at the same location as the Sorcery Test".
             //
             // Note that mentor and apprentice should never be null here, but might be in tests e.g.
             // and it's better to not crash in that case regardless.
-            //
-            // FIXME: figure out how to check presence against the Sorcery Test
-            if (mentor != null && apprentice != null && GameConditions.isPresentWith(game, mentor, apprentice)) {
+            if (
+                mentor != null
+                && apprentice != null
+                && GameConditions.isWith(game, self, mentor)
+                && GameConditions.isWith(game, self, apprentice)
+            ) {
                 // Draw training destiny.  If destiny + apprentice's power > 10, test completed and opponent loses 1 Force
                 return getGameTextTrainingDestinyAttemptAction(self.getOwner(), game, self, apprentice, 10, 1);
             }

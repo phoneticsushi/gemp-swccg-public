@@ -137,7 +137,6 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
                                     protected void cardTargeted(int targetGroupId2, PhysicalCard apprentice) {
                                         action.addAnimationGroup(apprentice);
                                         self.setTargetedCard(TargetId.SORCERY_TEST_APPRENTICE, targetGroupId2, apprentice, apprenticeToTargetFilter);
-                                        gameState.addApprentice(apprentice);
                                     }
                                 }
                         );
@@ -158,7 +157,6 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
                 protected void cardTargeted(int targetGroupId2, PhysicalCard apprentice) {
                     action.addAnimationGroup(apprentice);
                     self.setTargetedCard(TargetId.SORCERY_TEST_APPRENTICE, targetGroupId2, apprentice, apprenticeToTargetFilter);
-                    gameState.addApprentice(apprentice);
                 }
             };
             targetingEffects.add(targetingEffect);
@@ -294,7 +292,7 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
 
     @Override
     protected List<OptionalGameTextTriggerAction> getGameTextOptionalAfterTriggers(String playerId, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        List<OptionalGameTextTriggerAction> actions = super.getGameTextOptionalAfterTriggers(playerId, game, effectResult, self, gameTextSourceCardId);
+        List<OptionalGameTextTriggerAction> actions = new LinkedList<OptionalGameTextTriggerAction>();
 
         // Action to exchange Sorcery Tests with Lost Pile on completion:
         // Note: the game text describing the card exchange is defined on "Teo... SHA!!!",
@@ -314,9 +312,10 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
         }
 
         // Action to attempt the sorcery test.
-        // Sorcery tests can only be attempted once per turn, on your turn, and if not completed yet:
+        // Sorcery tests can only be attempted once per turn, on your turn, and if not completed yet.
+        // Note that "null" is the default value so we must compare against that:
         if (
-            self.getCharacterTestStatus() == CharacterTestStatus.NOT_COMPLETED
+            self.getCharacterTestStatus() == null
             && GameConditions.isDuringYourTurn(game, self)
             && GameConditions.isOncePerTurn(game, self, gameTextSourceCardId, GameTextActionId.SORCERY_TEST__ATTEMPT_TEST)
         ) {
