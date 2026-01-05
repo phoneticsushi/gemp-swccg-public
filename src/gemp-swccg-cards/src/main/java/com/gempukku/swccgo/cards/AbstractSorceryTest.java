@@ -2,11 +2,11 @@ package com.gempukku.swccgo.cards;
 
 import com.gempukku.swccgo.common.CardCategory;
 import com.gempukku.swccgo.common.CardType;
-import com.gempukku.swccgo.common.CharacterTestStatus;
 import com.gempukku.swccgo.common.DestinyType;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
+import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.PlayCardZoneOption;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -65,6 +65,32 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
         setCardCategory(CardCategory.SORCERY_TEST);
         addCardType(CardType.SORCERY_TEST);
         addIcon(Icon.SORCERY_TEST);
+    }
+
+    /**
+     * This method is overridden by individual cards to specify card deploy requirements.
+     * @param playerId the player
+     * @param game the game
+     * @param self the card
+     * @param playCardOptionId the play card option id
+     * @param asReact true if as a 'react', otherwise false
+     * @return true if requirements met, otherwise false
+     */
+    protected boolean checkGameTextDeployRequirements(String playerId, SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
+        // Apprentice validity has a dependency on who the mentor is,
+        // and mentor validity has a dependency on the test's deploy target, which could be any card,
+        // so scan for any valid combination of these three that would permit playing the Sorcery Test.
+        // FIXME: this is n^3 worst-case
+        for (PhysicalCard possibleDeployTarget : Filters.filterActive(game, self, getGameTextValidDeployTargetFilter(game, self, playCardOptionId, asReact))) {
+            for (PhysicalCard possibleMentor : Filters.filterActive(game, self, getValidMentorFilter(playerId, game, self, possibleDeployTarget))) {
+                for (PhysicalCard _possibleApprentice : Filters.filterActive(game, self, getValidApprenticeFilter(playerId, game, self, possibleDeployTarget, possibleMentor))) {
+                    return true;
+                }
+            }
+        }
+
+        // no valid combos...
+        return false;
     }
 
     /**
