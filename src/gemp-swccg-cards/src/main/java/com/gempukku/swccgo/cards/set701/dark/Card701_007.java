@@ -41,12 +41,12 @@ public class Card701_007 extends AbstractAlien {
         super(Side.DARK, 3, 3, 3, 4, 6, Title.Jadru_Enchantress, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setGameText("Deploys only on Endor. Permanent device is •Jadru's Crystal Ball (once during your control phase, close your eyes and have opponent place a card from their hand face down on the table. Guess its destiny number, then open your eyes and have opponent reveal card. If correctly guessed, opponent places their card out of play).");
         addIcons(Icon.BEEZER_BOWL_2025, Icon.PERMANENT_DEVICE, Icon.WARRIOR);
-        addKeywords(Keyword.SORCERER);
+        addKeywords(Keyword.FEMALE, Keyword.SORCERER);
         addPersonas(Persona.JADRU);
         setSpecies(Species.CATHAR);
         addCardType(CardType.ARTIFACT);  // The permanent device is an artifact, but it's incorporated into this card.  Does this make sense?
     }
-    
+
     // Deploys only on Endor
     @Override
     protected Filter getGameTextValidDeployTargetFilter(SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {

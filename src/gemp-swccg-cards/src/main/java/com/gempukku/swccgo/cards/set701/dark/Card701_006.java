@@ -47,7 +47,7 @@ public class Card701_006 extends AbstractAlien {
         setLore("Winged sorcerer. Invaded the Bright Tree Village and stole the Crystal Cloak, enabling him to crystalize anything he touched.");
         setGameText("Deploys -1 to any Endor mountain site.  May 'fly' (landspeed = 2).  Permanent device is •Crystal Cloak (during battle, may target opponent's device or character weapon present; draw destiny; if destiny = target's destiny number, target is lost). Immune to [Permanent Weapon] and attrition < 4.");
         addIcons(Icon.BEEZER_BOWL_2025, Icon.PERMANENT_DEVICE, Icon.WARRIOR);
-        addKeywords(Keyword.SORCERER);
+        addKeywords(Keyword.MALE, Keyword.SORCERER);
         addPersonas(Persona.GRACCA);
         // Note that Gracca has no known species in any canon
     }

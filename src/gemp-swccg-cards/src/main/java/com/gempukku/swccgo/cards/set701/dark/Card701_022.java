@@ -44,7 +44,7 @@ public class Card701_022 extends AbstractAlien {
         setLore("Ewok shaman and musician. Childhood crush on Latara. Student of Logray's. Tempted by the dark arts into learning flashy magic.");
         setGameText("Deploys only on Endor. Power +1 for each [LS] icon at same Endor site. Once per game, if your character present was just lost, may use 'potion of life' to deploy that character from Lost Pile to same site for free. Opponent's non-alien characters deploy +1 here.");
         addIcons(Icon.BEEZER_BOWL_2025);
-        addKeywords(Keyword.DARK_ARTS, Keyword.MUSICIAN, Keyword.SHAMAN);
+        addKeywords(Keyword.DARK_ARTS, Keyword.MALE, Keyword.MUSICIAN, Keyword.SHAMAN);
         addPersonas(Persona.TEEBO);
         setSpecies(Species.EWOK);
     }

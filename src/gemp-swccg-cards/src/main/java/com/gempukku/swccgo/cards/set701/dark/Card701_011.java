@@ -42,11 +42,11 @@ public class Card701_011 extends AbstractAlien {
         super(Side.DARK, 1, 4, 4, 5, 6, Title.Master_Zarrak, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setGameText("Deploys only to your Endor mountain sites. When mentor, opponent may not target your apprentice with weapons or interrupts. Once per game, may [upload] Zarrak's Hang Glider or Zarrak's Medallion. Opponent may draw no more than one battle destiny here. Immune to attrition < 4.");
         addIcons(Icon.BEEZER_BOWL_2025, Icon.WARRIOR);
-        addKeywords(Keyword.DARK_ARTS, Keyword.SORCERER);
+        addKeywords(Keyword.DARK_ARTS, Keyword.MALE, Keyword.SORCERER);
         addPersonas(Persona.ZARRAK);
         setSpecies(Species.EWOK);
     }
-    
+
     // Deploys only to your Endor mountain sites
     @Override
     protected Filter getGameTextValidDeployTargetFilter(SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
@@ -88,7 +88,7 @@ public class Card701_011 extends AbstractAlien {
         for (PhysicalCard sorceryTest : sorceryTestsInPlay) {
             final PhysicalCard mentor = sorceryTest.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_MENTOR);
             final PhysicalCard apprentice = sorceryTest.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_APPRENTICE);
-            
+
             if (mentor != null && apprentice != null) {
                 if (mentor == self) {
                     modifiers.add(new MayNotBeTargetedByWeaponsModifier(self, apprentice));

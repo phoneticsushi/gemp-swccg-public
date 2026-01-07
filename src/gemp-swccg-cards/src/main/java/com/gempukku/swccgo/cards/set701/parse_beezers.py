@@ -21,7 +21,7 @@ CARD_INTERFACE_MAP = {
     'SORCERY_TEST': 'AbstractSorceryTest',
     'WEAPON_CHARACTER': 'AbstractCharacterWeapon',
     'VEHICLE_CREATURE': 'AbstractCreatureVehicle',
-    'VEHICLE_TRANSPORT': 'AbstractTransportVehicle', 
+    'VEHICLE_TRANSPORT': 'AbstractTransportVehicle',
 }
 
 def main():
@@ -33,7 +33,7 @@ def main():
     indexSelectionGroup.add_argument('-i', '--card_index', type=str)
     indexSelectionGroup.add_argument('-a', '--all', action=argparse.BooleanOptionalAction)
     args = parser.parse_args()
-    
+
     if args.force and not args.card_index:
         print('ERROR: -f/--force requires -i/--card_index')
         exit(1)
@@ -48,7 +48,7 @@ def try_generate_classfile_from_record(record: dict, force: bool, use_explicit_t
     # acquire metadata
     card_side = record['card_side']
     card_class_name = generate_card_class_name(record)
-    
+
     # calculate path for generated file relative to this file to avoid surprises...
     script_directory = os.path.dirname(os.path.realpath(__file__))
     card_directory = os.path.join(script_directory, card_side.lower())
@@ -143,10 +143,10 @@ def generate_class(record, use_explicit_title) -> str:
         indent(2, opt_generate_text_declaration(record, 'setLocationDarkSideGameText', 'dark_side_text')),
         # attributes - other (alphabetical order)
         *indent_list(2, multi_generate_force_gen_icons_declation(record)),
-        indent(2, opt_generate_enum_declaration(record, 'addIcons', 'Icon', 'icons')),
-        indent(2, opt_generate_enum_declaration(record, 'addKeywords', 'Keyword', 'keywords')),
-        indent(2, opt_generate_enum_declaration(record, 'addPersonas', 'Persona', 'persona')),
-        indent(2, opt_generate_enum_declaration(record, 'setSpecies', 'Species', 'species')),
+        indent(2, opt_generate_enum_declaration(record, 'addIcons', 'Icon', ['icons'])),
+        indent(2, opt_generate_enum_declaration(record, 'addKeywords', 'Keyword', ['gender', 'keywords'])),
+        indent(2, opt_generate_enum_declaration(record, 'addPersonas', 'Persona', ['persona'])),
+        indent(2, opt_generate_enum_declaration(record, 'setSpecies', 'Species', ['species'])),
         indent(1, '}'),
         # TODOs
         *indent_list(1, multi_generate_todos_section_from_game_text(record)),
@@ -284,8 +284,11 @@ def multi_generate_force_gen_icons_declation(record) -> list[str]:
             res.append(f'addIcon(Icon.LIGHT_FORCE, {num_light_force});')
     return res
 
-def opt_generate_enum_declaration(record, func_name, enum_name, record_index):
-    values = record[record_index]
+def opt_generate_enum_declaration(record, func_name, enum_name, column_headings):
+    values = []
+    for column in column_headings:
+        values.extend(record[column])
+
     if not values:
         return None
     else:
