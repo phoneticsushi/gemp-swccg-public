@@ -45,7 +45,7 @@ public class Card701_010 extends AbstractAlien {
         super(Side.DARK, 2, 3, 3, 3, 4, Title.Makrit, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setGameText("Deploys only on Endor. May place Wokling in opponent's Lost Pile (or under Pile of Bones). If with Logray, adds one battle destiny. During your move phase, may target opponent's Ewok present here. Each player draws destiny. If your destiny > opponent's destiny, target crosses over to the Dark Side.");
         addIcons(Icon.BEEZER_BOWL_2025, Icon.WARRIOR);
-        addKeywords(Keyword.SHAMAN);
+        addKeywords(Keyword.MALE, Keyword.SHAMAN);
         addPersonas(Persona.MAKRIT);
         setSpecies(Species.EWOK);
     }
@@ -67,7 +67,7 @@ public class Card701_010 extends AbstractAlien {
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
-        
+
         final String opponent = game.getOpponent(playerId);
 
         // Both Wokling and Pile of Bones are unique, so there's no need to have the user target them explicitly.
@@ -105,7 +105,7 @@ public class Card701_010 extends AbstractAlien {
                 actions.add(stackWoklingAction);
             }
         }
-        
+
         final Filter opponentsEwokPresentHere = Filters.and(Filters.opponents(playerId), Filters.Ewok, Filters.here(self));
 
         // During your move phase...
@@ -140,7 +140,7 @@ public class Card701_010 extends AbstractAlien {
                                                         @Override
                                                         protected void destinyDraws(SwccgGame game, List<PhysicalCard> opponentsDestinyCardDraws, List<Float> opponentsDestinyDrawValues, Float opponentsTotalDestiny) {
                                                             GameState gameState = game.getGameState();
-                                                            
+
                                                             String yourDestinyMessage;
                                                             float yourEffectiveDestiny;
                                                             if (yourTotalDestiny == null) {
@@ -150,7 +150,7 @@ public class Card701_010 extends AbstractAlien {
                                                                 yourDestinyMessage = GuiUtils.formatAsString(yourTotalDestiny);
                                                                 yourEffectiveDestiny = yourTotalDestiny;
                                                             }
-                                                            
+
                                                             String opponentsDestinyMessage;
                                                             float opponentsEffectiveDestiny;
                                                             if (opponentsTotalDestiny == null) {
@@ -163,7 +163,7 @@ public class Card701_010 extends AbstractAlien {
 
                                                             gameState.sendMessage(playerId + "'s destiny: " + yourDestinyMessage);
                                                             gameState.sendMessage(opponent + "'s destiny: " + opponentsDestinyMessage);
-                                                            
+
                                                             // If your destiny > opponent’s destiny...
                                                             if (yourEffectiveDestiny > opponentsEffectiveDestiny) {
                                                                 // ...Target crosses over to the Dark Side

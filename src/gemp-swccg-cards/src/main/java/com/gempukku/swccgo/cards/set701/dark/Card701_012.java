@@ -44,13 +44,13 @@ public class Card701_012 extends AbstractAlien {
         super(Side.DARK, 1, 6, 4, 5, 7, Title.Morag_Sorceress, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setGameText("Deploys -1 to Mt. Thunderstone sites. Once per game, may use 2 Force to [download] Shadowstone Staff (or deploy it from Lost Pile). If opponent's attempt to 'hit' Morag is not successful, opponent loses 1 Force and Morag is cumulatively power +2 for remainder of turn. Immune to Rebel Barrier and attrition < 5.");
         addIcons(Icon.BEEZER_BOWL_2025, Icon.WARRIOR);
-        addKeywords(Keyword.DARK_ARTS, Keyword.SORCERER);
+        addKeywords(Keyword.DARK_ARTS, Keyword.FEMALE, Keyword.SORCERER);
         addPersonas(Persona.MORAG);
         setSpecies(Species.TULGAH);
         // Immune to Rebel Barrier
         addImmuneToCardTitle(Title.Rebel_Barrier);
     }
-    
+
     @Override
     protected List<Modifier> getGameTextAlwaysOnModifiers(SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
@@ -60,7 +60,7 @@ public class Card701_012 extends AbstractAlien {
         modifiers.add(new ImmuneToAttritionLessThanModifier(self, 5));
         return modifiers;
     }
-   
+
     // Once per game, may use 2 Force to [download] Shadowstone Staff (or deploy it from Lost Pile)
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
@@ -88,7 +88,7 @@ public class Card701_012 extends AbstractAlien {
                         new DeployCardFromReserveDeckEffect(action, Filters.title(Title.Shadowstone_Staff), true));
                 actions.add(action);
             }
-            
+
             // Second case: Shadowstone Staff is in lost pile
             if (GameConditions.canDeployCardFromLostPile(game, playerId, self, gameTextActionId, Title.Shadowstone_Staff)) {
                 final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
