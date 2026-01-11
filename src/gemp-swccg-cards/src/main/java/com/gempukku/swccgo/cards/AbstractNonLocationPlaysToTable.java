@@ -745,8 +745,25 @@ public abstract class AbstractNonLocationPlaysToTable extends AbstractSwccgCardB
             if (!game.getModifiersQuerying().isGameTextCanceled(game.getGameState(), self)) {
                 if (inPlayActive) {
                     List<TopLevelGameTextAction> gameTextActions = getGameTextTopLevelActions(playerId, game, self, self.getCardId());
-                    if (gameTextActions != null)
+                    if (gameTextActions != null) {
                         actions.addAll(gameTextActions);
+                    }
+
+                    // Actions from permanent device, if present
+                    SwccgBuiltInCardBlueprint permanentDevice = self.getBlueprint().getPermanentDevice(self);
+                    if (permanentDevice != null) {
+                        // No starships have a permanent device as of writing, so last parameter is false as it doesn't apply.  Refactor if needed...
+                        int numDevicesToUseLimit = game.getModifiersQuerying().numDevicesAllowedToUse(game.getGameState(), self, false);
+                        List<Integer> devicesUsed = game.getModifiersQuerying().allDevicesUsed(self);
+
+                        // OK to use permanent device if we have uses remaining and haven't already used the device this turn
+                        if (devicesUsed.size() < numDevicesToUseLimit && !devicesUsed.contains(self.getCardId())) {
+                            List<TopLevelGameTextAction> permanentDeviceActions = permanentDevice.getPermanentDeviceTopLevelActions(playerId, game, self);
+                            if (permanentDeviceActions != null) {
+                                actions.addAll(permanentDeviceActions);
+                            }
+                        }
+                    }
                 }
                 else {
                     List<TopLevelGameTextAction> gameTextActions = getGameTextTopLevelActionsWhenInactiveInPlay(playerId, game, self, self.getCardId());
@@ -775,22 +792,6 @@ public abstract class AbstractNonLocationPlaysToTable extends AbstractSwccgCardB
             List<TopLevelGameTextAction> gameTextActions = getGameTextTopLevelWhileStackedActions(playerId, game, self, self.getCardId());
             if (gameTextActions != null)
                 actions.addAll(gameTextActions);
-        }
-
-        // Actions from permanent device, if present
-        SwccgBuiltInCardBlueprint permanentDevice = self.getBlueprint().getPermanentDevice(self);
-        if (permanentDevice != null) {
-            // No starships have a permanent device as of writing, so last parameter is false as it doesn't apply.  Refactor if needed...
-            int numDevicesToUseLimit = game.getModifiersQuerying().numDevicesAllowedToUse(game.getGameState(), self, false);
-            List<Integer> devicesUsed = game.getModifiersQuerying().allDevicesUsed(self);
-
-            // OK to use permanent device if we have uses remaining and haven't already used the device this turn
-            if (devicesUsed.size() < numDevicesToUseLimit && !devicesUsed.contains(self.getCardId())) {
-                List<TopLevelGameTextAction> permanentDeviceActions = permanentDevice.getPermanentDeviceTopLevelActions(playerId, game, self);
-                if (permanentDeviceActions != null) {
-                    actions.addAll(permanentDeviceActions);
-                }
-            }
         }
 
         return actions;
@@ -837,7 +838,7 @@ public abstract class AbstractNonLocationPlaysToTable extends AbstractSwccgCardB
         // Actions from game text
         if (self.getZone().isInPlay()) {
             boolean inPlayActive = game.getGameState().isCardInPlayActive(self, false, false, false, false, false, false, false, false);
-            
+
             if (!game.getModifiersQuerying().isGameTextCanceled(game.getGameState(), self)) {
                 if (inPlayActive) {
                     List<TopLevelGameTextAction> gameTextActions = getOpponentsCardGameTextTopLevelActions(playerId, game, self, self.getCardId());
@@ -1230,7 +1231,7 @@ public abstract class AbstractNonLocationPlaysToTable extends AbstractSwccgCardB
                     }
                 }
             }
-        } 
+        }
         // End of checking for 'react' actions
 
         return actions;
