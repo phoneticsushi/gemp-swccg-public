@@ -1,17 +1,20 @@
 package com.gempukku.swccgo.cards.set701.dark;
 
-import com.gempukku.swccgo.common.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
+import org.junit.Test;
+
+import com.gempukku.swccgo.common.CharacterTestStatus;
+import com.gempukku.swccgo.common.Phase;
+import com.gempukku.swccgo.common.TargetId;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.framework.StartingSetup;
 import com.gempukku.swccgo.framework.TestBase;
 import com.gempukku.swccgo.framework.VirtualTableScenario;
 import com.gempukku.swccgo.game.PhysicalCardImpl;
-
-import org.junit.Test;
-
-import java.util.HashMap;
-
-import static org.junit.Assert.*;
 
 public class SorceryTestTests
 {
@@ -19,6 +22,8 @@ public class SorceryTestTests
 		return new VirtualTableScenario(
 				new HashMap<>()
 				{{
+					put("midge", "9_011");
+					put("blount", "9_021");
 				}},
 				new HashMap<>()
 				{{
