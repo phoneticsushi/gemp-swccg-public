@@ -15098,13 +15098,13 @@ public class Filters {
     //
 
     /**
-     * Filter that accepts cards that are Spells and have not been cast this turn
+     * Filter that accepts cards that are Spells, but have not been cast this turn
      */
     public static final Filter spell_not_cast_this_turn = new Filter() {
         @Override
         public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
             return Filters.Spell.accepts(gameState, modifiersQuerying, physicalCard)
-                && modifiersQuerying.getUntilEndOfTurnLimitCounter(physicalCard, physicalCard.getOwner(), physicalCard.getCardId(), GameTextActionId.SPELLCASTING_ACTION).getUsedLimit() > 0;
+                && modifiersQuerying.getUntilEndOfTurnLimitCounter(physicalCard, physicalCard.getOwner(), physicalCard.getCardId(), GameTextActionId.SPELLCASTING_ACTION).getUsedLimit() == 0;
         }
     };
 
