@@ -17884,6 +17884,7 @@ public class Filters {
     public static final Filter any_Mara = Filters.or(Persona.MARA_JADE, Persona.MARA_SKYWALKER);
     public static final Filter any_model_type = Filters.modelType(ModelType._ANY_);
     public static final Filter Any_Methods_Necessary = Filters.title(Title.Any_Methods_Necessary);
+    public static final Filter Apex = Filters.title(Title.Apex);
     public static final Filter Ardon_Crell = Filters.title(Title.Ardon_Crell);
     public static final Filter Arleil = Filters.title(Title.Arleil);
     public static final Filter Armorer = Filters.persona(Persona.ARMORER);
@@ -18384,6 +18385,7 @@ public class Filters {
     public static final Filter exterior_site = Filters.icon(Icon.EXTERIOR_SITE);
     public static final Filter exterior_Tatooine_site = Filters.and(Icon.EXTERIOR_SITE, Filters.partOfSystem(Title.Tatooine));
     public static final Filter Eyes_In_The_Dark = Filters.title(Title.Eyes_In_The_Dark);
+    public static final Filter EZ_PZ = Filters.persona(Persona.EZ_PZ);
     public static final Filter Ezra = Filters.persona(Persona.EZRA);
     public static final Filter Fambaa = Filters.keyword(Keyword.FAMBAA);
     public static final Filter Falcon = Filters.persona(Persona.FALCON);
@@ -18898,6 +18900,7 @@ public class Filters {
     public static final Filter Mosep = Filters.title(Title.Mosep);
     public static final Filter Mostly_Armless = Filters.title(Title.Mostly_Armless);
     public static final Filter Motti = Filters.persona(Persona.MOTTI);
+    public static final Filter mount_krana_site = Filters.keyword(Keyword.MOUNT_KRANA_SITE);
     public static final Filter mountain_site = Filters.icon(Icon.MOUNTAIN_SITE);
     public static final Filter Mountains = Filters.title(Title.Mountains);
     public static final Filter Mournful_Roar = Filters.title(Title.Mournful_Roar);

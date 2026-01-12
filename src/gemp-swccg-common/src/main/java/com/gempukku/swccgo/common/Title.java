@@ -60,6 +60,7 @@ public interface Title {
     String Anoat = "Anoat";
     String Antechamber = "Maz's Castle: Antechamber";
     String Any_Methods_Necessary = "Any Methods Necessary";
+    String Apex = "Mount Krana: Apex";
     String Apology_Accepted = "Apology Accepted";
     String Ardon_Crell = "Ardon \"Vapor\" Crell";
     String Arleil = "Arleil Schous";
@@ -459,6 +460,7 @@ public interface Title {
     String Gather_Allies_And_Train = "Gather Allies And Train";
     String General_Calrissian = "General Calrissian";
     String General_Dodonna = "General Dodonna";
+    String Generator_Chamber = "Endor: Generator Chamber";
     String Geonosis = "Geonosis";
     String Geonosis_Petranaki_Arena = "Geonosis: Petranaki Arena";
     String Get_Alongside_That_One = "Get Alongside That One";
@@ -1043,6 +1045,8 @@ public interface Title {
     String Sei_Taria = "Sei Taria";
     String Send_A_Detachment_Down = "Send A Detachment Down";
     String Sense = "Sense";
+    String Sergeant_Junkin = "Sergeant Junkin";
+    String Sergeant_Squalls = "Sergeant Squalls";
     String Set_For_Stun = "Set For Stun";
     String Set_Your_Course_For_Alderaan = "Set Your Course For Alderaan";
     String Starship_Levitation = "Starship Levitation";
@@ -1229,6 +1233,7 @@ public interface Title {
     String Tusken_Canyon = "Tatooine: Tusken Canyon";
     String Tusken_Scavengers = "Tusken Scavengers";
     String Twin_Suns_Of_Tatooine = "Twin Suns Of Tatooine";
+    String Twin_Trees = "Endor: Twin Trees";
     String Tydirium = "Tydirium";
     String Tyrant = "Tyrant";
     String Tzizvvt = "Tzizvvt";
