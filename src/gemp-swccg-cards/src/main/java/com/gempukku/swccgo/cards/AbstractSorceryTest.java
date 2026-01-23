@@ -1,5 +1,8 @@
 package com.gempukku.swccgo.cards;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.gempukku.swccgo.common.CardCategory;
 import com.gempukku.swccgo.common.CardType;
 import com.gempukku.swccgo.common.DestinyType;
@@ -30,8 +33,6 @@ import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.FailCostEffect;
 import com.gempukku.swccgo.logic.timing.GuiUtils;
 import com.gempukku.swccgo.logic.timing.TargetingEffect;
-import java.util.LinkedList;
-import java.util.List;
 
 
 /**
@@ -212,7 +213,7 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
      * Note that this logic implements the following game text from "Once the Sunstar is Mine...":
     // - "Sorcery Test destiny draws are +1 for each sorcerer on table"
     // - "Whenever you draw sorcery training destiny, draw two and choose one"
-     * 
+     *
      * @param playerId the player attempting the Sorcery Test
      * @param game the game
      * @param self the sorcery test
@@ -222,7 +223,7 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
     protected OptionalGameTextTriggerAction getGameTextTrainingDestinyAttemptAction(String playerId, SwccgGame game, PhysicalCard self, PhysicalCard apprentice, float thresholdToPass, float opponentForceLossIfPassed) {
         final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, self.getCardId(), GameTextActionId.SORCERY_TEST__ATTEMPT_TEST);
         final boolean isSunstarObjectiveOnTable = Filters.canSpot(game, null, Filters.Once_The_Sunstar_Is_Mine);
-        
+
         int numDestinyDraws;
         if (isSunstarObjectiveOnTable) {
             numDestinyDraws = 2;
@@ -241,6 +242,8 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
             new DrawDestinyEffect(action, playerId, numDestinyDraws, 1, DestinyType.TRAINING_DESTINY) {
                 @Override
                 protected void destinyDraws(SwccgGame game, List<PhysicalCard> destinyCardDraws, List<Float> destinyDrawValues, Float totalDestiny) {
+                    final GameState gameState = game.getGameState();
+
                     final int numThunderstoneSites = Filters.countActive(game, self, Filters.Mt_Thunderstone_site);
                     final float apprenticePower = game.getModifiersQuerying().getPower(game.getGameState(), apprentice);
                     final float numSorcerersOnTable = Filters.countActive(game, self, Filters.sorcerer);
@@ -251,7 +254,7 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
                     } else {
                         destinyFromObjective = 0;
                     }
-                    
+
                     final PhysicalCard mentor = self.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_MENTOR);
                     final boolean isMedallionOnTableAndAttachedToMentor = Filters.hasAttached(Filters.Zarraks_Medallion).accepts(game.getGameState(), game.getModifiersQuerying(), mentor);
 
@@ -263,13 +266,22 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
                     }
 
                     final float trainingDestiny = totalDestiny + numThunderstoneSites + apprenticePower + destinyFromObjective + destinyFromMedallion;
+
+                    // FIXME: it looks like the destiny draw itself prints out a message, which is confusing...
+                    // ideally, remove this message, and implement all destiny adjustments as modifiers so it's all handled there.
+                    // May need to disambiguate Jedi Training destiny from Sorcery Training Destiny...
+                    gameState.sendMessage("Adjusted Destiny: " + GuiUtils.formatAsString(trainingDestiny));
+                    gameState.sendMessage("Training Threshold: " + GuiUtils.formatAsString(thresholdToPass));
                     if (Float.compare(trainingDestiny, thresholdToPass) > 0) {
                         // Sorcery Test is 'completed'
+                        gameState.sendMessage("Result: Succeeded");
                         if (opponentForceLossIfPassed > 0) {
                             action.appendEffect(new LoseForceEffect(action, game.getOpponent(playerId), opponentForceLossIfPassed));
                         }
 
                         action.appendEffect(new CompleteSorceryTestEffect(action, self));
+                    } else {
+                        gameState.sendMessage("Result: Failed");
                     }
                 }
             }
@@ -281,7 +293,7 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
     /**
      * This method is called by getGameTextOptionalAfterTriggers() to determine if the Sorcery Test can be attempted,
      * and to collect the associated action if it can.
-     * 
+     *
      * @param playerId the player attempting the Sorcery Test
      * @param game the game
      * @effectResult the result of the triggers
@@ -335,15 +347,15 @@ public abstract class AbstractSorceryTest extends AbstractDeployable {
 
     /**
      * This method is overridden by individual cards to specify the actions made available by the Spellbook's "cast a spell" mechanic.
-     * 
+     *
      * As of writing, logic controlling available casts is located on the Spellbook,
      * while the logic describing what happens as a result of the cast is located on each individual Sorcery Test.
      * There is no specific EffectResult issued by casting a spell as there's nothing in the game that explicitly triggers from it.
-     * 
+     *
      * Note that this has to be an OptionalGameTextTriggerAction and not a TopLevelGameTextAction
      * because Kiss Of Death can only be cast "at the end of your opponents battle phase",
      * which is detected by checking TriggerConditions on the effectResult.
-     * 
+     *
      * @param playerId the player
      * @param game the game
      * @param self the card containing the game text of the spell (e.g. the Sorcery Test)
