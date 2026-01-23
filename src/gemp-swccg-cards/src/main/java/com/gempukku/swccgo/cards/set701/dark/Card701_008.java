@@ -1,6 +1,7 @@
 package com.gempukku.swccgo.cards.set701.dark;
 
 import com.gempukku.swccgo.cards.AbstractSorceryTest;
+import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
@@ -75,13 +76,13 @@ public class Card701_008 extends AbstractSorceryTest {
         final PhysicalCard morag = Filters.findFirstActive(game, self, Filters.Morag);  // Persona filter, so there can be only one
         final PhysicalCard apprentice = self.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_APPRENTICE);
 
-        if (morag == null || apprentice == null) {
-            // not active -> not present
-            return null;
-        }
-
         // Attempt when Morag and apprentice are present
-        if (Filters.present(self).accepts(game, morag) && Filters.present(self).accepts(game, apprentice)) {
+        if (
+            morag != null
+            && apprentice != null
+            && GameConditions.isPresentWith(game, self, morag)
+            && GameConditions.isPresentWith(game, self, apprentice)
+        ) {
             final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, self.getCardId(), GameTextActionId.SORCERY_TEST__ATTEMPT_TEST);
             action.setText("Initiate 'Duel of the Fates'");
             action.addAnimationGroup(morag, apprentice);

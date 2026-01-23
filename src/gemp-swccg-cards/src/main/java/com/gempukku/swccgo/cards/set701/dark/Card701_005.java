@@ -61,7 +61,12 @@ public class Card701_005 extends AbstractSorceryTest {
             final PhysicalCard apprentice = self.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_APPRENTICE);
 
             // ...attempt when mentor and apprentice are present
-            if (Filters.present(self).accepts(game, mentor) && Filters.present(self).accepts(game, apprentice)) {
+            if (
+                mentor != null
+                && apprentice != null
+                && GameConditions.isPresentWith(game, self, mentor)
+                && GameConditions.isPresentWith(game, self, apprentice)
+            ) {
                 // Draw training destiny.  If destiny + apprentice's power >12, test completed and opponent loses 3 Force
                 return getGameTextTrainingDestinyAttemptAction(self.getOwner(), game, self, apprentice, 12, 3);
             }

@@ -10,8 +10,10 @@ public interface Presence extends BaseQuery, Keywords {
 		return getCardIsPresentAt(gameState, physicalCard, false, false);
 	}
 
-	default PhysicalCard getCardIsPresentAt(GameState gameState, PhysicalCard physicalCard, boolean includeMovesLikeCharacter, boolean includeEnclosedInPrison) {
-		// Only a character, creature, starship, vehicle, weapon or device can be "present" somewhere (include effects)
+	default PhysicalCard
+	getCardIsPresentAt(GameState gameState, PhysicalCard physicalCard, boolean includeMovesLikeCharacter, boolean includeEnclosedInPrison) {
+		// Only a character, creature, starship, vehicle, weapon, or device can be "present" somewhere,
+		// but to make the check intuitive, effects and jedi/sorcery tests are also included.
 		// If includeMovesLikeCharacter is set to true, then also allow cards that "move like characters"
 
 		// Card is "present" at a location if the card is physically at that location or is
@@ -22,7 +24,7 @@ public interface Presence extends BaseQuery, Keywords {
 		// is "present" on/in that starship, vehicle, or location.
 		CardCategory cardCategory = physicalCard.getBlueprint().getCardCategory();
 		if (cardCategory != CardCategory.CHARACTER && cardCategory != CardCategory.STARSHIP && cardCategory != CardCategory.VEHICLE && cardCategory != CardCategory.EFFECT
-				&& cardCategory != CardCategory.WEAPON && cardCategory != CardCategory.DEVICE && cardCategory != CardCategory.JEDI_TEST && cardCategory != CardCategory.CREATURE
+				&& cardCategory != CardCategory.WEAPON && cardCategory != CardCategory.DEVICE && cardCategory != CardCategory.JEDI_TEST && cardCategory != CardCategory.SORCERY_TEST && cardCategory != CardCategory.CREATURE
 				&& !physicalCard.isDejarikHologramAtHolosite()
 				&& (!includeMovesLikeCharacter || !physicalCard.getBlueprint().isMovesLikeCharacter()))
 			return null;
