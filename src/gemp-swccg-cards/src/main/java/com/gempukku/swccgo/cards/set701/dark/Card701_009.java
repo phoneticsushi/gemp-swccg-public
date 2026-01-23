@@ -71,9 +71,11 @@ public class Card701_009 extends AbstractSorceryTest {
 
             // ...attempt when mentor, apprentice, and creature are present
             if (
-                Filters.present(self).accepts(game, mentor)
-                && Filters.present(self).accepts(game, apprentice)
-                && Filters.presentWith(self, Filters.creature).accepts(game, self)
+                mentor != null
+                && apprentice != null
+                && GameConditions.isPresentWith(game, self, mentor)
+                && GameConditions.isPresentWith(game, self, apprentice)
+                && GameConditions.isPresentWith(game, self, Filters.creature)
             ) {
                 // Draw training destiny. If destiny + apprentice's power > 9, test completed
                 return getGameTextTrainingDestinyAttemptAction(self.getOwner(), game, self, apprentice, 9, 0);

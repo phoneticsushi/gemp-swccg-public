@@ -96,14 +96,16 @@ public class Card701_023 extends AbstractSorceryTest {
             //
             // A Sorcery Test doesn't have "presence" in the ability sense, so interpreting this as
             // "when both targets are at the same location as the Sorcery Test".
+            // Other Sorcery Tests use a similar pattern.
+            // See note in Presence.java.
             //
-            // Note that mentor and apprentice should never be null here, but might be in tests e.g.
+            // Mentor and apprentice should never be null here, but might be in tests e.g.
             // and it's better to not crash in that case regardless.
             if (
                 mentor != null
                 && apprentice != null
-                && GameConditions.isWith(game, self, mentor)
-                && GameConditions.isWith(game, self, apprentice)
+                && GameConditions.isPresentWith(game, self, mentor)
+                && GameConditions.isPresentWith(game, self, apprentice)
             ) {
                 // Draw training destiny.  If destiny + apprentice's power > 10, test completed and opponent loses 1 Force
                 return getGameTextTrainingDestinyAttemptAction(self.getOwner(), game, self, apprentice, 10, 1);
