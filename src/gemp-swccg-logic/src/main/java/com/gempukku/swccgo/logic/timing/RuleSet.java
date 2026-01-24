@@ -54,6 +54,7 @@ public class RuleSet {
         new LostFromLifeForceRule(_actionsEnvironment).applyRule();
         new LostIfAboutToBeStolenRule(_actionsEnvironment).applyRule();
         new LukesBackpackRule(_actionsEnvironment).applyRule();
+        new MtThunderstoneDeploymentRule(_modifiersEnvironment).applyRule();
         new OperativesRule(_actionsEnvironment, _modifiersEnvironment).applyRule();
         new PresenceIconRule(_modifiersEnvironment).applyRule();
         new ReleaseCaptivesWithLightSideEscortRule(_actionsEnvironment).applyRule();
