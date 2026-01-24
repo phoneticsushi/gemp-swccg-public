@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.gempukku.swccgo.cards.AbstractSorceryTest;
 import com.gempukku.swccgo.cards.GameConditions;
+import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
@@ -125,6 +126,10 @@ public class Card701_023 extends AbstractSorceryTest {
             if (GameConditions.canTarget(game, self, targetingReason, targetingFilter)) {
                 final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(spellbook, self.getCardId(), GameTextActionId.SPELLCASTING_ACTION);
                 action.setText("Cast '" + self.getTitle() + "'");
+
+                // Update usage limit(s)
+                action.appendUsage(
+                        new OncePerTurnEffect(action));
 
                 // Choose target(s)
                 action.appendTargeting(

@@ -39,7 +39,7 @@ public class Card701_020 extends AbstractArtifact {
         setGameText("Deploy on a character if 'Once The Sunstar Is Mine...' on table. Character gains Spellcaster and is immune to attrition. Completed Sorcery Tests are placed here as spells. Spells about to be lost from opponent's side of table are relocated here. Once per turn, may 'cast' one spell from Spellbook (two if Sunstar on this character). Each spell may only be cast once per turn.");
         addIcons(Icon.BEEZER_BOWL_2025);
     }
-    
+
     // Deploy on a character...
     @Override
     protected Filter getGameTextValidDeployTargetFilter(SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
@@ -54,14 +54,14 @@ public class Card701_020 extends AbstractArtifact {
 
     // Character gains Spellcaster
     // ^ Note that this is implemented implicitly; see Filters.Spellcaster
-    
+
     // Character is immune to attrition
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
         modifiers.add(new ImmuneToAttritionModifier(self, Filters.Spellcaster));
         return modifiers;
     }
-    
+
     // Relocation checks.
     protected List<RequiredGameTextTriggerAction> getGameTextRequiredAfterTriggers(SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
         LinkedList<RequiredGameTextTriggerAction> actions = new LinkedList<>();
@@ -88,7 +88,7 @@ public class Card701_020 extends AbstractArtifact {
 
         return actions;
     }
-    
+
     // Once per turn, may 'cast' one spell from Spellbook (two if Sunstar on this character)
     // (see note on "Sunstar"; This also implements "spells may be cast at adjacent sites as if Spellcaster present there")
     // Note that these are unforunately AfterTriggers and not TopLevel since certain sorcery tests can only be cast at the beginning/end of a phase/turn
@@ -102,7 +102,7 @@ public class Card701_020 extends AbstractArtifact {
 
         final int castLimitPerTurn;
         final Filter spellcasterEffectivePresenceFilter;
-        
+
         // implement "two if Sunstar on this character" from this card,
         // as well as "spells may be cast at adjacent sites as if Spellcaster present there" from Sunstar
         if (Filters.hasAttached(Filters.Sunstar).accepts(game, spellbookHolder)) {
@@ -120,13 +120,17 @@ public class Card701_020 extends AbstractArtifact {
             // See YAGNI note in AbstractSorceryTest regarding an explicit spell interface; for now:
             // - only AbstractSorceryTests can be Spells
             // - All AbstractSorceryTests attached to the Spellbook must be Spells
-            for (PhysicalCard spell : Filters.filterActive(game, self, Filters.spell_not_cast_this_turn)) { 
+            //
+            // Each spell may only be cast once per turn.
+            for (PhysicalCard spell : Filters.filterActive(game, self, Filters.spell_not_cast_this_turn)) {
                 AbstractSorceryTest sorceryTest = (AbstractSorceryTest) spell.getBlueprint();
 
                 OptionalGameTextTriggerAction spellAction = sorceryTest.getGameTextSpellcastingAction(playerId, game, effectResult, spell, self, spellbookHolder, spellcasterEffectivePresenceFilter);
+                // FIXME: it would be ideal to "spellAction.appendUsage(new OncePerTurnEffect(spellAction));" here,
+                // but appendUsage() needs to be called between appendCost() and appendEffect() for some reason,
+                // and an arbitrary spell may have either of those.
+                // To work around, we append the OncePerTurnEffect explicitly in each of the spells themselves.
                 if (spellAction != null) {
-                    // Each spell may only be cast once per turn
-                    spellAction.appendUsage(new OncePerTurnEffect(spellAction));
                     spellcastingActions.add(spellAction);
                 }
             }
