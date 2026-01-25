@@ -1055,6 +1055,7 @@ public interface Title {
     String Send_A_Detachment_Down = "Send A Detachment Down";
     String Sense = "Sense";
     String Sergeant_Junkin = "Sergeant Junkin";
+    String Sergeant_Squalls = "Sergeant Squalls";
     String Set_For_Stun = "Set For Stun";
     String Set_Your_Course_For_Alderaan = "Set Your Course For Alderaan";
     String Starship_Levitation = "Starship Levitation";
