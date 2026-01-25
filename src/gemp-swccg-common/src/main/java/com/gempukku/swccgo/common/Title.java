@@ -1244,6 +1244,7 @@ public interface Title {
     String Tusken_Canyon = "Tatooine: Tusken Canyon";
     String Tusken_Scavengers = "Tusken Scavengers";
     String Twin_Suns_Of_Tatooine = "Twin Suns Of Tatooine";
+    String Twin_Trees = "Endor: Twin Trees";
     String Tydirium = "Tydirium";
     String Tyrant = "Tyrant";
     String Tzizvvt = "Tzizvvt";
