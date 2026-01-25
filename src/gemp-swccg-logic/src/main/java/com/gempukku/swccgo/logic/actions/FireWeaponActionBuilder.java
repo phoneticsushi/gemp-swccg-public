@@ -4922,6 +4922,91 @@ public class FireWeaponActionBuilder {
     }
 
     /**
+     * Builds a fire weapon action for Sergeant Junkin (BB25)'s Concussion Grenade.
+     * @return the action
+     */
+    public FireSingleWeaponAction buildFirePermamentWeaponJunkinConcussionGrenadeAction() {
+        // may ‘throw’ at same or adjacent site; draw destiny; all characters present with that destiny number are 'hit'.
+        final FireSingleWeaponAction action = new FireSingleWeaponAction(_sourceCard, _weaponOrCardWithPermanentWeapon, _permanentWeapon, _repeatedFiring, _targetedAsCharacter, _defenseValueAsCharacter, _fireAtTargetFilter, _ignorePerAttackOrBattleLimit);
+        action.setText("Fire " + action.getWeaponTitle(_game));
+
+        // Valid sites to 'throw' grenade
+        Filter siteFilter = Filters.sameOrAdjacentSite(_weaponOrCardWithPermanentWeapon);
+        if (_game.getGameState().isDuringAttack()) {
+            siteFilter = Filters.and(Filters.attackLocation, siteFilter);
+        }
+        if (_game.getGameState().isDuringBattle()) {
+            siteFilter = Filters.and(Filters.battleLocation, siteFilter);
+        }
+
+        // Choose target(s)
+        action.appendTargeting(
+                new ChooseCardOnTableEffect(action, _playerId, "Choose site to 'throw' grenade", siteFilter) {
+                    @Override
+                    protected void cardSelected(final PhysicalCard siteSelected) {
+                        action.addAnimationGroup(siteSelected);
+
+                        // Pay cost(s)
+                        float forceToUse = getUseForceCost(action.getCardFiringWeapon());
+                        if (forceToUse > 0) {
+                            action.appendCost(
+                                    new UseForceEffect(action, _playerId, forceToUse));
+                        }
+
+                        // Allow response(s)
+                        action.allowResponses(GameUtils.getCardLink(action.getCardFiringWeapon()) + " targets to 'throw' Concussion Grenade at " + GameUtils.getCardLink(siteSelected),
+                                new RespondableWeaponFiringEffect(action) {
+                                    @Override
+                                    protected void performActionResults(Action targetingAction) {
+                                        // Perform result(s)
+                                        action.appendEffect(
+                                                new DrawDestinyEffect(action, _playerId, 1, DestinyType.WEAPON_DESTINY) {
+                                                    @Override
+                                                    protected void destinyDraws(final SwccgGame game, List<PhysicalCard> destinyCardDraws, List<Float> destinyDrawValues, final Float totalDestiny) {
+                                                        final GameState gameState = game.getGameState();
+                                                        final PhysicalCard cardFiringWeapon = gameState.getWeaponFiringState().getCardFiringWeapon();
+                                                        if (totalDestiny == null) {
+                                                            gameState.sendMessage("Result: Failed to failed weapon destiny draw");
+                                                            return;
+                                                        }
+
+                                                        gameState.sendMessage("Total destiny: " + GuiUtils.formatAsString(totalDestiny));
+
+                                                        final Collection<PhysicalCard> cards = Filters.filterAllOnTable(game,
+                                                                Filters.and(Filters.character, Filters.present(siteSelected), Filters.canBeTargetedBy(action.getWeaponToFire())));
+                                                        if (!cards.isEmpty()) {
+                                                            action.appendEffect(
+                                                                    new RefreshPrintedDestinyValuesEffect(action, cards) {
+                                                                        @Override
+                                                                        protected void refreshedPrintedDestinyValues() {
+                                                                            Collection<PhysicalCard> validToHit = Filters.filter(cards, game, Filters.destinyEqualTo(totalDestiny));
+                                                                            if (!validToHit.isEmpty()) {
+                                                                                gameState.sendMessage("Result: Succeeded");
+                                                                                for (PhysicalCard cardToHit : validToHit) {
+                                                                                    action.appendEffect(
+                                                                                            new HitCardEffect(action, cardToHit, _weaponOrCardWithPermanentWeapon, _permanentWeapon, cardFiringWeapon));
+                                                                                }
+                                                                            } else {
+                                                                                gameState.sendMessage("Result: No characters present with matching destiny number");
+                                                                            }
+                                                                        }
+                                                                    }
+                                                            );
+                                                        } else {
+                                                            gameState.sendMessage("Result: No characters present");
+                                                        }
+                                                    }
+                                                }
+                                        );
+                                    }
+                                });
+                    }
+                }
+        );
+        return action;
+    }
+
+    /**
      * Builds a fire weapon action for Thermal Detonator.
      * @return the action
      */
