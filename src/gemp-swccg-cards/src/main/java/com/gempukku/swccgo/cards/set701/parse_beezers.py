@@ -237,7 +237,7 @@ def generate_super(record, use_explicit_title: bool) -> str:
     card_rarity = 'V'  # all rarities are hardcoded to "V" (Virtual)
 
     # super() implementation is dependent on card type:
-    if card_interface == 'AbstractAlien':
+    if card_interface in ['AbstractAlien', 'AbstractRebel']:
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {record["deploy"]}, {record["power"]}, {record["ability"]}, {record["forfeit"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
     if card_interface == 'AbstractArtifact':
         return f'super(Side.{record["card_side"]}, {record["destiny"]}, {card_title}, Uniqueness.{record["uniqueness"]}, ExpansionSet.{record["expansion_set"]}, Rarity.{card_rarity});'
@@ -287,14 +287,15 @@ def multi_generate_force_gen_icons_declation(record) -> list[str]:
 def opt_generate_enum_declaration(record, func_name, enum_name, column_headings):
     values = []
     for column in column_headings:
-        values.extend(record[column])
+        values.extend(record[column].split(','))
 
-    if not values:
+    values_cleaned = [value.strip() for value in values if value]
+
+    if not values_cleaned:
         return None
     else:
         # assumption here that input schema is a comma-separated list of enum values,
         # and that values contain no spaces
-        values_cleaned = values.replace(' ', '').split(',')
         func_args = ', '.join([f'{enum_name}.{value}' for value in sorted(values_cleaned)])
         # arguments are not quoted
         return f'{func_name}({func_args});'
