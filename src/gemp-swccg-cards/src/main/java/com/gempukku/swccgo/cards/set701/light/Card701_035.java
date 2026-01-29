@@ -34,6 +34,7 @@ public class Card701_035 extends AbstractSite {
         addIcon(Icon.DARK_FORCE, 1);
         addIcon(Icon.LIGHT_FORCE, 2);
         addIcons(Icon.BEEZER_BOWL_2025, Icon.EXTERIOR_SITE, Icon.PLANET);
+        setAsHorizontal(false);
     }
 
     @Override
