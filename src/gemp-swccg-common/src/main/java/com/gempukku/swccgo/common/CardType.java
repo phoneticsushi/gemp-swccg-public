@@ -16,6 +16,7 @@ public enum CardType implements Filterable {
     EFFECT("Effect"),
     EPIC_EVENT("Epic Event"),
     FIRST_ORDER("First Order"),
+    GENERALS_ORDER("General's Order"),
     IMPERIAL("Imperial"),
     INTERRUPT("Interrupt"),
     JEDI_MASTER("Jedi Master"),

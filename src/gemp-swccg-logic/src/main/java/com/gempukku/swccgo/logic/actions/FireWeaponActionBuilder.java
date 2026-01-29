@@ -77,6 +77,7 @@ import com.gempukku.swccgo.logic.effects.choose.ChooseCharacterOnTableToCaptureE
 import com.gempukku.swccgo.logic.effects.choose.StealCardToLocationEffect;
 import com.gempukku.swccgo.logic.effects.choose.TakeStackedCardsIntoHandEffect;
 import com.gempukku.swccgo.logic.modifiers.AddsDestinyToAttritionModifier;
+import com.gempukku.swccgo.logic.modifiers.EachWeaponDestinyModifier;
 import com.gempukku.swccgo.logic.modifiers.ImmunityToAttritionChangeModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotBeFiredModifier;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
@@ -7280,5 +7281,62 @@ public class FireWeaponActionBuilder {
 
         return action;
     }
+/**
+     * Builds a fire weapon action for Smoke Canister (DELEVARY- Delevar).
+     * Targets a character for free, no weapon destiny needed.
+     * For remainder of turn, target's power is -1 and target's weapon destiny draws are -1.
+     * @return the action
+     */
+    public FireSingleWeaponAction buildFireWeaponSmokeCanisterAction() {
 
+        final FireSingleWeaponAction action = new FireSingleWeaponAction(_sourceCard, _weaponOrCardWithPermanentWeapon, _permanentWeapon, _repeatedFiring, _targetedAsCharacter, _defenseValueAsCharacter, _fireAtTargetFilter, _ignorePerAttackOrBattleLimit);
+        action.setText("Fire " + action.getWeaponTitle(_game));
+
+        // Choose target(s)
+        action.appendTargeting(
+                new TargetCardOnTableEffect(action, _playerId, "Choose target", getTargetFiltersMap(action.getCardFiringWeapon())) {
+                    @Override
+                    protected boolean isIncludeStackedCardsTargetedByWeaponsAsIfPresent() {
+                        return true;
+                    }
+                    @Override
+                    protected void cardTargeted(final int targetGroupId, PhysicalCard cardTargeted) {
+                        action.addAnimationGroup(cardTargeted);
+                        _game.getGameState().getWeaponFiringState().setTarget(cardTargeted);
+
+                        // Pay cost(s)
+                        float forceToUse = getUseForceCost(action.getCardFiringWeapon(), cardTargeted);
+                        if (forceToUse > 0) {
+                            action.appendCost(
+                                    new UseForceEffect(action, _playerId, forceToUse));
+                        }
+
+                        // Allow response(s)
+                        action.allowResponses("Throw smoke canister " + GameUtils.getCardLink(action.getWeaponToFire()) + " at " + GameUtils.getCardLink(cardTargeted),
+                                new RespondableWeaponFiringEffect(action) {
+                                    @Override
+                                    protected void performActionResults(Action targetingAction) {
+                                        // Get the targeted card(s) from the action using the targetGroupId.
+                                        // This needs to be done in case the target(s) were changed during the responses.
+                                        final PhysicalCard cardFiredAt = targetingAction.getPrimaryTargetCard(targetGroupId);
+                                        _game.getGameState().getWeaponFiringState().setTarget(cardFiredAt);
+
+                                        // Perform result(s)
+                                        // Power -1 until end of turn
+                                        action.appendEffect(
+                                                new ModifyPowerUntilEndOfTurnEffect(action, cardFiredAt, -1));
+
+                                        // Weapon destiny draws -1 until end of turn when this character fires weapons
+                                        action.appendEffect(
+                                                new AddUntilEndOfTurnModifierEffect(action,
+                                                        new EachWeaponDestinyModifier(_weaponOrCardWithPermanentWeapon, Filters.weaponBeingFiredBy(Filters.sameCardId(cardFiredAt)), -1),
+                                                        "Makes " + GameUtils.getCardLink(cardFiredAt) + "'s weapon destiny draws -1"));
+                                    }
+                                });
+                    }
+                }
+        );
+
+        return action;
+    }
 }
