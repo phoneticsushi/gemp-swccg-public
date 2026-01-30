@@ -636,6 +636,12 @@ public abstract class AbstractModifier implements Modifier {
         return 0;
     }
 
+    // Beezer Bowl 2025: Added to support "immune to attrition > X" (immune to values above X, vulnerable to X or less)
+    @Override
+    public float getImmunityToAttritionGreaterThanModifier(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+        return 0;
+    }
+
     @Override
     public boolean isExceptForceIconOrPresenceRequirement() {
         return false;
