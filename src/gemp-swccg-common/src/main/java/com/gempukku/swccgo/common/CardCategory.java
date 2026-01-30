@@ -14,6 +14,8 @@ public enum CardCategory implements Filterable {
     EFFECT("Effect"),
     EPIC_EVENT("Epic Event"),
     GAME_AID("Game Aid"),
+    // Adding general's order for Beezer Bowl 2025 cardset
+    GENERALS_ORDER("General's Order"),
     INTERRUPT("Interrupt"),
     JEDI_TEST("Jedi Test"),
     LOCATION("Location"),

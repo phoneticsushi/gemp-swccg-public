@@ -18456,6 +18456,8 @@ public class Filters {
     public static final Filter general = Filters.keyword(Keyword.GENERAL);
     public static final Filter General_Calrissian = Filters.title(Title.General_Calrissian);
     public static final Filter General_Dodonna = Filters.title(Title.General_Dodonna);
+    // Adding general's order filter for Beezer Bowl 2025 cardset
+    public static final Filter Generals_Order = Filters.type(CardType.GENERALS_ORDER);
     public static final Filter generic_site = Filters.and(Filters.subtype(CardSubtype.SITE), Filters.generic());
     public static final Filter Geonosis_location = Filters.partOfSystem(Title.Geonosis);
     public static final Filter Geonosis_Petranaki_Arena = Filters.title(Title.Geonosis_Petranaki_Arena);
