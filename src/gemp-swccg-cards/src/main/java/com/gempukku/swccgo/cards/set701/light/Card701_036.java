@@ -18,6 +18,7 @@ import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
+import com.gempukku.swccgo.logic.effects.LoseCardsFromTableEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardInUsedPileFromTableEffect;
 import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.TargetCardOnTableEffect;
@@ -26,6 +27,7 @@ import com.gempukku.swccgo.logic.modifiers.CharactersAboardMayJumpOffModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.Action;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,7 +65,7 @@ public class Card701_036 extends AbstractTransportVehicle {
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
 
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        GameTextActionId gameTextActionId = GameTextActionId.EWOK_GLIDER__ONCE_PER_GAME_CHOICE;
 
         // Check if once per game is available
         if (GameConditions.isOncePerGame(game, self, gameTextActionId)) {
@@ -76,7 +78,12 @@ public class Card701_036 extends AbstractTransportVehicle {
                 // Update usage limit(s)
                 action.appendUsage(
                         new OncePerGameEffect(action));
-                // Pay cost(s)
+                // Pay cost(s) - lose any characters aboard
+                Collection<PhysicalCard> charactersAboard = Filters.filterActive(game, self, Filters.and(Filters.character, Filters.aboard(self)));
+                if (!charactersAboard.isEmpty()) {
+                    action.appendCost(
+                            new LoseCardsFromTableEffect(action, charactersAboard));
+                }
                 action.appendCost(
                         new PlaceCardInUsedPileFromTableEffect(action, self));
                 // Perform result(s)
@@ -101,7 +108,12 @@ public class Card701_036 extends AbstractTransportVehicle {
                     // Update usage limit(s)
                     action.appendUsage(
                             new OncePerGameEffect(action));
-                    // Pay cost(s)
+                    // Pay cost(s) - lose any characters aboard
+                    Collection<PhysicalCard> charactersAboard = Filters.filterActive(game, self, Filters.and(Filters.character, Filters.aboard(self)));
+                    if (!charactersAboard.isEmpty()) {
+                        action.appendCost(
+                                new LoseCardsFromTableEffect(action, charactersAboard));
+                    }
                     action.appendCost(
                             new PlaceCardInUsedPileFromTableEffect(action, self));
                     // Choose target location

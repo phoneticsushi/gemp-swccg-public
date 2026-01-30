@@ -3,7 +3,7 @@ package com.gempukku.swccgo.cards.set701.light;
 import com.gempukku.swccgo.cards.AbstractNormalEffect;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.cards.effects.SetWhileInPlayDataEffect;
-import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
+import com.gempukku.swccgo.cards.effects.usage.OncePerPhaseEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
@@ -146,7 +146,7 @@ public class Card701_055 extends AbstractNormalEffect {
                 action.setActionMsg("Take an Ewok into hand from Reserve Deck");
                 // Update usage limit(s)
                 action.appendUsage(
-                        new OncePerTurnEffect(action));
+                        new OncePerPhaseEffect(action));
                 // Perform result(s)
                 action.appendEffect(
                         new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.Ewok, true));
@@ -160,7 +160,7 @@ public class Card701_055 extends AbstractNormalEffect {
                 action.setActionMsg("Take a mountaineer into hand from Reserve Deck");
                 // Update usage limit(s)
                 action.appendUsage(
-                        new OncePerTurnEffect(action));
+                        new OncePerPhaseEffect(action));
                 // Perform result(s)
                 action.appendEffect(
                         new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.and(Keyword.MOUNTAINEER), true));
