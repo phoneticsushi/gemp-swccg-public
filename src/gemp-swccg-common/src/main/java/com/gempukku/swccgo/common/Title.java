@@ -86,6 +86,7 @@ public interface Title {
     String Awwww_Cannot_Get_Your_Ship_Out = "Awwww, Cannot Get Your Ship Out";
     String Azure_Angel = "Azure Angel";
     String Back_Door = "Endor: Back Door";
+    String Back_To_Base = "Back To Base"; // Beezer Bowl 2025 Objective (Back)
     String Bacta_Tank = "Bacta Tank";
     String Bad_Feeling_Have_I = "Bad Feeling Have I";
     String Barada = "Barada";
@@ -690,6 +691,7 @@ public interface Title {
     String Lateral_Damage = "Lateral Damage";
     String Launch_Bay = "Star Destroyer: Launch Bay";
     String Launching_The_Assault = "Launching The Assault";
+    String Leave_It_To_Beezer = "Leave It To Beezer";  // Beezer Bowl 2025 - Card 38 Objective (front)
     String Leave_Them_To_Me = "Leave Them To Me";
     String Leebo = "LE-BO2D9 (Leebo)";
     String Leia_Of_Alderaan = "Leia Of Alderaan";
