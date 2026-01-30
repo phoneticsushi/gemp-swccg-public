@@ -62,7 +62,7 @@ public class Card701_049 extends AbstractAlien {
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
 
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        GameTextActionId gameTextActionId = GameTextActionId.PAPLOO__UPLOAD_SPEEDER_BIKE;
 
         // Check condition(s) - Once per game, may upload one speeder bike
         if (GameConditions.isOncePerGame(game, self, gameTextActionId)

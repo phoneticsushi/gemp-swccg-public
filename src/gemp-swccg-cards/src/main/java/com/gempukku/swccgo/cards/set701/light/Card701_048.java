@@ -55,7 +55,7 @@ public class Card701_048 extends AbstractRebel {
     protected List<OptionalGameTextTriggerAction> getGameTextOptionalAfterTriggers(final String playerId, SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
         List<OptionalGameTextTriggerAction> actions = new LinkedList<OptionalGameTextTriggerAction>();
 
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        GameTextActionId gameTextActionId = GameTextActionId.NIK_SANT__UPLOAD_STARFIGHTER_OR_VEHICLE;
 
         // Check condition(s) - When deployed, may upload a starfighter or vehicle
         if (TriggerConditions.justDeployed(game, effectResult, self)

@@ -64,7 +64,7 @@ public class Card701_042 extends AbstractAlien {
 
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        GameTextActionId gameTextActionId = GameTextActionId.KNEESAA__UPLOAD_EWOK_GLIDER_OR_EWOK;
 
         // Check condition(s) - During your turn, may upload one Ewok Glider or non-unique Ewok
         if (GameConditions.isOnceDuringYourTurn(game, self, playerId, gameTextSourceCardId, gameTextActionId)
@@ -87,7 +87,7 @@ public class Card701_042 extends AbstractAlien {
     @Override
     protected List<OptionalGameTextTriggerAction> getGameTextOptionalAfterTriggers(final String playerId, SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
         String opponent = game.getOpponent(playerId);
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_2;
+        GameTextActionId gameTextActionId = GameTextActionId.KNEESAA__TAKE_CARD_INTO_HAND_FROM_LOST_PILE;
 
         // Check condition(s) - If opponent just initiated battle here
         if (TriggerConditions.battleInitiatedAt(game, effectResult, opponent, Filters.here(self))

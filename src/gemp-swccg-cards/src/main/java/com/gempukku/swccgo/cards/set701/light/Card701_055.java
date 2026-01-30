@@ -133,7 +133,7 @@ public class Card701_055 extends AbstractNormalEffect {
 
         int currentPosition = self.getWhileInPlayData().getIntValue();
 
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        GameTextActionId gameTextActionId = GameTextActionId.TWILIGHT_IS_UPON_US__UPLOAD_CARD;
 
         // Once per turn during your control phase
         if (GameConditions.isOnceDuringYourPhase(game, self, playerId, gameTextSourceCardId, gameTextActionId, Phase.CONTROL)
