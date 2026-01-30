@@ -15,17 +15,18 @@ import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
+import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.modifiers.ForfeitModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
-import com.gempukku.swccgo.logic.timing.Effect;
+import com.gempukku.swccgo.logic.timing.EffectResult;
 
 /**
-* Set: BEEZER_BOWL_2025
-* Type: LOCATION_SITE
-* Title: Endor: Dark Tree Village
-*/
+ * Set: BEEZER_BOWL_2025
+ * Type: LOCATION_SITE
+ * Title: Endor: Dark Tree Village
+ */
 public class Card701_001_BACK extends AbstractSite {
     public Card701_001_BACK() {
         super(Side.DARK, Title.Dark_Tree_Village, Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
@@ -35,23 +36,26 @@ public class Card701_001_BACK extends AbstractSite {
         addIcon(Icon.LIGHT_FORCE, 3);
         addIcons(Icon.BEEZER_BOWL_2025, Icon.EXTERIOR_SITE, Icon.PLANET);
     }
-    
+
     @Override
-    protected List<Modifier> getGameTextLightSideWhileActiveModifiers(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self) {
+    protected List<Modifier> getGameTextDarkSideWhileActiveModifiers(String playerOnDarkSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
         // Your Ewoks are each forfeit +1 here
-        modifiers.add(new ForfeitModifier(self, Filters.and(Filters.your(playerOnLightSideOfLocation), Filters.Ewok, Filters.here(self)), 1));
+        modifiers.add(new ForfeitModifier(self, Filters.and(Filters.your(playerOnDarkSideOfLocation), Filters.Ewok, Filters.here(self)), 1));
         return modifiers;
     }
 
     @Override
-    protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredBeforeTriggers(String playerOnLightSideOfLocation, SwccgGame game, Effect effect, PhysicalCard self, int gameTextSourceCardId) {
-        // if you control...
-        if (GameConditions.controls(game, playerOnLightSideOfLocation, self)) {
-            // ...flip this site
-            final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
-            action.appendEffect(new FlipCardEffect(action, self));
-            return Collections.singletonList(action);
+    protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredAfterTriggers(String playerOnLightSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
+        // Check when game state changes
+        if (TriggerConditions.isTableChanged(game, effectResult)) {
+            // if you control...
+            if (GameConditions.controls(game, playerOnLightSideOfLocation, self)) {
+                // ...flip this site
+                final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
+                action.appendEffect(new FlipCardEffect(action, self));
+                return Collections.singletonList(action);
+            }
         }
         return null;
     }
