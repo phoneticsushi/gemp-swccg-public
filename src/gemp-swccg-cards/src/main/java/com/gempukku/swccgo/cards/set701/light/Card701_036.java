@@ -62,7 +62,7 @@ public class Card701_036 extends AbstractTransportVehicle {
     }
 
     @Override
-    protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
+    protected List<TopLevelGameTextAction> getGameTextTopLevelActionsEvenIfUnpiloted(final String playerId, final SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
 
         GameTextActionId gameTextActionId = GameTextActionId.EWOK_GLIDER__ONCE_PER_GAME_CHOICE;
