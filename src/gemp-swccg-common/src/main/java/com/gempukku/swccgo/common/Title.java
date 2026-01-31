@@ -475,6 +475,8 @@ public interface Title {
     String Gold_5 = "Gold 5";
     String Gold_6 = "Gold 6";
     String Goldenrod = "Goldenrod";
+    String Gorax = "Gorax";
+    String Goraxs_Lair = "Mt Krana: Gorax's Lair";
     String Goo_Nee_Tay = "Goo Nee Tay";
     String Graak = "Graak";
     String Gravel_Storm = "Gravel Storm";
@@ -1168,6 +1170,7 @@ public interface Title {
     String The_Force_Is_Strong_In_My_Family = "The Force Is Strong In My Family";
     String The_Force_Is_Strong_With_This_One = "The Force Is Strong With This One";
     String The_Galaxy_May_Need_A_Legend = "The Galaxy May Need A Legend";
+    String The_Great_Devourer = "The Great Devourer";
     String The_Hidden_Path = "The Hidden Path";
     String The_Hyperdrive_Generators_Gone = "The Hyperdrive Generator's Gone";
     String The_Mythrol = "The Mythrol";

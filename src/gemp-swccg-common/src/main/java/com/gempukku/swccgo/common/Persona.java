@@ -198,6 +198,10 @@ public enum Persona implements Filterable {
     ZEV("Zev Senesca"),
     ZUCKUSS("Zuckuss"),
 
+    // Creatures
+    GORAX("Gorax"),
+    THE_GREAT_DEVOURER("The Great Devourer"),
+
     // Devices
     BEEZERS_HELMET("Beezer's Helmet"),
     BEEZERS_TWEEZERS("Beezer's Tweezers"),
@@ -305,6 +309,7 @@ public enum Persona implements Filterable {
         if (equals(MARA_JADES_LIGHTSABER)) return MARA_SKYWALKERS_LIGHTSABER;
         if (equals(MARA_SKYWALKERS_LIGHTSABER)) return MARA_JADES_LIGHTSABER;
         if (equals(SON_OF_VADERS_LIGHTSABER)) return LUKES_LIGHTSABER;
+        if (equals(THE_GREAT_DEVOURER)) return GORAX;
         if (equals(VADERS_LIGHTSABER)) return ANAKINS_LIGHTSABER;
         return this;
     }
