@@ -1,6 +1,5 @@
 package com.gempukku.swccgo.cards.set701.light;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,18 +16,16 @@ import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
-import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
-import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.modifiers.InitiateBattleCostModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
-import com.gempukku.swccgo.logic.timing.Effect;
 
 /**
-* Set: BEEZER_BOWL_2025
-* Type: LOCATION_SITE
-* Title: Endor: Generator Chamber
-*/
+ * Set: Beezer Bowl 2025
+ * Type: Location
+ * Subtype: Site
+ * Title: Endor: Generator Chamber
+ */
 public class Card701_033 extends AbstractSite {
     public Card701_033() {
         super(Side.LIGHT, Title.Generator_Chamber, Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
@@ -46,23 +43,7 @@ public class Card701_033 extends AbstractSite {
         return modifiers;
     }
 
-    @Override
-    protected List<RequiredGameTextTriggerAction> getGameTextDarkSideRequiredBeforeTriggers(String playerOnDarkSideOfLocation, SwccgGame game, Effect effect, PhysicalCard self, int gameTextSourceCardId) {
-        // Unless opponent controls...
-        if (!GameConditions.controls(game, game.getOpponent(playerOnDarkSideOfLocation), self)
-                // ...if Sorcery Test #3 completed...
-                && GameConditions.canSpot(game, self, Filters.and(Filters.completed_Sorcery_Test, Filters.Sorcery_Test_3))) {
-
-            // ...flip this site
-            final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
-            action.appendEffect(new FlipCardEffect(action, self));
-            return Collections.singletonList(action);
-        }
-        return null;
-    }
-
     // During your move phase, you may move between here and Back Door
-    // Adapted from 213_026 First Light: Dryden's Study
     @Override
     protected List<TopLevelGameTextAction> getGameTextLightSideTopLevelActions(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<TopLevelGameTextAction>();
@@ -74,7 +55,7 @@ public class Card701_033 extends AbstractSite {
                     && GameConditions.canPerformMovementUsingLocationText(playerOnLightSideOfLocation, game, Filters.your(playerOnLightSideOfLocation), self, Filters.Back_Door, false)) {
 
                 MoveUsingLocationTextAction action = new MoveUsingLocationTextAction(playerOnLightSideOfLocation, game, self, gameTextSourceCardId, Filters.your(playerOnLightSideOfLocation), self, Filters.Back_Door, false);
-                action.setText("Move from here to another site");
+                action.setText("Move from here to Back Door");
                 actions.add(action);
             }
 
@@ -83,7 +64,7 @@ public class Card701_033 extends AbstractSite {
                     && GameConditions.canPerformMovementUsingLocationText(playerOnLightSideOfLocation, game, Filters.your(playerOnLightSideOfLocation), Filters.Back_Door, self, false)) {
 
                 MoveUsingLocationTextAction action = new MoveUsingLocationTextAction(playerOnLightSideOfLocation, game, self, gameTextSourceCardId, Filters.your(playerOnLightSideOfLocation), Filters.Back_Door, self, false);
-                action.setText("Move from another site to here");
+                action.setText("Move from Back Door to here");
                 actions.add(action);
             }
         }

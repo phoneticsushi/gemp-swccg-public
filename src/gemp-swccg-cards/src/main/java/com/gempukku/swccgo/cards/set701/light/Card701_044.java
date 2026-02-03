@@ -13,6 +13,7 @@ import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -78,7 +79,7 @@ public class Card701_044 extends AbstractObjective {
 
         // Deploy [BB25] Beezer to Back Door
         action.appendRequiredEffect(
-                new DeployCardToLocationFromReserveDeckEffect(action, Filters.and(Icon.BEEZER_BOWL_2025, Filters.title("Beezer")), Filters.Back_Door, true, false) {
+                new DeployCardToLocationFromReserveDeckEffect(action, Filters.and(Icon.BEEZER_BOWL_2025, Filters.persona(Persona.BEEZER)), Filters.Back_Door, true, false) {
                     @Override
                     public String getChoiceText() {
                         return "Choose Beezer to deploy to Back Door";
@@ -87,7 +88,7 @@ public class Card701_044 extends AbstractObjective {
 
         // Deploy Generator Chamber
         action.appendRequiredEffect(
-                new DeployCardFromReserveDeckEffect(action, Filters.title(Title.Generator_Chamber), true, false) {
+                new DeployCardFromReserveDeckEffect(action, Filters.Generator_Chamber, true, false) {
                     @Override
                     public String getChoiceText() {
                         return "Choose Generator Chamber to deploy";
@@ -197,7 +198,7 @@ public class Card701_044 extends AbstractObjective {
         }
 
         // Flip this card if Han moves to Generator Chamber with [BB25] Scrambled Transmission attached to him
-        if (TriggerConditions.movedToLocation(game, effectResult, Filters.Han, Filters.title(Title.Generator_Chamber))
+        if (TriggerConditions.movedToLocation(game, effectResult, Filters.Han, Filters.Generator_Chamber)
                 && GameConditions.canBeFlipped(game, self)) {
 
             MovedResult movedResult = (MovedResult) effectResult;
@@ -222,7 +223,7 @@ public class Card701_044 extends AbstractObjective {
 
         // Place out of play if Beezer not on table
         if (TriggerConditions.isTableChanged(game, effectResult)
-                && !GameConditions.canSpot(game, self, Filters.title("Beezer"))) {
+                && !GameConditions.canSpot(game, self, Filters.persona(Persona.BEEZER))) {
 
             RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.setSingletonTrigger(true);

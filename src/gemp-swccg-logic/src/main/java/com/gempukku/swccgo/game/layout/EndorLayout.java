@@ -15,6 +15,7 @@ public class EndorLayout extends AbstractSystemLayout {
     //      D) Ewok Village
     //      E) Chief Chirpa's Hut
     //      F) Zarrak's Hideout (Beezer Bowl 2025)
+    //      G) Generator Chamber (Beezer Bowl 2025)
     //  2) Clouds
     //  3) Planet
     //  4) Asteroids
@@ -50,7 +51,9 @@ public class EndorLayout extends AbstractSystemLayout {
                         //  E) Chief Chirpa's Hut
                         new LocationGroup("Chief Chirpa's Hut", Filters.Chief_Chirpas_Hut),
                         //  F) Zarrak's Hideout
-                        new LocationGroup("Zarrak's Hideout", Filters.Zarraks_Hideout)
+                        new LocationGroup("Zarrak's Hideout", Filters.Zarraks_Hideout),
+                        //  G) Generator Chamber
+                        new LocationGroup("Generator Chamber", Filters.Generator_Chamber)
                 )
         );
         //  2) Clouds
