@@ -18,10 +18,12 @@ import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.DrawDestinyEffect;
 import com.gempukku.swccgo.logic.effects.ExcludeFromBattleEffect;
+import com.gempukku.swccgo.logic.effects.RespondableEffect;
 import com.gempukku.swccgo.logic.effects.TargetCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.DefenseValueModifier;
 import com.gempukku.swccgo.logic.modifiers.EachWeaponDestinyModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
+import com.gempukku.swccgo.logic.timing.Action;
 import com.gempukku.swccgo.logic.timing.GuiUtils;
 
 import java.util.Collections;
@@ -70,8 +72,8 @@ public class Card701_028 extends AbstractCharacterDevice {
                 && GameConditions.canTarget(game, self, opponentsCharacterInBattle)) {
 
             // Get Beezer (the character this device is attached to)
-            final PhysicalCard beezer = self.getAttachedTo();
-            if (beezer != null && GameConditions.isInBattle(game, beezer)) {
+            PhysicalCard attachedTo = self.getAttachedTo();
+            if (attachedTo != null && GameConditions.isInBattle(game, attachedTo)) {
 
                 final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId);
                 action.setText("Yell \"CHAAAAAARGE!!!\"");
@@ -81,39 +83,56 @@ public class Card701_028 extends AbstractCharacterDevice {
                 action.appendTargeting(
                         new TargetCardOnTableEffect(action, playerId, "Choose opponent's character", opponentsCharacterInBattle) {
                             @Override
-                            protected void cardTargeted(int targetGroupId, final PhysicalCard targetedCharacter) {
+                            protected void cardTargeted(final int targetGroupId, PhysicalCard targetedCharacter) {
                                 action.addAnimationGroup(targetedCharacter);
 
-                                // Player draws 1 destiny
-                                action.appendEffect(
-                                        new DrawDestinyEffect(action, playerId, 1) {
+                                // Allow response(s)
+                                action.allowResponses("Yell \"CHAAAAAARGE!!!\" targeting " + GameUtils.getCardLink(targetedCharacter),
+                                        new RespondableEffect(action) {
                                             @Override
-                                            protected void destinyDraws(SwccgGame game, List<PhysicalCard> playersDestinyCardDraws, List<Float> playersDestinyDrawValues, final Float playersTotalDestiny) {
-                                                final float playersTotal = (playersTotalDestiny != null ? playersTotalDestiny : 0);
+                                            protected void performActionResults(Action targetingAction) {
+                                                // Get the targeted card(s) from the action using the targetGroupId.
+                                                // This needs to be done in case the target(s) were changed during the responses.
+                                                final PhysicalCard finalTarget = action.getPrimaryTargetCard(targetGroupId);
+                                                final PhysicalCard beezer = self.getAttachedTo();
 
-                                                // Opponent draws 1 destiny
+                                                if (beezer == null || finalTarget == null) {
+                                                    return;
+                                                }
+
+                                                // Player draws 1 destiny
                                                 action.appendEffect(
-                                                        new DrawDestinyEffect(action, opponent, 1) {
+                                                        new DrawDestinyEffect(action, playerId, 1) {
                                                             @Override
-                                                            protected void destinyDraws(SwccgGame game, List<PhysicalCard> opponentsDestinyCardDraws, List<Float> opponentsDestinyDrawValues, Float opponentsTotalDestiny) {
-                                                                final float opponentsTotal = (opponentsTotalDestiny != null ? opponentsTotalDestiny : 0);
+                                                            protected void destinyDraws(SwccgGame game, List<PhysicalCard> playersDestinyCardDraws, List<Float> playersDestinyDrawValues, final Float playersTotalDestiny) {
+                                                                final float playersTotal = (playersTotalDestiny != null ? playersTotalDestiny : 0);
 
-                                                                game.getGameState().sendMessage(playerId + "'s destiny: " + GuiUtils.formatAsString(playersTotal));
-                                                                game.getGameState().sendMessage(opponent + "'s destiny: " + GuiUtils.formatAsString(opponentsTotal));
+                                                                // Opponent draws 1 destiny
+                                                                action.appendEffect(
+                                                                        new DrawDestinyEffect(action, opponent, 1) {
+                                                                            @Override
+                                                                            protected void destinyDraws(SwccgGame game, List<PhysicalCard> opponentsDestinyCardDraws, List<Float> opponentsDestinyDrawValues, Float opponentsTotalDestiny) {
+                                                                                final float opponentsTotal = (opponentsTotalDestiny != null ? opponentsTotalDestiny : 0);
 
-                                                                // Check if player wins
-                                                                if (playersTotal > opponentsTotal) {
-                                                                    game.getGameState().sendMessage("CHAAAAAARGE!!! succeeds - " + GameUtils.getCardLink(beezer) + " and " + GameUtils.getCardLink(targetedCharacter) + " are excluded from battle");
+                                                                                game.getGameState().sendMessage(playerId + "'s destiny: " + GuiUtils.formatAsString(playersTotal));
+                                                                                game.getGameState().sendMessage(opponent + "'s destiny: " + GuiUtils.formatAsString(opponentsTotal));
 
-                                                                    // Exclude Beezer from battle
-                                                                    action.appendEffect(
-                                                                            new ExcludeFromBattleEffect(action, beezer));
-                                                                    // Exclude target from battle
-                                                                    action.appendEffect(
-                                                                            new ExcludeFromBattleEffect(action, targetedCharacter));
-                                                                } else {
-                                                                    game.getGameState().sendMessage("CHAAAAAARGE!!! fails");
-                                                                }
+                                                                                // Check if player wins
+                                                                                if (playersTotal > opponentsTotal) {
+                                                                                    game.getGameState().sendMessage("CHAAAAAARGE!!! succeeds - " + GameUtils.getCardLink(beezer) + " and " + GameUtils.getCardLink(finalTarget) + " are excluded from battle");
+
+                                                                                    // Exclude Beezer from battle
+                                                                                    action.appendEffect(
+                                                                                            new ExcludeFromBattleEffect(action, beezer));
+                                                                                    // Exclude target from battle
+                                                                                    action.appendEffect(
+                                                                                            new ExcludeFromBattleEffect(action, finalTarget));
+                                                                                } else {
+                                                                                    game.getGameState().sendMessage("CHAAAAAARGE!!! fails");
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                );
                                                             }
                                                         }
                                                 );

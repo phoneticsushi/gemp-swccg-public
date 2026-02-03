@@ -153,7 +153,8 @@ public class Card701_044 extends AbstractObjective {
         // Once during each of your turns may [upload] an Endor or Mt. Krana battleground site
         GameTextActionId gameTextActionId = GameTextActionId.LEAVE_IT_TO_BEEZER__UPLOAD_ENDOR_OR_MOUNT_KRANA_BATTLEGROUND_SITE;
 
-        if (GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, gameTextActionId)
+        if (GameConditions.isDuringYourTurn(game, playerId)
+                && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, gameTextActionId)
                 && GameConditions.canTakeCardsIntoHandFromReserveDeck(game, playerId, self, gameTextActionId)) {
 
             final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);

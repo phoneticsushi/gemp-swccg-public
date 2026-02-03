@@ -21,7 +21,7 @@ import com.gempukku.swccgo.logic.actions.OptionalGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.PlaceCardsInUsedPileFromTableEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardsOnTableEffect;
-import com.gempukku.swccgo.logic.effects.choose.DeployCardFromReserveDeckEffect;
+import com.gempukku.swccgo.logic.effects.choose.TakeCardIntoHandFromReserveDeckEffect;
 import com.gempukku.swccgo.logic.modifiers.AddsPowerToPilotedBySelfModifier;
 import com.gempukku.swccgo.logic.modifiers.DeployCostToLocationModifier;
 import com.gempukku.swccgo.logic.modifiers.ImmuneToAttritionLessThanModifier;
@@ -43,7 +43,6 @@ import java.util.List;
  */
 public class Card701_040 extends AbstractRebel {
     public Card701_040() {
-        // NOTE: AbstractRebel constructor: Side, destiny, deployCost, power, ability, forfeit, title, uniqueness, expansionSet, rarity
         super(Side.LIGHT, 1, 6, 4, 4, 8, "Han, Dependable General", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Founder/ leader of Renegade Squadron. Dependable in pressure situation. Scout.");
         setGameText("Adds 2 to anything he pilots. Deploys -2 to Endor. When deployed, may [upload] one General's Order or Tydirium. Once per game, may place any or all of your devices on table in Used Pile. Immune to opponent's Interrupts and attrition < 4.");
@@ -76,20 +75,18 @@ public class Card701_040 extends AbstractRebel {
 
     @Override
     protected List<OptionalGameTextTriggerAction> getGameTextOptionalAfterTriggers(final String playerId, SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
-        // NOTE: Requires adding HAN_DEPENDABLE_GENERAL__UPLOAD_CARD to GameTextActionId.java
         GameTextActionId gameTextActionId = GameTextActionId.HAN_DEPENDABLE_GENERAL__UPLOAD_CARD;
 
         // When deployed, may upload one General's Order or Tydirium
         if (TriggerConditions.justDeployed(game, effectResult, self)
-                && GameConditions.canDeployCardFromReserveDeck(game, playerId, self, gameTextActionId)) {
+                && GameConditions.canTakeCardsIntoHandFromReserveDeck(game, playerId, self, gameTextActionId)) {
 
             final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, gameTextSourceCardId, gameTextActionId);
-            action.setText("Deploy card from Reserve Deck");
-            action.setActionMsg("Deploy a General's Order or Tydirium from Reserve Deck");
+            action.setText("Take card into hand from Reserve Deck");
+            action.setActionMsg("Take a General's Order or Tydirium into hand from Reserve Deck");
             // Perform result(s)
-            // NOTE: Requires adding GENERALS_ORDER to CardType.java if not already present
             action.appendEffect(
-                    new DeployCardFromReserveDeckEffect(action, Filters.or(Filters.type(CardType.GENERALS_ORDER), Filters.Tydirium), true));
+                    new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.or(Filters.type(CardType.GENERALS_ORDER), Filters.Tydirium), true));
             return Collections.singletonList(action);
         }
         return null;
@@ -97,7 +94,6 @@ public class Card701_040 extends AbstractRebel {
 
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
-        // NOTE: Requires adding HAN_DEPENDABLE_GENERAL__PLACE_DEVICES_IN_USED_PILE to GameTextActionId.java
         GameTextActionId gameTextActionId = GameTextActionId.HAN_DEPENDABLE_GENERAL__PLACE_DEVICES_IN_USED_PILE;
 
         Filter yourDevicesOnTable = Filters.and(Filters.your(self), Filters.device, Filters.onTable);

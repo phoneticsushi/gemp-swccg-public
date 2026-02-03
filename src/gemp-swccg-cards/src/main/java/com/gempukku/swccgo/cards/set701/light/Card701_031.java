@@ -25,7 +25,7 @@ import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromTableEffect;
 import com.gempukku.swccgo.logic.effects.UseForceEffect;
-import com.gempukku.swccgo.logic.effects.choose.DeployCardFromReserveDeckEffect;
+import com.gempukku.swccgo.logic.effects.choose.TakeCardIntoHandFromReserveDeckEffect;
 import com.gempukku.swccgo.logic.modifiers.ImmuneToAttritionLessThanModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotBeTargetedByModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
@@ -98,7 +98,7 @@ public class Card701_031 extends AbstractRebel {
 
     @Override
     protected List<RequiredGameTextTriggerAction> getGameTextRequiredAfterTriggers(SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
-        Filter scrambledTransmissionFilter = Filters.and(Filters.title(Title.Scrambled_Transmission), Icon.BEEZER_BOWL_2025);
+        Filter scrambledTransmissionFilter = Filters.and(Filters.title(Title.Scrambled_Transmission), Filters.icon(Icon.BEEZER_BOWL_2025));
 
         // Check condition(s) - Flip if Scrambled Transmission with BEEZER_BOWL_2025 icon relocated to Han
         if (effectResult.getType() == EffectResult.Type.RETARGETED_EFFECT
@@ -122,17 +122,16 @@ public class Card701_031 extends AbstractRebel {
 
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
-        // NOTE: Requires adding CORPORAL_BEEZER__UPLOAD_DEVICE to GameTextActionId.java
         GameTextActionId gameTextActionId = GameTextActionId.CORPORAL_BEEZER__UPLOAD_DEVICE;
 
         // Check condition(s) - Once during each of your deploy phases, may use 1 Force to upload one device
         if (GameConditions.isOnceDuringYourPhase(game, self, playerId, gameTextSourceCardId, gameTextActionId, Phase.DEPLOY)
                 && GameConditions.canUseForce(game, playerId, 1)
-                && GameConditions.canDeployCardFromReserveDeck(game, playerId, self, gameTextActionId)) {
+                && GameConditions.canTakeCardsIntoHandFromReserveDeck(game, playerId, self, gameTextActionId)) {
 
             final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
-            action.setText("Deploy device from Reserve Deck");
-            action.setActionMsg("Deploy a device from Reserve Deck");
+            action.setText("Take device into hand from Reserve Deck");
+            action.setActionMsg("Take a device into hand from Reserve Deck");
             // Update usage limit(s)
             action.appendUsage(
                     new OncePerPhaseEffect(action));
@@ -141,7 +140,7 @@ public class Card701_031 extends AbstractRebel {
                     new UseForceEffect(action, playerId, 1));
             // Perform result(s)
             action.appendEffect(
-                    new DeployCardFromReserveDeckEffect(action, Filters.device, true));
+                    new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.device, true));
             return Collections.singletonList(action);
         }
         return null;

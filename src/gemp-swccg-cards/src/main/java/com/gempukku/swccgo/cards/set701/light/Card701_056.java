@@ -20,6 +20,7 @@ import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.StackTopCardOfReserveDeckEffect;
+import com.gempukku.swccgo.logic.modifiers.DeployCostToLocationModifier;
 import com.gempukku.swccgo.logic.modifiers.DefenseValueModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
@@ -39,7 +40,7 @@ public class Card701_056 extends AbstractAlien {
     public Card701_056() {
         super(Side.LIGHT, 2, 3, 3, 2, 5, "\u2022Wicket Warrick", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Brave warrior of the Bright Tree Village. Uses the stars to help him on journeys. Married Chief Chirpa's daughter, Kneesaa, shortly after the battle of Endor.");
-        setGameText("Deploys only on Endor. Permanent device is \u2022Wicket's Belt of Honor (if Wicket just initiated a Force drain or won a battle, stack top card of opponent's Reserve Deck here; Wicket is defense value +2 for each card stacked here).");
+        setGameText("Deploys only on Endor (-1 to same site as any Ewok). Permanent device is \u2022Wicket's Belt of Honor (if Wicket just initiated a Force drain or won a battle, stack top card of opponent's Reserve Deck here; Wicket is defense value +2 for each card stacked here).");
         addPersona(Persona.WICKET);
         addIcons(Icon.WARRIOR, Icon.DEVICE, Icon.BEEZER_BOWL_2025);
         setSpecies(Species.EWOK);
@@ -48,6 +49,14 @@ public class Card701_056 extends AbstractAlien {
     @Override
     protected Filter getGameTextValidDeployTargetFilter(SwccgGame game, PhysicalCard self, PlayCardOptionId playCardOptionId, boolean asReact) {
         return Filters.Deploys_on_Endor;
+    }
+
+    @Override
+    protected List<Modifier> getGameTextAlwaysOnModifiers(SwccgGame game, PhysicalCard self) {
+        List<Modifier> modifiers = new LinkedList<Modifier>();
+        // Deploys -1 to same site as any Ewok
+        modifiers.add(new DeployCostToLocationModifier(self, -1, Filters.wherePresent(self, Filters.Ewok)));
+        return modifiers;
     }
 
     @Override
