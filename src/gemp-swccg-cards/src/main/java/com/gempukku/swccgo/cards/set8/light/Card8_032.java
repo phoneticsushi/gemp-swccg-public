@@ -8,6 +8,7 @@ import com.gempukku.swccgo.cards.evaluators.ForceIconsAtLocationEvaluator;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -52,6 +53,7 @@ public class Card8_032 extends AbstractAlien {
         addIcons(Icon.ENDOR);
         addKeywords(Keyword.SCOUT);
         setSpecies(Species.EWOK);
+        addPersona(Persona.WICKET);
     }
 
     @Override

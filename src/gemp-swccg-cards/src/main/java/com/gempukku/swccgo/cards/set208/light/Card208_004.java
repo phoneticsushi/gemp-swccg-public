@@ -8,6 +8,7 @@ import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -46,7 +47,9 @@ public class Card208_004 extends AbstractRebel {
         setLore("Veteran of Battle of Hoth. Medic and Scout assigned to General Solo's assault force. Prides himself on being an efficient soldier in General Madine's commando organization.");
         setGameText("Once per game, may [download] 2-1B here. Once per turn, if present at a site, may 'operate' on your Disarmed character (or your just 'hit' non-droid character of ability < 4) present here; character is restored to normal.");
         addIcons(Icon.ENDOR, Icon.WARRIOR, Icon.VIRTUAL_SET_8);
-        addKeywords(Keyword.SCOUT);
+        addKeywords(Keyword.SCOUT, Keyword.CORPORAL, Keyword.MALE);
+        addPersona(Persona.DELEVAR);
+
     }
 
     @Override
