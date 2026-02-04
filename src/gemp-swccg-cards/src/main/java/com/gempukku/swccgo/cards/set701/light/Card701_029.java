@@ -12,17 +12,14 @@ import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Uniqueness;
+import com.gempukku.swccgo.common.Zone;
 import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
-import com.gempukku.swccgo.logic.effects.PutStackedCardOnBottomOfForcePileEffect;
-import com.gempukku.swccgo.logic.effects.PutStackedCardOnBottomOfUsedPileEffect;
-import com.gempukku.swccgo.logic.effects.PutStackedCardOnBottomOfReserveDeckEffect;
-import com.gempukku.swccgo.logic.effects.StackTopCardOfForcePileEffect;
-import com.gempukku.swccgo.logic.effects.StackTopCardOfUsedPileEffect;
-import com.gempukku.swccgo.logic.effects.StackTopCardOfReserveDeckEffect;
+import com.gempukku.swccgo.logic.effects.PutStackedCardUnderPileEffect;
+import com.gempukku.swccgo.logic.effects.StackTopCardFromPileEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseStackedCardEffect;
 import com.gempukku.swccgo.logic.effects.choose.TakeStackedCardIntoHandEffect;
 
@@ -71,7 +68,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                 action.setText("'Tweeze' top card of Force Pile");
                 action.setActionMsg("Place top card of Force Pile here face up");
                 action.appendUsage(new OncePerTurnEffect(action));
-                action.appendEffect(new StackTopCardOfForcePileEffect(action, playerId, self, false));
+                action.appendEffect(new StackTopCardFromPileEffect(action, playerId, Zone.FORCE_PILE, self, false));
                 actions.add(action);
             }
 
@@ -81,7 +78,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                 action.setText("'Tweeze' top card of Used Pile");
                 action.setActionMsg("Place top card of Used Pile here face up");
                 action.appendUsage(new OncePerTurnEffect(action));
-                action.appendEffect(new StackTopCardOfUsedPileEffect(action, playerId, self, false));
+                action.appendEffect(new StackTopCardFromPileEffect(action, playerId, Zone.USED_PILE, self, false));
                 actions.add(action);
             }
 
@@ -91,7 +88,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                 action.setText("'Tweeze' top card of Reserve Deck");
                 action.setActionMsg("Place top card of Reserve Deck here face up");
                 action.appendUsage(new OncePerTurnEffect(action));
-                action.appendEffect(new StackTopCardOfReserveDeckEffect(action, playerId, self, false));
+                action.appendEffect(new StackTopCardFromPileEffect(action, playerId, Zone.RESERVE_DECK, self, false));
                 actions.add(action);
             }
 
@@ -105,7 +102,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                         new ChooseStackedCardEffect(action, playerId, self, Filters.any) {
                             @Override
                             protected void cardSelected(final PhysicalCard stackedCard) {
-                                action.appendEffect(new PutStackedCardOnBottomOfForcePileEffect(action, playerId, stackedCard, false));
+                                action.appendEffect(new PutStackedCardUnderPileEffect(action, playerId, stackedCard, Zone.FORCE_PILE));
                             }
                         }
                 );
@@ -122,7 +119,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                         new ChooseStackedCardEffect(action, playerId, self, Filters.any) {
                             @Override
                             protected void cardSelected(final PhysicalCard stackedCard) {
-                                action.appendEffect(new PutStackedCardOnBottomOfUsedPileEffect(action, playerId, stackedCard, false));
+                                action.appendEffect(new PutStackedCardUnderPileEffect(action, playerId, stackedCard, Zone.USED_PILE));
                             }
                         }
                 );
@@ -139,7 +136,7 @@ public class Card701_029 extends AbstractCharacterDevice {
                         new ChooseStackedCardEffect(action, playerId, self, Filters.any) {
                             @Override
                             protected void cardSelected(final PhysicalCard stackedCard) {
-                                action.appendEffect(new PutStackedCardOnBottomOfReserveDeckEffect(action, playerId, stackedCard, false));
+                                action.appendEffect(new PutStackedCardUnderPileEffect(action, playerId, stackedCard, Zone.RESERVE_DECK));
                             }
                         }
                 );
