@@ -79,8 +79,7 @@ public class Card701_036 extends AbstractTransportVehicle {
                 // Update usage limit(s)
                 action.appendUsage(
                         new OncePerGameEffect(action));
-                // FIX: Instead of losing characters aboard (which triggers Beezer's "place out of play"),
-                // explicitly disembark (jump off) any driver to the current location before placing in Used Pile
+                // Disembark any driver to the current location before placing in Used Pile
                 action.appendCost(
                         new PassthruEffect(action) {
                             @Override
@@ -123,23 +122,7 @@ public class Card701_036 extends AbstractTransportVehicle {
                     // Update usage limit(s)
                     action.appendUsage(
                             new OncePerGameEffect(action));
-                    // FIX: Disembark Beezer from the glider to Apex BEFORE placing glider in Used Pile.
-                    // This avoids triggering Beezer's "if about to leave table, place out of play" effect.
-                    action.appendCost(
-                            new PassthruEffect(action) {
-                                @Override
-                                protected void doPlayEffect(SwccgGame game) {
-                                    PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
-                                    if (location != null) {
-                                        game.getGameState().sendMessage(GameUtils.getCardLink(beezer) + " 'jumps off' " + GameUtils.getCardLink(self));
-                                        game.getGameState().moveCardToLocation(beezer, location);
-                                    }
-                                }
-                            });
-                    // Place glider in Used Pile (no characters aboard now)
-                    action.appendCost(
-                            new PlaceCardInUsedPileFromTableEffect(action, self));
-                    // Choose target location and relocate Beezer
+                    // Choose target location FIRST (appendTargeting must come before appendCost)
                     action.appendTargeting(
                             new TargetCardOnTableEffect(action, playerId, "Choose exterior Endor site or Back Door", validDestination) {
                                 @Override
@@ -150,7 +133,16 @@ public class Card701_036 extends AbstractTransportVehicle {
                                             new UnrespondableEffect(action) {
                                                 @Override
                                                 protected void performActionResults(Action targetingAction) {
-                                                    // Perform result(s)
+                                                    // Disembark Beezer from the glider to Apex before placing glider in Used Pile
+                                                    PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
+                                                    if (location != null) {
+                                                        game.getGameState().sendMessage(GameUtils.getCardLink(beezer) + " 'jumps off' " + GameUtils.getCardLink(self));
+                                                        game.getGameState().moveCardToLocation(beezer, location);
+                                                    }
+                                                    // Place glider in Used Pile (no characters aboard now)
+                                                    action.appendEffect(
+                                                            new PlaceCardInUsedPileFromTableEffect(action, self));
+                                                    // Relocate Beezer to chosen site
                                                     action.appendEffect(
                                                             new RelocateBetweenLocationsEffect(action, beezer, targetedSite));
                                                 }

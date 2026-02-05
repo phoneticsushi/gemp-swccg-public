@@ -3019,5 +3019,21 @@ public class ModifiersLogic implements ModifiersEnvironment, ModifiersState, Mod
         return cardsTargetingCard;
     }
 
+    /**
+     * Checks if a card has a specific modifier type affecting it.
+     * Used by conditions like OccupiesSatisfiesBattlePlanCondition and OccupiesSatisfiesBattleOrderCondition
+     * to determine if a location satisfies Battle Plan or Battle Order requirements when occupied.
+     *
+     * @param gameState the game state
+     * @param card the card to check
+     * @param modifierType the modifier type to look for
+     * @return true if the card has the specified modifier type affecting it
+     */
+    public boolean hasModifierType(GameState gameState, PhysicalCard card, ModifierType modifierType) {
+        for (Modifier modifier : getModifiersAffectingCard(gameState, modifierType, card)) {
+            return true;
+        }
+        return false;
+    }
 
 }
