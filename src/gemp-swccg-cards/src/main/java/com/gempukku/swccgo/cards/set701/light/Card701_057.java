@@ -21,7 +21,7 @@ import com.gempukku.swccgo.logic.actions.OptionalGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.AddCardsToMoveUsingLandspeedSimultaneouslyEffect;
 import com.gempukku.swccgo.logic.effects.TargetCardsOnTableEffect;
 import com.gempukku.swccgo.logic.effects.UnrespondableEffect;
-import com.gempukku.swccgo.logic.modifiers.ExtraForceCostToFireWeaponModifier;
+import com.gempukku.swccgo.logic.modifiers.FireWeaponFiredAtCostModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.TotalPowerModifier;
 import com.gempukku.swccgo.logic.timing.Action;
@@ -66,12 +66,11 @@ public class Card701_057 extends AbstractNormalEffect {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
         // Opponent must use +1 Force to fire a weapon targeting your Rebel present with your Ewok
-        // Note: ExtraForceCostToFireWeaponModifier applies to weapons, not targets
-        // This makes opponent's weapons cost +1 to fire at your Rebels present with Ewoks
-        modifiers.add(new ExtraForceCostToFireWeaponModifier(self,
-                Filters.and(Filters.opponents(playerId), Filters.weapon),
-                null,
-                1));
+        modifiers.add(new FireWeaponFiredAtCostModifier(self,
+                Filters.and(Filters.opponents(playerId), Filters.or(Filters.weapon, Filters.hasPermanentWeapon)),
+                1,
+                Filters.and(Filters.opponents(playerId), Filters.or(Filters.weapon, Filters.hasPermanentWeapon)),
+                yourRebelPresentWithYourEwok));
 
         // At sites where you have an Ewok and a mountaineer, your total power is +2
         modifiers.add(new TotalPowerModifier(self, sitesWithEwokAndMountaineer, 2, playerId));

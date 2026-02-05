@@ -136,7 +136,20 @@ public class Card701_036 extends AbstractTransportVehicle {
                                                     // Relocate the glider (with Beezer aboard) to the chosen site
                                                     action.appendEffect(
                                                             new RelocateBetweenLocationsEffect(action, self, targetedSite));
-                                                    // Place glider in Used Pile (Beezer will "jump off" due to CharactersAboardMayJumpOffModifier)
+                                                    // Disembark Beezer to the destination site before placing glider in Used Pile
+                                                    action.appendEffect(
+                                                            new PassthruEffect(action) {
+                                                                @Override
+                                                                protected void doPlayEffect(SwccgGame game) {
+                                                                    // Find Beezer (may have changed reference after relocation)
+                                                                    PhysicalCard beezerNow = Filters.findFirstActive(game, self, Filters.and(Filters.persona(Persona.BEEZER), Filters.aboard(self)));
+                                                                    if (beezerNow != null) {
+                                                                        game.getGameState().sendMessage(GameUtils.getCardLink(beezerNow) + " 'jumps off' " + GameUtils.getCardLink(self));
+                                                                        game.getGameState().moveCardToLocation(beezerNow, targetedSite);
+                                                                    }
+                                                                }
+                                                            });
+                                                    // Place glider in Used Pile (now empty)
                                                     action.appendEffect(
                                                             new PlaceCardInUsedPileFromTableEffect(action, self));
                                                 }

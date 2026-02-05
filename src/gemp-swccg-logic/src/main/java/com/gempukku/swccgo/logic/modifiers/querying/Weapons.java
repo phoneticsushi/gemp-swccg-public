@@ -2,12 +2,14 @@ package com.gempukku.swccgo.logic.modifiers.querying;
 
 import com.gempukku.swccgo.common.CardCategory;
 import com.gempukku.swccgo.common.Icon;
+import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgBuiltInCardBlueprint;
 import com.gempukku.swccgo.game.SwccgCardBlueprint;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.modifiers.FireWeaponFiredAtCostModifier;
+import com.gempukku.swccgo.logic.modifiers.MayTargetAtAnyExteriorSiteOnPlanetModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.ModifierType;
 
@@ -328,5 +330,49 @@ public interface Weapons extends BaseQuery, Icons {
 	 */
 	default boolean mayFireArtilleryWeaponWithoutWarriorPresent(GameState gameState, PhysicalCard artilleryWeapon) {
 		return (!getModifiersAffectingCard(gameState, ModifierType.MAY_FIRE_ARTILLERY_WEAPON_WITHOUT_WARRIOR_PRESENT, artilleryWeapon).isEmpty());
+	}
+
+	/**
+	 * Gets a filter for exterior sites on a planet that the specified weapon card may target,
+	 * due to a MayTargetAtAnyExteriorSiteOnPlanetModifier.
+	 * @param gameState the game state
+	 * @param weapon the weapon card
+	 * @return a Filter for valid target sites, or null if no such modifier applies
+	 */
+	default Filter getWeaponTargetAnyExteriorSiteOnPlanetFilter(GameState gameState, PhysicalCard weapon) {
+		Filter combinedFilter = null;
+		for (Modifier modifier : getModifiers(gameState, ModifierType.MAY_TARGET_AT_ANY_EXTERIOR_SITE_ON_PLANET)) {
+			if (modifier.isAffectedTarget(gameState, query(), weapon)) {
+				Filter siteFilter = ((MayTargetAtAnyExteriorSiteOnPlanetModifier) modifier).getSiteFilter();
+				if (combinedFilter == null) {
+					combinedFilter = siteFilter;
+				} else {
+					combinedFilter = Filters.or(combinedFilter, siteFilter);
+				}
+			}
+		}
+		return combinedFilter;
+	}
+
+	/**
+	 * Gets a filter for exterior sites on a planet that the specified permanent weapon may target,
+	 * due to a MayTargetAtAnyExteriorSiteOnPlanetModifier.
+	 * @param gameState the game state
+	 * @param permanentWeapon the permanent weapon
+	 * @return a Filter for valid target sites, or null if no such modifier applies
+	 */
+	default Filter getWeaponTargetAnyExteriorSiteOnPlanetFilter(GameState gameState, SwccgBuiltInCardBlueprint permanentWeapon) {
+		Filter combinedFilter = null;
+		for (Modifier modifier : getModifiers(gameState, ModifierType.MAY_TARGET_AT_ANY_EXTERIOR_SITE_ON_PLANET)) {
+			if (modifier.isAffectedTarget(gameState, query(), permanentWeapon)) {
+				Filter siteFilter = ((MayTargetAtAnyExteriorSiteOnPlanetModifier) modifier).getSiteFilter();
+				if (combinedFilter == null) {
+					combinedFilter = siteFilter;
+				} else {
+					combinedFilter = Filters.or(combinedFilter, siteFilter);
+				}
+			}
+		}
+		return combinedFilter;
 	}
 }

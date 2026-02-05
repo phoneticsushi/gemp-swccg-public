@@ -14686,6 +14686,12 @@ public class Filters {
                                     && Filters.nearestRelatedExteriorSite(weapon).accepts(gameState, modifiersQuerying, location)) {
                                 return true;
                             }
+                            // Check if weapon may target at any exterior site on a specific planet
+                            Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, weapon);
+                            if (planetSiteFilter != null
+                                    && planetSiteFilter.accepts(gameState, modifiersQuerying, location)) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -14713,6 +14719,12 @@ public class Filters {
                             }
                             if (modifiersQuerying.canWeaponTargetNearestRelatedExteriorSite(gameState, builtInCardBlueprint)
                                     && Filters.nearestRelatedExteriorSite(physicalCard).accepts(gameState, modifiersQuerying, location)) {
+                                return true;
+                            }
+                            // Check if weapon may target at any exterior site on a specific planet
+                            Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, builtInCardBlueprint);
+                            if (planetSiteFilter != null
+                                    && planetSiteFilter.accepts(gameState, modifiersQuerying, location)) {
                                 return true;
                             }
                         }
