@@ -1,15 +1,10 @@
 package com.gempukku.swccgo.cards.set701.light;
 
 import com.gempukku.swccgo.cards.AbstractCreature;
-import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.effects.usage.OncePerGameEffect;
-import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
-import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.ModelType;
 import com.gempukku.swccgo.common.Persona;
-import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -21,12 +16,9 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
-import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromTableEffect;
-import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.RetrieveForceEffect;
-import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.DefinedByGameTextFerocityModifier;
 import com.gempukku.swccgo.logic.modifiers.ForceRetrievalImmuneToSecretPlansModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotMoveModifier;
@@ -77,7 +69,7 @@ public class Card701_038_BACK extends AbstractCreature {
         modifiers.add(new ForceRetrievalImmuneToSecretPlansModifier(self, self));
 
         // Dark Side player controls movement - block all normal movement
-        // (DS moves via explicit relocate actions in getOpponentsCardGameTextTopLevelActions)
+        // (DS moves via explicit relocate actions hosted on Card701_050 Pile of Bones)
         modifiers.add(new MayNotMoveModifier(self));
 
         return modifiers;
@@ -141,89 +133,4 @@ public class Card701_038_BACK extends AbstractCreature {
         return actions;
     }
 
-    /**
-     * Dark Side player controls all movement of The Great Devourer.
-     * - During Dark Side's move phase, may move to an adjacent exterior Endor site (once per turn).
-     * - Once per game, during any deploy phase, may relocate to an adjacent site.
-     *
-     * NOTE: If this method does not compile (method not found in creature hierarchy),
-     * move these actions to Card701_044_BACK (the objective) instead, which supports opponent actions.
-     */
-    @Override
-    protected List<TopLevelGameTextAction> getOpponentsCardGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
-        List<TopLevelGameTextAction> actions = new LinkedList<>();
-
-        // 1) During Dark Side's move phase, may move to an adjacent exterior Endor site (once per turn)
-        GameTextActionId moveActionId = GameTextActionId.OTHER_CARD_ACTION_1;
-
-        if (GameConditions.isDuringYourPhase(game, playerId, Phase.MOVE)
-                && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, moveActionId)) {
-
-            PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
-            if (currentLocation != null) {
-                Filter adjacentValidSite = Filters.and(
-                        Filters.adjacentSite(currentLocation),
-                        Filters.exterior_site,
-                        Filters.Endor_site
-                );
-
-                if (GameConditions.canSpot(game, self, adjacentValidSite)) {
-                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, moveActionId);
-                    action.setText("Move The Great Devourer to adjacent site");
-                    action.setActionMsg("Move " + GameUtils.getCardLink(self) + " to an adjacent exterior Endor site");
-
-                    action.appendUsage(
-                            new OncePerTurnEffect(action));
-
-                    action.appendEffect(
-                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to move The Great Devourer to", adjacentValidSite) {
-                                @Override
-                                protected void cardSelected(PhysicalCard selectedCard) {
-                                    action.appendEffect(
-                                            new RelocateBetweenLocationsEffect(action, self, selectedCard));
-                                }
-                            }
-                    );
-
-                    actions.add(action);
-                }
-            }
-        }
-
-        // 2) Once per game, during any deploy phase, may relocate to an adjacent site
-        GameTextActionId relocateActionId = GameTextActionId.GORAX_THE_GREAT_DEVOURER__RELOCATE_TO_ADJACENT_SITE;
-
-        if (GameConditions.isOncePerGame(game, self, relocateActionId)
-                && GameConditions.isDuringEitherPlayersPhase(game, Phase.DEPLOY)) {
-
-            PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
-            if (currentLocation != null) {
-                // Note: once-per-game relocate goes to any adjacent site, not restricted to habitat
-                Filter adjacentSite = Filters.adjacentSite(currentLocation);
-
-                if (GameConditions.canSpot(game, self, adjacentSite)) {
-                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, relocateActionId);
-                    action.setText("Relocate to adjacent site (once per game)");
-                    action.setActionMsg("Relocate " + GameUtils.getCardLink(self) + " to an adjacent site");
-
-                    action.appendUsage(
-                            new OncePerGameEffect(action));
-
-                    action.appendEffect(
-                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to relocate to", adjacentSite) {
-                                @Override
-                                protected void cardSelected(PhysicalCard selectedCard) {
-                                    action.appendEffect(
-                                            new RelocateBetweenLocationsEffect(action, self, selectedCard));
-                                }
-                            }
-                    );
-
-                    actions.add(action);
-                }
-            }
-        }
-
-        return actions;
-    }
 }

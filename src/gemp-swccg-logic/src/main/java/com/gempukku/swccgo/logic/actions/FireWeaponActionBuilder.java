@@ -4980,13 +4980,12 @@ public class FireWeaponActionBuilder {
                                                                     new RefreshPrintedDestinyValuesEffect(action, cards) {
                                                                         @Override
                                                                         protected void refreshedPrintedDestinyValues() {
-                                                                            Collection<PhysicalCard> validToMakeLost = Filters.filter(cards, game, Filters.destinyEqualTo(totalDestiny));
-                                                                            if (!validToMakeLost.isEmpty()) {
+                                                                            Collection<PhysicalCard> validToHit = Filters.filter(cards, game, Filters.destinyEqualTo(totalDestiny));
+                                                                            if (!validToHit.isEmpty()) {
                                                                                 gameState.sendMessage("Result: Succeeded");
-                                                                                // Lose cards one at a time to ensure proper captive release when escorts are lost
-                                                                                for (PhysicalCard cardToLose : validToMakeLost) {
+                                                                                for (PhysicalCard cardToHit : validToHit) {
                                                                                     action.appendEffect(
-                                                                                            new LoseCardFromTableEffect(action, cardToLose));
+                                                                                            new HitCardEffect(action, cardToHit, _weaponOrCardWithPermanentWeapon, _permanentWeapon, cardFiringWeapon));
                                                                                 }
                                                                             } else {
                                                                                 gameState.sendMessage("Result: No characters present with matching destiny number");

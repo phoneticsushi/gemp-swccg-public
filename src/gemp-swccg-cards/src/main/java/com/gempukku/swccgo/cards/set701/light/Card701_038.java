@@ -2,14 +2,10 @@ package com.gempukku.swccgo.cards.set701.light;
 
 import com.gempukku.swccgo.cards.AbstractCreature;
 import com.gempukku.swccgo.cards.GameConditions;
-import com.gempukku.swccgo.cards.effects.usage.OncePerGameEffect;
-import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
-import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.ModelType;
 import com.gempukku.swccgo.common.Persona;
-import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -28,15 +24,12 @@ import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.conditions.Condition;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
-import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.RetrieveForceEffect;
-import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.MayNotAttackModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotMoveModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.timing.EffectResult;
-import com.gempukku.swccgo.logic.timing.PassthruEffect;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
 
 import java.util.Collection;
@@ -115,7 +108,7 @@ public class Card701_038 extends AbstractCreature {
         };
 
         // Gorax may never use normal movement - Dark Side controls via explicit relocate when suspicion active
-        modifiers.add(new MayNotMoveModifier(self));
+        modifiers.add(new MayNotMoveModifier(self, noSuspicionCondition));
 
         // Unless Gorax has suspicion, Gorax may not attack
         modifiers.add(new MayNotAttackModifier(self, noSuspicionCondition, self));
@@ -169,10 +162,10 @@ public class Card701_038 extends AbstractCreature {
 
             if (currentSuspicion && !previousSuspicion) {
                 self.setWhileInPlayData(new WhileInPlayData(true));
-                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " gains suspicion — movement now controlled by Dark Side player");
+                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " gains suspicion â€” movement now controlled by Dark Side player");
             } else if (!currentSuspicion && previousSuspicion) {
                 self.setWhileInPlayData(new WhileInPlayData(false));
-                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " loses suspicion — may not attack or move");
+                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " loses suspicion â€” may not attack or move");
             }
 
             // Flip this card if there are three or more cards beneath Pile of Bones
@@ -199,102 +192,9 @@ public class Card701_038 extends AbstractCreature {
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<>();
-        String opponent = game.getOpponent(playerId);
-
-        GameTextActionId gameTextActionId = GameTextActionId.GORAX_THE_MIGHTY__STACK_CHARACTER_UNDER_PILE_OF_BONES;
-
-        // Once per game, may stack topmost character from opponent's Lost Pile under Pile of Bones
-        if (GameConditions.isOncePerGame(game, self, gameTextActionId)) {
-            PhysicalCard pileOfBones = Filters.findFirstActive(game, self, Filters.title(Title.Pile_Of_Bones));
-
-            if (pileOfBones != null) {
-                List<PhysicalCard> opponentLostPile = game.getGameState().getLostPile(opponent);
-                PhysicalCard topmostCharacter = null;
-                for (PhysicalCard card : opponentLostPile) {
-                    if (Filters.character.accepts(game, card)) {
-                        topmostCharacter = card;
-                        break;
-                    }
-                }
-
-                if (topmostCharacter != null) {
-                    final PhysicalCard cardToStack = topmostCharacter;
-                    final PhysicalCard stackOnCard = pileOfBones;
-
-                    TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, gameTextActionId);
-                    action.setText("Stack character under Pile of Bones");
-                    action.setActionMsg("Stack " + GameUtils.getCardLink(cardToStack) + " from opponent's Lost Pile on " + GameUtils.getCardLink(stackOnCard));
-
-                    action.appendUsage(
-                            new OncePerGameEffect(action));
-
-                    action.appendEffect(
-                            new PassthruEffect(action) {
-                                @Override
-                                protected void doPlayEffect(SwccgGame game) {
-                                    game.getGameState().removeCardFromZone(cardToStack);
-                                    game.getGameState().stackCard(cardToStack, stackOnCard, false, false, false);
-                                    game.getGameState().sendMessage(GameUtils.getCardLink(cardToStack) + " is stacked on " + GameUtils.getCardLink(stackOnCard));
-                                }
-                            });
-
-                    actions.add(action);
-                }
-            }
-        }
 
         return actions;
     }
 
-    /**
-     * Dark Side player controls Gorax's movement when suspicion is active.
-     * During Dark Side's move phase, may move Gorax to an adjacent exterior Endor site (once per turn).
-     *
-     * NOTE: If this method does not compile (method not found in creature hierarchy),
-     * move this action to Card701_044_BACK (the objective) instead, which supports opponent actions.
-     */
-    @Override
-    protected List<TopLevelGameTextAction> getOpponentsCardGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
-        List<TopLevelGameTextAction> actions = new LinkedList<>();
 
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
-
-        // During Dark Side's move phase, if suspicion is active, DS may move Gorax once per turn
-        if (GameConditions.isDuringYourPhase(game, playerId, Phase.MOVE)
-                && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, gameTextActionId)
-                && hasSuspicion(game, self)) {
-
-            PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
-            if (currentLocation != null) {
-                Filter adjacentValidSite = Filters.and(
-                        Filters.adjacentSite(currentLocation),
-                        Filters.exterior_site,
-                        Filters.Endor_site
-                );
-
-                if (GameConditions.canSpot(game, self, adjacentValidSite)) {
-                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, gameTextActionId);
-                    action.setText("Move Gorax to adjacent site");
-                    action.setActionMsg("Move " + GameUtils.getCardLink(self) + " to an adjacent exterior Endor site");
-
-                    action.appendUsage(
-                            new OncePerTurnEffect(action));
-
-                    action.appendEffect(
-                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to move Gorax to", adjacentValidSite) {
-                                @Override
-                                protected void cardSelected(PhysicalCard selectedCard) {
-                                    action.appendEffect(
-                                            new RelocateBetweenLocationsEffect(action, self, selectedCard));
-                                }
-                            }
-                    );
-
-                    actions.add(action);
-                }
-            }
-        }
-
-        return actions;
-    }
 }

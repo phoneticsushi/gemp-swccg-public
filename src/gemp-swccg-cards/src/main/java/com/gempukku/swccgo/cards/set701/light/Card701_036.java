@@ -11,6 +11,7 @@ import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
+import com.gempukku.swccgo.common.Title;
 import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
@@ -18,7 +19,6 @@ import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
-import com.gempukku.swccgo.logic.effects.LoseCardsFromTableEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardInUsedPileFromTableEffect;
 import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.TargetCardOnTableEffect;
@@ -26,6 +26,7 @@ import com.gempukku.swccgo.logic.effects.UnrespondableEffect;
 import com.gempukku.swccgo.logic.modifiers.CharactersAboardMayJumpOffModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.Action;
+import com.gempukku.swccgo.logic.timing.PassthruEffect;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -40,9 +41,9 @@ import java.util.List;
  */
 public class Card701_036 extends AbstractTransportVehicle {
     public Card701_036() {
-        super(Side.LIGHT, 5, 1, 1, null, 2, 2, 2, "Ewok Glider", Uniqueness.UNRESTRICTED, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
+        super(Side.LIGHT, 5, 1, 1, null, 2, 2, 2, Title.Ewok_Glider, Uniqueness.UNRESTRICTED, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Constructed from a number of large animals, the Ewoks used their 'sky-gliders' to gain an advantage over the land-bound stormtroopers.");
-        setGameText("May add 1 driver (must be an Ewok or a mountaineer). Once per game, may place in Used Pile and choose: Peek at top two cards of your Reserve Deck and take one into hand. OR Relocate Beezer from Apex to an exterior Endor site. If lost, driver may \"jump off\" (disembark).");
+        setGameText("May add 1 driver (must be an Ewok or a mountaineer). Once per game, may place in Used Pile and choose: Peek at top two cards of your Reserve Deck and take one into hand. OR Relocate Beezer from Apex to an exterior Endor site (or Back Door). If lost or placed in Used Pile, driver may \"jump off\" (disembark).");
         addIcons(Icon.BEEZER_BOWL_2025);
         addKeywords(Keyword.EWOK_VEHICLE);
         setDriverCapacity(1);
@@ -56,7 +57,7 @@ public class Card701_036 extends AbstractTransportVehicle {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiersEvenIfUnpiloted(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        // If lost, driver may "jump off" (disembark)
+        // If lost, driver may "jump off" (disembark) - handled by engine via modifier
         modifiers.add(new CharactersAboardMayJumpOffModifier(self));
         return modifiers;
     }
@@ -78,12 +79,23 @@ public class Card701_036 extends AbstractTransportVehicle {
                 // Update usage limit(s)
                 action.appendUsage(
                         new OncePerGameEffect(action));
-                // Pay cost(s) - lose any characters aboard
-                Collection<PhysicalCard> charactersAboard = Filters.filterActive(game, self, Filters.and(Filters.character, Filters.aboard(self)));
-                if (!charactersAboard.isEmpty()) {
-                    action.appendCost(
-                            new LoseCardsFromTableEffect(action, charactersAboard));
-                }
+                // FIX: Instead of losing characters aboard (which triggers Beezer's "place out of play"),
+                // explicitly disembark (jump off) any driver to the current location before placing in Used Pile
+                action.appendCost(
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
+                                if (location != null) {
+                                    Collection<PhysicalCard> charactersAboard = Filters.filterActive(game, self, Filters.and(Filters.character, Filters.aboard(self)));
+                                    for (PhysicalCard character : charactersAboard) {
+                                        game.getGameState().sendMessage(GameUtils.getCardLink(character) + " 'jumps off' " + GameUtils.getCardLink(self));
+                                        game.getGameState().moveCardToLocation(character, location);
+                                    }
+                                }
+                            }
+                        });
+                // Pay cost - place glider in Used Pile (now empty of passengers)
                 action.appendCost(
                         new PlaceCardInUsedPileFromTableEffect(action, self));
                 // Perform result(s)
@@ -92,33 +104,44 @@ public class Card701_036 extends AbstractTransportVehicle {
                 actions.add(action);
             }
 
-            // Option 2: Relocate Beezer from Apex to an exterior Endor site
-            Filter beezerAtApex = Filters.and(Filters.persona(Persona.BEEZER), Filters.at(Filters.Apex));
-            Filter exteriorEndorSite = Filters.and(Filters.exterior_site, Filters.Endor_site);
+            // Option 2: Relocate Beezer from Apex to an exterior Endor site (or Back Door)
+            // Beezer must be aboard (driving) this glider, and the glider must be at Apex
+            Filter beezerAboard = Filters.and(Filters.persona(Persona.BEEZER), Filters.aboard(self));
+            Filter validDestination = Filters.or(Filters.and(Filters.exterior_site, Filters.Endor_site), Filters.Back_Door);
+            boolean gliderAtApex = Filters.at(Filters.Apex).accepts(game.getGameState(), game.getModifiersQuerying(), self);
 
-            if (GameConditions.canSpot(game, self, beezerAtApex)
-                    && GameConditions.canSpot(game, self, exteriorEndorSite)) {
+            if (gliderAtApex
+                    && GameConditions.canSpot(game, self, beezerAboard)
+                    && GameConditions.canSpot(game, self, validDestination)) {
 
-                final PhysicalCard beezer = Filters.findFirstActive(game, self, beezerAtApex);
+                final PhysicalCard beezer = Filters.findFirstActive(game, self, beezerAboard);
                 if (beezer != null) {
 
                     final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
-                    action.setText("Relocate Beezer to exterior Endor site");
-                    action.setActionMsg("Place " + GameUtils.getCardLink(self) + " in Used Pile to relocate Beezer from Apex to an exterior Endor site");
+                    action.setText("Relocate Beezer to exterior Endor site or Back Door");
+                    action.setActionMsg("Place " + GameUtils.getCardLink(self) + " in Used Pile to relocate Beezer from Apex to an exterior Endor site or Back Door");
                     // Update usage limit(s)
                     action.appendUsage(
                             new OncePerGameEffect(action));
-                    // Pay cost(s) - lose any characters aboard
-                    Collection<PhysicalCard> charactersAboard = Filters.filterActive(game, self, Filters.and(Filters.character, Filters.aboard(self)));
-                    if (!charactersAboard.isEmpty()) {
-                        action.appendCost(
-                                new LoseCardsFromTableEffect(action, charactersAboard));
-                    }
+                    // FIX: Disembark Beezer from the glider to Apex BEFORE placing glider in Used Pile.
+                    // This avoids triggering Beezer's "if about to leave table, place out of play" effect.
+                    action.appendCost(
+                            new PassthruEffect(action) {
+                                @Override
+                                protected void doPlayEffect(SwccgGame game) {
+                                    PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
+                                    if (location != null) {
+                                        game.getGameState().sendMessage(GameUtils.getCardLink(beezer) + " 'jumps off' " + GameUtils.getCardLink(self));
+                                        game.getGameState().moveCardToLocation(beezer, location);
+                                    }
+                                }
+                            });
+                    // Place glider in Used Pile (no characters aboard now)
                     action.appendCost(
                             new PlaceCardInUsedPileFromTableEffect(action, self));
-                    // Choose target location
+                    // Choose target location and relocate Beezer
                     action.appendTargeting(
-                            new TargetCardOnTableEffect(action, playerId, "Choose exterior Endor site", exteriorEndorSite) {
+                            new TargetCardOnTableEffect(action, playerId, "Choose exterior Endor site or Back Door", validDestination) {
                                 @Override
                                 protected void cardTargeted(int targetGroupId, final PhysicalCard targetedSite) {
                                     action.addAnimationGroup(targetedSite);

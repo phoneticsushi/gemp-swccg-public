@@ -1,9 +1,14 @@
 package com.gempukku.swccgo.cards.set701.light;
 
 import com.gempukku.swccgo.cards.AbstractEffect;
+import com.gempukku.swccgo.cards.GameConditions;
+import com.gempukku.swccgo.cards.effects.usage.OncePerGameEffect;
 import com.gempukku.swccgo.cards.evaluators.StackedEvaluator;
 import com.gempukku.swccgo.common.ExpansionSet;
+import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
+import com.gempukku.swccgo.common.Persona;
+import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.PlayCardZoneOption;
 import com.gempukku.swccgo.common.Rarity;
@@ -18,6 +23,9 @@ import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
+import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
+import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
+import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.FerocityModifier;
 import com.gempukku.swccgo.logic.modifiers.LandspeedModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
@@ -69,7 +77,7 @@ public class Card701_050 extends AbstractEffect {
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<>();
         // Gorax is ferocity +1 for each card stacked here
-        modifiers.add(new FerocityModifier(self, Filters.title(Title.Gorax), null, new StackedEvaluator(self), false));
+        modifiers.add(new FerocityModifier(self, Filters.persona(Persona.GORAX), null, new StackedEvaluator(self), false));
         // The Great Devourer is landspeed +1 for each card stacked here
         modifiers.add(new LandspeedModifier(self, Filters.title(Title.The_Great_Devourer), new StackedEvaluator(self)));
         return modifiers;
@@ -79,12 +87,12 @@ public class Card701_050 extends AbstractEffect {
     protected List<RequiredGameTextTriggerAction> getGameTextRequiredAfterTriggers(SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
         // Cards defeated by Gorax are stacked here face up and are out of play
         if (TriggerConditions.justDefeatedBy(game, effectResult, Filters.any,
-                Filters.or(Filters.title(Title.Gorax), Filters.title(Title.The_Great_Devourer)))) {
+                Filters.persona(Persona.GORAX))) {
 
             DefeatedResult defeatedResult = (DefeatedResult) effectResult;
             final PhysicalCard defeatedCard = defeatedResult.getCardDefeated();
 
-            if (defeatedCard != null && defeatedCard.getZone().isInPlay()) {
+            if (defeatedCard != null && defeatedCard.getZone() != null) {
                 // Capture the defeated card and all its attachments NOW (before game engine moves them)
                 final List<PhysicalCard> cardsToStack = new ArrayList<>();
                 cardsToStack.add(defeatedCard);
@@ -112,5 +120,97 @@ public class Card701_050 extends AbstractEffect {
             }
         }
         return null;
+    }
+
+    @Override
+    protected List<TopLevelGameTextAction> getOpponentsCardGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
+        List<TopLevelGameTextAction> actions = new LinkedList<>();
+
+        // Once per game, DS player may stack topmost character from opponent's (LS) Lost Pile under Pile of Bones
+        // (This action is from Gorax, The Mighty's game text but hosted here since creatures don't support opponent actions)
+        GameTextActionId stackActionId = GameTextActionId.GORAX_THE_MIGHTY__STACK_CHARACTER_UNDER_PILE_OF_BONES;
+
+        if (GameConditions.isOncePerGame(game, self, stackActionId)
+                && GameConditions.canSpot(game, self, Filters.persona(Persona.GORAX))) {
+
+            // playerId is DS (opponent of LS card owner); opponent = LS whose lost pile we search
+            String opponent = game.getOpponent(playerId);
+            List<PhysicalCard> opponentLostPile = game.getGameState().getLostPile(opponent);
+            PhysicalCard topmostCharacter = null;
+            for (PhysicalCard card : opponentLostPile) {
+                if (Filters.character.accepts(game, card)) {
+                    topmostCharacter = card;
+                    break;
+                }
+            }
+
+            if (topmostCharacter != null) {
+                final PhysicalCard cardToStack = topmostCharacter;
+
+                TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, stackActionId);
+                action.setText("Stack character under Pile of Bones");
+                action.setActionMsg("Stack " + GameUtils.getCardLink(cardToStack) + " from opponent's Lost Pile on " + GameUtils.getCardLink(self));
+
+                action.appendUsage(
+                        new OncePerGameEffect(action));
+
+                action.appendEffect(
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                game.getGameState().removeCardFromZone(cardToStack);
+                                game.getGameState().stackCard(cardToStack, self, false, false, false);
+                                game.getGameState().sendMessage(GameUtils.getCardLink(cardToStack) + " is stacked on " + GameUtils.getCardLink(self));
+                            }
+                        });
+
+                actions.add(action);
+            }
+        }
+
+        // The following action is from The Great Devourer's (Card701_038_BACK) game text,
+        // hosted here since creatures don't support opponent actions.
+        // Only available when The Great Devourer is on table (Gorax has flipped).
+        PhysicalCard greatDevourer = Filters.findFirstActive(game, self, Filters.title(Title.The_Great_Devourer));
+
+        if (greatDevourer != null) {
+
+            // Once per game, during any deploy phase, may relocate The Great Devourer to an adjacent site
+            GameTextActionId relocateActionId = GameTextActionId.GORAX_THE_GREAT_DEVOURER__RELOCATE_TO_ADJACENT_SITE;
+
+            if (GameConditions.isOncePerGame(game, self, relocateActionId)
+                    && GameConditions.isDuringEitherPlayersPhase(game, Phase.DEPLOY)) {
+
+                PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), greatDevourer);
+                if (currentLocation != null) {
+                    // Once-per-game relocate goes to any adjacent site, not restricted to habitat
+                    Filter adjacentSite = Filters.adjacentSite(currentLocation);
+
+                    if (GameConditions.canSpot(game, self, adjacentSite)) {
+                        final PhysicalCard creatureToMove = greatDevourer;
+                        final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, relocateActionId);
+                        action.setText("Relocate to adjacent site (once per game)");
+                        action.setActionMsg("Relocate " + GameUtils.getCardLink(creatureToMove) + " to an adjacent site");
+
+                        action.appendUsage(
+                                new OncePerGameEffect(action));
+
+                        action.appendEffect(
+                                new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to relocate to", adjacentSite) {
+                                    @Override
+                                    protected void cardSelected(PhysicalCard selectedCard) {
+                                        action.appendEffect(
+                                                new RelocateBetweenLocationsEffect(action, creatureToMove, selectedCard));
+                                    }
+                                }
+                        );
+
+                        actions.add(action);
+                    }
+                }
+            }
+        }
+
+        return actions;
     }
 }
