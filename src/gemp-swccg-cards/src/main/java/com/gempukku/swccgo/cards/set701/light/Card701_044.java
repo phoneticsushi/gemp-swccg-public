@@ -14,9 +14,12 @@ import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.Persona;
+import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
+import com.gempukku.swccgo.common.SpotOverride;
 import com.gempukku.swccgo.common.Title;
+import com.gempukku.swccgo.common.Zone;
 import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
@@ -42,6 +45,7 @@ import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.PassthruEffect;
 import com.gempukku.swccgo.logic.timing.results.AttackTargetSelectedResult;
+import com.gempukku.swccgo.logic.timing.results.LostFromTableResult;
 import com.gempukku.swccgo.logic.timing.results.MovedResult;
 
 /**
@@ -222,9 +226,37 @@ public class Card701_044 extends AbstractObjective {
             }
         }
 
+        // If Beezer was just placed in Lost Pile (e.g., from persona replacement), move her to Out of Play
+        // This is because Beezer's card text says "If Beezer about to leave table, place her out of play"
+        // but persona replacement bypasses that trigger, so the objective handles it instead
+        if (TriggerConditions.justLost(game, effectResult, Filters.persona(Persona.BEEZER))) {
+            LostFromTableResult lostResult = (LostFromTableResult) effectResult;
+            final PhysicalCard beezerCard = lostResult.getCard();
+            
+            // Only if still in Lost Pile (hasn't been moved already)
+            if (beezerCard.getZone() == Zone.LOST_PILE) {
+                RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
+                action.setSingletonTrigger(true);
+                action.setText("Place Beezer out of play");
+                action.setActionMsg("Place " + GameUtils.getCardLink(beezerCard) + " out of play");
+                action.appendEffect(
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                // Move Beezer from Lost Pile to Out of Play
+                                game.getGameState().removeCardFromZone(beezerCard);
+                                game.getGameState().addCardToTopOfZone(beezerCard, Zone.OUT_OF_PLAY, beezerCard.getOwner());
+                                game.getGameState().sendMessage(GameUtils.getCardLink(beezerCard) + " is placed out of play");
+                            }
+                        });
+                actions.add(action);
+            }
+        }
+
         // Place out of play if Beezer not on table
+        // Note: Beezer excluded from battle is still "on table" - use SpotOverride to include inactive cards
         if (TriggerConditions.isTableChanged(game, effectResult)
-                && !GameConditions.canSpot(game, self, Filters.persona(Persona.BEEZER))) {
+                && !GameConditions.canSpot(game, self, SpotOverride.INCLUDE_EXCLUDED_FROM_BATTLE, Filters.persona(Persona.BEEZER))) {
 
             RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.setSingletonTrigger(true);

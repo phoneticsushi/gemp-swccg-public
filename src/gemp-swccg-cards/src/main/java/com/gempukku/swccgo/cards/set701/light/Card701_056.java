@@ -19,7 +19,7 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
-import com.gempukku.swccgo.cards.effects.PeekAtTopCardsOfReserveDeckAndStackEffect;
+import com.gempukku.swccgo.logic.effects.StackTopCardOfReserveDeckEffect;
 import com.gempukku.swccgo.logic.modifiers.DeployCostToLocationModifier;
 import com.gempukku.swccgo.logic.modifiers.DefenseValueModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
@@ -82,7 +82,7 @@ public class Card701_056 extends AbstractAlien {
             action.setActionMsg("Stack top card of opponent's Reserve Deck on " + GameUtils.getCardLink(self));
             // Perform result(s)
             action.appendEffect(
-                    new PeekAtTopCardsOfReserveDeckAndStackEffect(action, opponent, 1, self));
+                    new StackTopCardOfReserveDeckEffect(action, opponent, self, false));
             return Collections.singletonList(action);
         }
         return null;

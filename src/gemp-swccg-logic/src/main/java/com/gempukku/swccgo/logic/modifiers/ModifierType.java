@@ -371,6 +371,9 @@ public enum ModifierType {
     // Search party
     MAY_NOT_JOIN_SEARCH_PARTY,
 
+    // Missing
+    MAY_NOT_GO_MISSING,  // Beezer Bowl 2025: Prevents a character from going 'missing'
+
     // Stealing
     LOST_IF_ABOUT_TO_BE_STOLEN,
 

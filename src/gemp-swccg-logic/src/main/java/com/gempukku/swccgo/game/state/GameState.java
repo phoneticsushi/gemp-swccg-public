@@ -719,6 +719,11 @@ public class GameState implements Snapshotable<GameState> {
      * @param card the card
      */
     public void makeGoMissing(SwccgGame game, PhysicalCard card) {
+        // Beezer Bowl 2025: Check if card cannot go missing
+        if (game.getModifiersQuerying().cannotGoMissing(this, card)) {
+            return;
+        }
+
         card.setMissing(true);
         if (!card.isFrozen()) {
             card.setCaptiveEscort(null);

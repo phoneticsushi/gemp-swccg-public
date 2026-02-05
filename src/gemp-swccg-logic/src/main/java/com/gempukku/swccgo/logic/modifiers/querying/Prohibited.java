@@ -193,6 +193,17 @@ public interface Prohibited extends BaseQuery, Flags {
 		return (!getModifiersAffectingCard(gameState, ModifierType.MAY_NOT_JOIN_SEARCH_PARTY, card).isEmpty());
 	}
 
+	/**
+	 * Determines if the specified card is prohibited from going 'missing'.
+	 * Beezer Bowl 2025: Used for "Cannot be missing" game text.
+	 * @param gameState the game state
+	 * @param card the card
+	 * @return true if card cannot go missing, otherwise false
+	 */
+	default boolean cannotGoMissing(GameState gameState, PhysicalCard card) {
+		return (!getModifiersAffectingCard(gameState, ModifierType.MAY_NOT_GO_MISSING, card).isEmpty());
+	}
+
 	default boolean cannotBeFlipped(GameState gameState, PhysicalCard card) {
 		return (!getModifiersAffectingCard(gameState, ModifierType.MAY_NOT_BE_FLIPPED, card).isEmpty());
 	}

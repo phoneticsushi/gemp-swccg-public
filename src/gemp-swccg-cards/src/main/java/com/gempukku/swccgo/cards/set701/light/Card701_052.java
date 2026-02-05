@@ -26,6 +26,7 @@ import com.gempukku.swccgo.logic.actions.FireWeaponActionBuilder;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.choose.StealCardAndAttachFromLostPileEffect;
 import com.gempukku.swccgo.logic.modifiers.MayDeployToTargetModifier;
+import com.gempukku.swccgo.logic.modifiers.MayUseWeaponModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 
 /**
@@ -42,10 +43,14 @@ public class Card701_052 extends AbstractRebel {
         addPersonas(Persona.JUNKIN);
     }
 
-    // Any stolen blaster may deploy on Junkin
+    // Any stolen blaster may deploy on Junkin and be fired by Junkin
+    @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new ArrayList<>();
+        // Any stolen blaster may deploy on Junkin
         modifiers.add(new MayDeployToTargetModifier(self, Filters.and(Filters.stolen, Filters.blaster), self));
+        // Junkin may use/fire any stolen blaster attached to him
+        modifiers.add(new MayUseWeaponModifier(self, self, Filters.and(Filters.stolen, Filters.blaster, Filters.attachedTo(self))));
         return modifiers;
     }
 

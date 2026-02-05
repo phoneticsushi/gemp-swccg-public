@@ -289,6 +289,54 @@ public class Card701_044_BACK extends AbstractObjective {
         List<TopLevelGameTextAction> actions = new LinkedList<>();
         final String opponent = game.getOpponent(playerId);
 
+        // Combo persona replacement: During deploy phase, if Sergeant Beezer and Sergeant Junkin are present at same location,
+        // may deploy Sergeant Beezer & Sergeant Junkin from hand replacing both
+        if (GameConditions.isPhaseForPlayer(game, Phase.DEPLOY, playerId)) {
+            
+            // Check if player has the combo card in hand (card with title "Sergeant Beezer & Sergeant Junkin")
+            Collection<PhysicalCard> comboCardsInHand = Filters.filter(game.getGameState().getHand(playerId), game,
+                    Filters.title("Sergeant Beezer & Sergeant Junkin"));
+            
+            if (!comboCardsInHand.isEmpty()) {
+                // Find Sergeant Beezer on table
+                Collection<PhysicalCard> beezers = Filters.filterActive(game, self,
+                        Filters.and(Filters.your(playerId), Filters.title("Sergeant Beezer"), Filters.presentAt(Filters.location)));
+                
+                for (final PhysicalCard beezer : beezers) {
+                    // Get the location where Beezer is
+                    final PhysicalCard beezerLocation = game.getModifiersQuerying().getLocationThatCardIsAt(game.getGameState(), beezer);
+                    if (beezerLocation == null) continue;
+                    
+                    // Check if Sergeant Junkin is present at the same location
+                    Collection<PhysicalCard> junkins = Filters.filterActive(game, self,
+                            Filters.and(Filters.your(playerId), Filters.title("Sergeant Junkin"), Filters.present(beezer)));
+                    
+                    for (final PhysicalCard junkin : junkins) {
+                        // Found a valid pair! Create an action for each combo card in hand
+                        for (final PhysicalCard comboCard : comboCardsInHand) {
+                            final TopLevelGameTextAction comboAction = new TopLevelGameTextAction(self, gameTextSourceCardId);
+                            comboAction.setText("Dansra proposes to Carl");
+                            comboAction.setActionMsg("Deploy " + GameUtils.getCardLink(comboCard) + " replacing " + GameUtils.getCardLink(beezer) + " and " + GameUtils.getCardLink(junkin));
+                            
+                            // Perform the combo replacement
+                            comboAction.appendEffect(
+                                    new PassthruEffect(comboAction) {
+                                        @Override
+                                        protected void doPlayEffect(SwccgGame game) {
+                                            performComboReplacement(game, playerId, comboCard, beezer, junkin, beezerLocation);
+                                            comboAction.setText("Sergeant Beezer is placed out of play");
+                                            comboAction.setText("Sergeant Junkin is placed in Lost Pile");
+                                            comboAction.setText("Congratulations to the happy couple!");
+                                        }
+                                    });
+                            
+                            actions.add(comboAction);
+                        }
+                    }
+                }
+            }
+        }
+
         // During your move phase, may search your Lost Pile and choose two cards;
         // opponent places one card on your Used Pile (place the other card out of play)
         GameTextActionId gameTextActionId = GameTextActionId.BACK_TO_BASE__SEARCH_LOST_PILE;
@@ -365,5 +413,64 @@ public class Card701_044_BACK extends AbstractObjective {
         }
 
         return actions;
+    }
+
+    /**
+     * Performs the combo persona replacement.
+     * Beezer goes out of play, Junkin goes to Lost Pile, combo card deploys to location.
+     */
+    private void performComboReplacement(SwccgGame game, String playerId, PhysicalCard comboCard, PhysicalCard beezer, PhysicalCard junkin, PhysicalCard location) {
+        GameState gameState = game.getGameState();
+        
+        // Collect attached cards from both characters before we start moving things
+        List<PhysicalCard> attachedToBeezer = new ArrayList<>(gameState.getAttachedCards(beezer, true));
+        List<PhysicalCard> attachedToJunkin = new ArrayList<>(gameState.getAttachedCards(junkin, true));
+
+        // Send message
+        gameState.sendMessage(playerId + " deploys " + GameUtils.getCardLink(comboCard) +
+                " replacing " + GameUtils.getCardLink(beezer) + " and " + GameUtils.getCardLink(junkin));
+
+        // 1. Remove combo card from hand and deploy to location
+        gameState.removeCardFromZone(comboCard);
+        comboCard.setOwner(playerId);
+        gameState.playCardToLocation(comboCard, location, playerId);
+
+        // 2. Handle Beezer's attached cards first
+        for (PhysicalCard attachedCard : attachedToBeezer) {
+            Filter validTransferFilter = attachedCard.getBlueprint().getValidTransferDuringCharacterReplacementTargetFilter(game, attachedCard);
+            if (validTransferFilter != null && validTransferFilter.accepts(game, comboCard)) {
+                // Transfer to combo card
+                gameState.moveCardToAttached(attachedCard, comboCard);
+            } else {
+                // Goes to Lost Pile
+                gameState.removeCardFromZone(attachedCard);
+                gameState.addCardToTopOfZone(attachedCard, Zone.LOST_PILE, attachedCard.getOwner());
+            }
+        }
+
+        // Place Beezer out of play (per her card text)
+        gameState.removeCardFromZone(beezer);
+        gameState.addCardToTopOfZone(beezer, Zone.OUT_OF_PLAY, beezer.getOwner());
+
+        // 3. Handle Junkin's attached cards
+        for (PhysicalCard attachedCard : attachedToJunkin) {
+            Filter validTransferFilter = attachedCard.getBlueprint().getValidTransferDuringCharacterReplacementTargetFilter(game, attachedCard);
+            if (validTransferFilter != null && validTransferFilter.accepts(game, comboCard)) {
+                // Transfer to combo card
+                gameState.moveCardToAttached(attachedCard, comboCard);
+            } else {
+                // Goes to Lost Pile
+                gameState.removeCardFromZone(attachedCard);
+                gameState.addCardToTopOfZone(attachedCard, Zone.LOST_PILE, attachedCard.getOwner());
+            }
+        }
+
+        // Place Junkin in Lost Pile (normal persona replacement behavior)
+        gameState.removeCardFromZone(junkin);
+        gameState.addCardToTopOfZone(junkin, Zone.LOST_PILE, junkin.getOwner());
+
+        // 4. Emit the play card result
+        game.getActionsEnvironment().emitEffectResult(
+                new com.gempukku.swccgo.logic.timing.results.PlayCardResult(playerId, comboCard, Zone.HAND, null, location, null, false, false));
     }
 }

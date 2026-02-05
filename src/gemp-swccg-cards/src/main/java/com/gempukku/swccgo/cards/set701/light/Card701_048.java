@@ -40,7 +40,7 @@ public class Card701_048 extends AbstractRebel {
         setGameText("When deployed, may [upload] one starfighter or vehicle. While aboard a starship, adds 2 to hyperspeed. During battle with a mountaineer, may cancel one opponent's just drawn weapon destiny. Immune to attrition < 4.");
         addPersona(Persona.NIK_SANT);
         addIcons(Icon.WARRIOR, Icon.NAV_COMPUTER, Icon.BEEZER_BOWL_2025);
-        addKeywords(Keyword.MOUNTAINEER, Keyword.MAJOR);
+        addKeywords(Keyword.MOUNTAINEER, Keyword.MAJOR, Keyword.MALE);
     }
 
     @Override

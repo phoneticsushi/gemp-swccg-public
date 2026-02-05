@@ -70,9 +70,17 @@ public class Card701_031 extends AbstractRebel {
     @Override
     protected List<RequiredGameTextTriggerAction> getGameTextRequiredAfterTriggersAlwaysWhenInPlay(SwccgGame game, EffectResult effectResult, final PhysicalCard self, int gameTextSourceCardId) {
         // Check condition(s) - If Beezer about to leave table, place her out of play
+        // But only if this is a preventable effect (not persona replacement)
         if (TriggerConditions.isAboutToLeaveTable(game, effectResult, self)
                 && !TriggerConditions.isAboutToBePlacedOutOfPlayFromTable(game, effectResult, self)) {
             final AboutToLeaveTableResult result = (AboutToLeaveTableResult) effectResult;
+
+            // Only intercept if there's a preventable effect (i.e., NOT persona replacement)
+            // Persona replacement has null preventable effect - let it proceed normally
+            // and handle it with the "just lost" trigger below
+            if (result.getPreventableCardEffect() == null) {
+                return null;
+            }
 
             final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.setText("Place out of play");
