@@ -57,7 +57,7 @@ public class Card701_036 extends AbstractTransportVehicle {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiersEvenIfUnpiloted(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
-        // If lost, driver may "jump off" (disembark) - handled by engine via modifier
+        // If lost or placed in Used Pile, driver may "jump off" (disembark)
         modifiers.add(new CharactersAboardMayJumpOffModifier(self));
         return modifiers;
     }
@@ -103,7 +103,7 @@ public class Card701_036 extends AbstractTransportVehicle {
                 actions.add(action);
             }
 
-            // Option 2: Relocate Beezer from Apex to an exterior Endor site (or Back Door)
+            // Option 2: Relocate glider (with Beezer aboard) from Apex to an exterior Endor site (or Back Door)
             // Beezer must be aboard (driving) this glider, and the glider must be at Apex
             Filter beezerAboard = Filters.and(Filters.persona(Persona.BEEZER), Filters.aboard(self));
             Filter validDestination = Filters.or(Filters.and(Filters.exterior_site, Filters.Endor_site), Filters.Back_Door);
@@ -118,7 +118,7 @@ public class Card701_036 extends AbstractTransportVehicle {
 
                     final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
                     action.setText("Relocate Beezer to exterior Endor site or Back Door");
-                    action.setActionMsg("Place " + GameUtils.getCardLink(self) + " in Used Pile to relocate Beezer from Apex to an exterior Endor site or Back Door");
+                    action.setActionMsg("Relocate " + GameUtils.getCardLink(self) + " with Beezer to an exterior Endor site or Back Door, then place glider in Used Pile");
                     // Update usage limit(s)
                     action.appendUsage(
                             new OncePerGameEffect(action));
@@ -129,22 +129,16 @@ public class Card701_036 extends AbstractTransportVehicle {
                                 protected void cardTargeted(int targetGroupId, final PhysicalCard targetedSite) {
                                     action.addAnimationGroup(targetedSite);
                                     // Allow response(s)
-                                    action.allowResponses("Relocate " + GameUtils.getCardLink(beezer) + " to " + GameUtils.getCardLink(targetedSite),
+                                    action.allowResponses("Relocate " + GameUtils.getCardLink(self) + " with " + GameUtils.getCardLink(beezer) + " to " + GameUtils.getCardLink(targetedSite),
                                             new UnrespondableEffect(action) {
                                                 @Override
                                                 protected void performActionResults(Action targetingAction) {
-                                                    // Disembark Beezer from the glider to Apex before placing glider in Used Pile
-                                                    PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
-                                                    if (location != null) {
-                                                        game.getGameState().sendMessage(GameUtils.getCardLink(beezer) + " 'jumps off' " + GameUtils.getCardLink(self));
-                                                        game.getGameState().moveCardToLocation(beezer, location);
-                                                    }
-                                                    // Place glider in Used Pile (no characters aboard now)
+                                                    // Relocate the glider (with Beezer aboard) to the chosen site
+                                                    action.appendEffect(
+                                                            new RelocateBetweenLocationsEffect(action, self, targetedSite));
+                                                    // Place glider in Used Pile (Beezer will "jump off" due to CharactersAboardMayJumpOffModifier)
                                                     action.appendEffect(
                                                             new PlaceCardInUsedPileFromTableEffect(action, self));
-                                                    // Relocate Beezer to chosen site
-                                                    action.appendEffect(
-                                                            new RelocateBetweenLocationsEffect(action, beezer, targetedSite));
                                                 }
                                             }
                                     );

@@ -62,6 +62,9 @@ public class Card701_046 extends AbstractSite {
         // Either player occupying satisfies Battle Order
         modifiers.add(new SatisfiesBattleOrderModifier(self));
 
+        // Either player occupying satisfies Battle Plan (from dark side text, but applies to either player)
+        modifiers.add(new SatisfiesBattlePlanModifier(self));
+
         return modifiers;
     }
 
@@ -71,6 +74,9 @@ public class Card701_046 extends AbstractSite {
 
         // Either player occupying satisfies Battle Plan
         modifiers.add(new SatisfiesBattlePlanModifier(self));
+
+        // Either player occupying satisfies Battle Order (from light side text, but applies to either player)
+        modifiers.add(new SatisfiesBattleOrderModifier(self));
 
         return modifiers;
     }

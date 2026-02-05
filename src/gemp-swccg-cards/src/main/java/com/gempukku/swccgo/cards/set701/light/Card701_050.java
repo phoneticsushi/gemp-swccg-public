@@ -34,6 +34,7 @@ import com.gempukku.swccgo.logic.timing.PassthruEffect;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,6 +99,10 @@ public class Card701_050 extends AbstractEffect {
                 cardsToStack.add(defeatedCard);
                 cardsToStack.addAll(game.getGameState().getAllAttachedRecursively(defeatedCard));
 
+                // Also capture any cards stacked ON the defeated card (e.g. Wicket's Belt of Honor cards).
+                // These are NOT defeated by Gorax, so they go to Lost Pile instead of Pile of Bones.
+                final List<PhysicalCard> orphanedStackedCards = new ArrayList<>(game.getGameState().getStackedCards(defeatedCard));
+
                 RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
                 action.setText("Stack defeated card");
                 action.setActionMsg("Stack " + GameUtils.getCardLink(defeatedCard) + " and attachments on " + GameUtils.getCardLink(self));
@@ -107,6 +112,18 @@ public class Card701_050 extends AbstractEffect {
                             @Override
                             protected void doPlayEffect(SwccgGame game) {
                                 GameState gameState = game.getGameState();
+
+                                // First, move orphaned stacked cards to their owner's Lost Pile
+                                // (these were stacked on the defeated card but were not themselves defeated by Gorax)
+                                for (PhysicalCard stackedCard : orphanedStackedCards) {
+                                    if (stackedCard.getZone() != null) {
+                                        gameState.removeCardFromZone(stackedCard);
+                                        gameState.addCardToTopOfZone(stackedCard, com.gempukku.swccgo.common.Zone.LOST_PILE, stackedCard.getOwner());
+                                        gameState.sendMessage(GameUtils.getCardLink(stackedCard) + " placed in Lost Pile");
+                                    }
+                                }
+
+                                // Then stack the defeated card and its attachments on Pile of Bones
                                 for (PhysicalCard card : cardsToStack) {
                                     if (card.getZone() != null) {
                                         gameState.removeCardFromZone(card);
