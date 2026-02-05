@@ -125,7 +125,7 @@ public class Card701_044 extends AbstractObjective {
         // This affects any card that could be used to transport (e.g., Nabrun Leids, Elis Helrot)
         action.appendEffect(
                 new AddUntilEndOfGameModifierEffect(action,
-                        new MayNotUseCardToTransportToOrFromLocationModifier(self, Filters.any, Filters.mount_krana_site), null));
+                        new MayNotUseCardToTransportToOrFromLocationModifier(self, Filters.any, Filters.mt_krana_site), null));
 
         return action;
     }
@@ -145,7 +145,7 @@ public class Card701_044 extends AbstractObjective {
                 Filters.not(exceptions)
         );
 
-        modifiers.add(new DeployCostToLocationModifier(self, affectedCards, 3, Filters.mount_krana_site));
+        modifiers.add(new DeployCostToLocationModifier(self, affectedCards, 3, Filters.mt_krana_site));
 
         return modifiers;
     }
@@ -155,7 +155,7 @@ public class Card701_044 extends AbstractObjective {
         List<TopLevelGameTextAction> actions = new LinkedList<>();
 
         // Once during each of your turns may [upload] an Endor or Mt. Krana battleground site
-        GameTextActionId gameTextActionId = GameTextActionId.LEAVE_IT_TO_BEEZER__UPLOAD_ENDOR_OR_MOUNT_KRANA_BATTLEGROUND_SITE;
+        GameTextActionId gameTextActionId = GameTextActionId.LEAVE_IT_TO_BEEZER__UPLOAD_ENDOR_OR_MT_KRANA_BATTLEGROUND_SITE;
 
         if (GameConditions.isDuringYourTurn(game, playerId)
                 && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, gameTextActionId)
@@ -172,7 +172,7 @@ public class Card701_044 extends AbstractObjective {
             // Perform result(s)
             Filter battlegroundSiteFilter = Filters.and(
                     Filters.battleground_site,
-                    Filters.or(Filters.Endor_site, Filters.mount_krana_site)
+                    Filters.or(Filters.Endor_site, Filters.mt_krana_site)
             );
             action.appendEffect(
                     new TakeCardIntoHandFromReserveDeckEffect(action, playerId, battlegroundSiteFilter, true));

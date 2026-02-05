@@ -12,6 +12,7 @@ import com.gempukku.swccgo.common.PlayCardOptionId;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Species;
+import com.gempukku.swccgo.common.Title;
 import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
@@ -78,8 +79,7 @@ public class Card701_042 extends AbstractAlien {
                     new OncePerTurnEffect(action));
             // Perform result(s)
             action.appendEffect(
-                    new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.or(Filters.Ewok_glider, Filters.and(Filters.non_unique, Filters.Ewok)), true));
-            return Collections.singletonList(action);
+                    new TakeCardIntoHandFromReserveDeckEffect(action, playerId, Filters.or(Filters.title(Title.Ewok_Glider), Filters.and(Filters.non_unique, Filters.Ewok)), true));            return Collections.singletonList(action);
         }
         return null;
     }

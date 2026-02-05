@@ -14,14 +14,15 @@ import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
+import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
-import com.gempukku.swccgo.logic.effects.StackCardsFromTableEffect;
 import com.gempukku.swccgo.logic.modifiers.FerocityModifier;
 import com.gempukku.swccgo.logic.modifiers.LandspeedModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
+import com.gempukku.swccgo.logic.timing.PassthruEffect;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
 
 import java.util.ArrayList;
@@ -81,20 +82,32 @@ public class Card701_050 extends AbstractEffect {
                 Filters.or(Filters.title(Title.Gorax), Filters.title(Title.The_Great_Devourer)))) {
 
             DefeatedResult defeatedResult = (DefeatedResult) effectResult;
-            PhysicalCard defeatedCard = defeatedResult.getCardDefeated();
+            final PhysicalCard defeatedCard = defeatedResult.getCardDefeated();
 
             if (defeatedCard != null && defeatedCard.getZone().isInPlay()) {
-                // Get the defeated card and all its attachments (while still on table)
-                List<PhysicalCard> cardsToStack = new ArrayList<>();
+                // Capture the defeated card and all its attachments NOW (before game engine moves them)
+                final List<PhysicalCard> cardsToStack = new ArrayList<>();
                 cardsToStack.add(defeatedCard);
                 cardsToStack.addAll(game.getGameState().getAllAttachedRecursively(defeatedCard));
 
                 RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
                 action.setText("Stack defeated card");
                 action.setActionMsg("Stack " + GameUtils.getCardLink(defeatedCard) + " and attachments on " + GameUtils.getCardLink(self));
-                // Stack the cards face up (cards stacked here are out of play per game text)
+                // Use PassthruEffect to manually stack all cards, handling cards that may have already moved to Lost Pile
                 action.appendEffect(
-                        new StackCardsFromTableEffect(action, cardsToStack, self, false));
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                GameState gameState = game.getGameState();
+                                for (PhysicalCard card : cardsToStack) {
+                                    if (card.getZone() != null) {
+                                        gameState.removeCardFromZone(card);
+                                        gameState.stackCard(card, self, false, false, false);
+                                    }
+                                }
+                                gameState.sendMessage(GameUtils.getCardLink(defeatedCard) + " and attachments stacked on " + GameUtils.getCardLink(self));
+                            }
+                        });
                 return Collections.singletonList(action);
             }
         }

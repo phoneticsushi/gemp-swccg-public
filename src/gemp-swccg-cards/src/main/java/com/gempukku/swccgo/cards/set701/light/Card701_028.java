@@ -2,6 +2,7 @@ package com.gempukku.swccgo.cards.set701.light;
 
 import com.gempukku.swccgo.cards.AbstractCharacterDevice;
 import com.gempukku.swccgo.cards.GameConditions;
+import com.gempukku.swccgo.cards.effects.usage.OncePerBattleEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
@@ -40,7 +41,7 @@ public class Card701_028 extends AbstractCharacterDevice {
     public Card701_028() {
         super(Side.LIGHT, 5, "Beezer's Helmet", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("The Rebel Alliance didn't have a helmet that fit Beezer's head, so she used her technical prowess to fashion her own. Made with kevlar.");
-        setGameText("Deploy on Beezer. Adds 2 to defense value. Subtracts 1 from opponent's weapon destiny draws here. During battle, may target opponent's character and yell \"CHAAAAAARGE!!!\" (both players draw one destiny; if your destiny > opponent's, Beezer and target are excluded from battle).");
+        setGameText("Deploy on Beezer. Adds 2 to defense value. Subtracts 1 from opponent's weapon destiny draws here. Once per battle, may target opponent's character and yell \"CHAAAAAARGE!!!\" (both players draw one destiny; if your destiny > opponent's, Beezer and target are excluded from battle).");
         addIcons(Icon.BEEZER_BOWL_2025);
         addKeywords(Keyword.DEPLOYS_ON_CHARACTERS);
     }
@@ -67,8 +68,8 @@ public class Card701_028 extends AbstractCharacterDevice {
         final String opponent = game.getOpponent(playerId);
         final Filter opponentsCharacterInBattle = Filters.and(Filters.opponents(self), Filters.character, Filters.participatingInBattle);
 
-        // Check condition(s) - During battle, may target opponent's character
-        if (GameConditions.isDuringBattle(game)
+        // Check condition(s) - Once per battle, during battle, may target opponent's character
+        if (GameConditions.isOncePerBattle(game, self, playerId, gameTextSourceCardId)
                 && GameConditions.canTarget(game, self, opponentsCharacterInBattle)) {
 
             // Get Beezer (the character this device is attached to)
@@ -78,6 +79,9 @@ public class Card701_028 extends AbstractCharacterDevice {
                 final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId);
                 action.setText("Yell \"CHAAAAAARGE!!!\"");
                 action.setActionMsg("Target opponent's character and yell \"CHAAAAAARGE!!!\"");
+                // Update usage limit(s)
+                action.appendUsage(
+                        new OncePerBattleEffect(action));
 
                 // Choose target
                 action.appendTargeting(

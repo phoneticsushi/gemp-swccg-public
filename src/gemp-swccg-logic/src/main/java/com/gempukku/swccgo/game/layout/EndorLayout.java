@@ -10,12 +10,15 @@ public class EndorLayout extends AbstractSystemLayout {
     // Layout order for Endor:
     //  1) Sites (in forward or reverse order)
     //      A) Bunker
-    //      B) Landing Platform
-    //      C) Exterior sites
-    //      D) Ewok Village
-    //      E) Chief Chirpa's Hut
-    //      F) Zarrak's Hideout (Beezer Bowl 2025)
-    //      G) Generator Chamber (Beezer Bowl 2025)
+    //      B) Generator Chamber (Beezer Bowl 2025)
+    //      C) Landing Platform
+    //      D) Exterior sites
+    //      E) Mt. Krana Pass (Beezer Bowl 2025)
+    //      F) Gorax's Lair (Beezer Bowl 2025)
+    //      G) Mt. Krana: Apex (Beezer Bowl 2025)
+    //      H) Zarrak's Hideout (Beezer Bowl 2025)
+    //      I) Ewok Village
+    //      J) Chief Chirpa's Hut
     //  2) Clouds
     //  3) Planet
     //  4) Asteroids
@@ -41,19 +44,26 @@ public class EndorLayout extends AbstractSystemLayout {
                 new LocationReversibleGroupOrder(
                         //  A) Bunker
                         new LocationGroup("Bunker", Filters.Bunker),
-                        //  B) Landing Platform
+                        //  B) Generator Chamber
+                        new LocationGroup("Generator Chamber", Filters.Generator_Chamber),                        
+                        //  C) Landing Platform
                         new LocationGroup("Landing Platform", Filters.Landing_Platform),
-                        //  C) Exterior sites
+                        //  D) Exterior sites (excluding Mt. Krana sites)
                         new LocationGroup("Exterior sites", Filters.and(Filters.exterior_site, Filters.not(Filters.or(Filters.Landing_Platform,
-                                Filters.Ewok_Village)), Filters.partOfSystem(systemName))),
-                        //  D) Ewok Village
-                        new LocationGroup("Ewok Village", Filters.Ewok_Village),
-                        //  E) Chief Chirpa's Hut
-                        new LocationGroup("Chief Chirpa's Hut", Filters.Chief_Chirpas_Hut),
-                        //  F) Zarrak's Hideout
+                                Filters.Ewok_Village, Filters.Endor_Mt_Krana_Pass, Filters.Goraxs_Lair, Filters.Apex)), Filters.partOfSystem(systemName))),
+                        //  E) Mt. Krana Pass (must be on end of Mt. Krana group)
+                        new LocationGroup("Mt. Krana Pass", Filters.Endor_Mt_Krana_Pass),
+                        //  F) Gorax's Lair (middle of Mt. Krana group)
+                        new LocationGroup("Gorax's Lair", Filters.Goraxs_Lair),
+                        //  G) Mt. Krana: Apex (must be on end of Mt. Krana group)
+                        new LocationGroup("Mt. Krana: Apex", Filters.Apex),
+                        //  H) Zarrak's Hideout
                         new LocationGroup("Zarrak's Hideout", Filters.Zarraks_Hideout),
-                        //  G) Generator Chamber
-                        new LocationGroup("Generator Chamber", Filters.Generator_Chamber)
+                        //  I) Ewok Village
+                        new LocationGroup("Ewok Village", Filters.Ewok_Village),
+                        //  J) Chief Chirpa's Hut
+                        new LocationGroup("Chief Chirpa's Hut", Filters.Chief_Chirpas_Hut)
+                        
                 )
         );
         //  2) Clouds

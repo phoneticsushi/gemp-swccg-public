@@ -80,6 +80,7 @@ import com.gempukku.swccgo.logic.modifiers.AddsDestinyToAttritionModifier;
 import com.gempukku.swccgo.logic.modifiers.EachWeaponDestinyModifier;
 import com.gempukku.swccgo.logic.modifiers.ImmunityToAttritionChangeModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotBeFiredModifier;
+import com.gempukku.swccgo.logic.modifiers.MayTargetAtAnyExteriorSiteOnPlanetModifier;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.modifiers.PowerModifier;
 import com.gempukku.swccgo.logic.timing.Action;
@@ -315,6 +316,12 @@ public class FireWeaponActionBuilder {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.nearestRelatedExteriorSite(_weaponOrCardWithPermanentWeapon)));
                             _proximityFilterList.set(i, proximityFilter);
                         }
+                        // Check if weapon may target at any exterior site on a specific planet
+                        Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, _permanentWeapon);
+                        if (planetSiteFilter != null) {
+                            proximityFilter = Filters.or(proximityFilter, Filters.presentAt(planetSiteFilter));
+                            _proximityFilterList.set(i, proximityFilter);
+                        }
                     } else {
                         if (modifiersQuerying.canWeaponTargetTwoSitesAway(gameState, _weaponOrCardWithPermanentWeapon)) {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.siteWithinDistance(_weaponOrCardWithPermanentWeapon, 2)));
@@ -326,6 +333,12 @@ public class FireWeaponActionBuilder {
                         }
                         if (modifiersQuerying.canWeaponTargetNearestRelatedExteriorSite(gameState, _weaponOrCardWithPermanentWeapon)) {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.nearestRelatedExteriorSite(_weaponOrCardWithPermanentWeapon)));
+                            _proximityFilterList.set(i, proximityFilter);
+                        }
+                        // Check if weapon may target at any exterior site on a specific planet
+                        Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, _weaponOrCardWithPermanentWeapon);
+                        if (planetSiteFilter != null) {
+                            proximityFilter = Filters.or(proximityFilter, Filters.presentAt(planetSiteFilter));
                             _proximityFilterList.set(i, proximityFilter);
                         }
                     }

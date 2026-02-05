@@ -60,7 +60,7 @@ public interface Title {
     String Anoat = "Anoat";
     String Antechamber = "Maz's Castle: Antechamber";
     String Any_Methods_Necessary = "Any Methods Necessary";
-    String Apex = "Mount Krana: Apex";
+    String Apex = "Mt. Krana: Apex";
     String Apology_Accepted = "Apology Accepted";
     String Ardon_Crell = "Ardon \"Vapor\" Crell";
     String Arleil = "Arleil Schous";
@@ -387,6 +387,7 @@ public interface Title {
     String End_This_Destructive_Conflict = "End This Destructive Conflict";
     String Endor = "Endor";
     String Endor_Celebration = "Endor Celebration";
+    String Endor_Mt_Krana_Pass = "Endor: Mt. Krana Pass";
     String Endor_Occupation = "Endor Occupation";
     String Endor_Operations = "Endor Operations";
     String Endor_Shield = "Endor Shield";
@@ -476,7 +477,8 @@ public interface Title {
     String Gold_6 = "Gold 6";
     String Goldenrod = "Goldenrod";
     String Gorax = "Gorax";
-    String Goraxs_Lair = "Mt Krana: Gorax's Lair";
+    String Goraxs_Lair = "Mt. Krana: Gorax's Lair";
+    String Gorax_The_Mighty = "Gorax, The Mighty";
     String Goo_Nee_Tay = "Goo Nee Tay";
     String Graak = "Graak";
     String Gravel_Storm = "Gravel Storm";

@@ -18,7 +18,7 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.AttachCardFromTableEffect;
 import com.gempukku.swccgo.logic.effects.DrawDestinyEffect;
-import com.gempukku.swccgo.logic.effects.TargetCardOnTableEffect;
+import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.timing.GuiUtils;
 
 import java.util.Collections;
@@ -60,10 +60,10 @@ public class Card701_027 extends AbstractDevice {
             action.setActionMsg("Attempt to 'intercept' the Imperial transmission");
 
             // Choose target mountaineer to receive Scrambled Transmission if successful
-            action.appendTargeting(
-                    new TargetCardOnTableEffect(action, playerId, "Choose your mountaineer", yourMountaineerHere) {
+            action.appendEffect(
+                    new ChooseCardOnTableEffect(action, playerId, "Choose your mountaineer", yourMountaineerHere) {
                         @Override
-                        protected void cardTargeted(int targetGroupId, final PhysicalCard targetedMountaineer) {
+                        protected void cardSelected(final PhysicalCard targetedMountaineer) {
                             action.addAnimationGroup(targetedMountaineer);
 
                             // Draw destiny - player draws 2

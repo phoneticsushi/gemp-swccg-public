@@ -18348,6 +18348,7 @@ public class Filters {
     public static final Filter enclosed_vehicle = Filters.and(Keyword.ENCLOSED, CardType.VEHICLE);
     public static final Filter End_This_Destructive_Conflict = Filters.title(Title.End_This_Destructive_Conflict);
     public static final Filter Endor_location = Filters.partOfSystem(Title.Endor);
+    public static final Filter Endor_Mt_Krana_Pass = Filters.title(Title.Endor_Mt_Krana_Pass);
     public static final Filter Endor_Operations = Filters.title(Title.Endor_Operations);
     public static final Filter Endor_Shield = Filters.title(Title.Endor_Shield);
     public static final Filter Endor_site = Filters.and(Filters.partOfSystem(Title.Endor), CardSubtype.SITE);
@@ -18477,6 +18478,7 @@ public class Filters {
     public static final Filter Gold_5 = Filters.title(Title.Gold_5);
     public static final Filter Gold_6 = Filters.title(Title.Gold_6);
     public static final Filter Gold_Squadron_Pilot = Filters.and(CardCategory.CHARACTER, Icon.PILOT, Filters.or(Keyword.GOLD_SQUADRON, Filters.aboard(Filters.keyword(Keyword.GOLD_SQUADRON))));
+    public static final Filter Goraxs_Lair = Filters.title(Title.Goraxs_Lair);
     public static final Filter Goo_Nee_Tay = Filters.title(Title.Goo_Nee_Tay);
     public static final Filter Graak = Filters.title(Title.Graak);
     public static final Filter grabber = Filters.icon(Icon.GRABBER);
@@ -18903,7 +18905,7 @@ public class Filters {
     public static final Filter Mosep = Filters.title(Title.Mosep);
     public static final Filter Mostly_Armless = Filters.title(Title.Mostly_Armless);
     public static final Filter Motti = Filters.persona(Persona.MOTTI);
-    public static final Filter mount_krana_site = Filters.keyword(Keyword.MOUNT_KRANA_SITE);
+    public static final Filter mt_krana_site = Filters.keyword(Keyword.MT_KRANA_SITE);
     public static final Filter mountain_site = Filters.icon(Icon.MOUNTAIN_SITE);
     public static final Filter Mountains = Filters.title(Title.Mountains);
     public static final Filter Mournful_Roar = Filters.title(Title.Mournful_Roar);

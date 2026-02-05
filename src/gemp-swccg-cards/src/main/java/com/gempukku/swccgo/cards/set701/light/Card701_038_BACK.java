@@ -3,6 +3,7 @@ package com.gempukku.swccgo.cards.set701.light;
 import com.gempukku.swccgo.cards.AbstractCreature;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.cards.effects.usage.OncePerGameEffect;
+import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
@@ -28,6 +29,7 @@ import com.gempukku.swccgo.logic.effects.RetrieveForceEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.DefinedByGameTextFerocityModifier;
 import com.gempukku.swccgo.logic.modifiers.ForceRetrievalImmuneToSecretPlansModifier;
+import com.gempukku.swccgo.logic.modifiers.MayNotMoveModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
@@ -74,6 +76,10 @@ public class Card701_038_BACK extends AbstractCreature {
         // Force retrieval from defeating The Great Devourer is immune to Secret Plans
         modifiers.add(new ForceRetrievalImmuneToSecretPlansModifier(self, self));
 
+        // Dark Side player controls movement - block all normal movement
+        // (DS moves via explicit relocate actions in getOpponentsCardGameTextTopLevelActions)
+        modifiers.add(new MayNotMoveModifier(self));
+
         return modifiers;
     }
 
@@ -82,7 +88,7 @@ public class Card701_038_BACK extends AbstractCreature {
         List<RequiredGameTextTriggerAction> actions = new LinkedList<>();
         String playerId = self.getOwner();
 
-        // If lost, place out of play (card is already in Lost Pile when justLost triggers)
+        // If lost, place out of play
         if (TriggerConditions.justLost(game, effectResult, self)) {
             RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.setText("Place out of play");
@@ -98,7 +104,6 @@ public class Card701_038_BACK extends AbstractCreature {
             DefeatedResult defeatedResult = (DefeatedResult) effectResult;
             Collection<PhysicalCard> defeatedByCards = defeatedResult.getDefeatedByCards();
 
-            // Determine the attacking player from the cards that defeated this creature
             String attackingPlayer = null;
             if (defeatedByCards != null && !defeatedByCards.isEmpty()) {
                 PhysicalCard firstDefeater = defeatedByCards.iterator().next();
@@ -136,21 +141,26 @@ public class Card701_038_BACK extends AbstractCreature {
         return actions;
     }
 
+    /**
+     * Dark Side player controls all movement of The Great Devourer.
+     * - During Dark Side's move phase, may move to an adjacent exterior Endor site (once per turn).
+     * - Once per game, during any deploy phase, may relocate to an adjacent site.
+     *
+     * NOTE: If this method does not compile (method not found in creature hierarchy),
+     * move these actions to Card701_044_BACK (the objective) instead, which supports opponent actions.
+     */
     @Override
-    protected List<TopLevelGameTextAction> getGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
+    protected List<TopLevelGameTextAction> getOpponentsCardGameTextTopLevelActions(String playerId, SwccgGame game, PhysicalCard self, int gameTextSourceCardId) {
         List<TopLevelGameTextAction> actions = new LinkedList<>();
 
-        // Use generic action ID for once per game
-        GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+        // 1) During Dark Side's move phase, may move to an adjacent exterior Endor site (once per turn)
+        GameTextActionId moveActionId = GameTextActionId.OTHER_CARD_ACTION_1;
 
-        // Once per game, during any deploy phase, may relocate The Great Devourer to an adjacent site
-        if (GameConditions.isOncePerGame(game, self, gameTextActionId)
-                && GameConditions.isDuringEitherPlayersPhase(game, Phase.DEPLOY)) {
+        if (GameConditions.isDuringYourPhase(game, playerId, Phase.MOVE)
+                && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, moveActionId)) {
 
-            // Find current location
             PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
             if (currentLocation != null) {
-                // Find adjacent sites that are valid habitat (exterior Endor)
                 Filter adjacentValidSite = Filters.and(
                         Filters.adjacentSite(currentLocation),
                         Filters.exterior_site,
@@ -158,17 +168,49 @@ public class Card701_038_BACK extends AbstractCreature {
                 );
 
                 if (GameConditions.canSpot(game, self, adjacentValidSite)) {
-                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, gameTextActionId);
-                    action.setText("Relocate to adjacent site");
+                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, moveActionId);
+                    action.setText("Move The Great Devourer to adjacent site");
+                    action.setActionMsg("Move " + GameUtils.getCardLink(self) + " to an adjacent exterior Endor site");
+
+                    action.appendUsage(
+                            new OncePerTurnEffect(action));
+
+                    action.appendEffect(
+                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to move The Great Devourer to", adjacentValidSite) {
+                                @Override
+                                protected void cardSelected(PhysicalCard selectedCard) {
+                                    action.appendEffect(
+                                            new RelocateBetweenLocationsEffect(action, self, selectedCard));
+                                }
+                            }
+                    );
+
+                    actions.add(action);
+                }
+            }
+        }
+
+        // 2) Once per game, during any deploy phase, may relocate to an adjacent site
+        GameTextActionId relocateActionId = GameTextActionId.GORAX_THE_GREAT_DEVOURER__RELOCATE_TO_ADJACENT_SITE;
+
+        if (GameConditions.isOncePerGame(game, self, relocateActionId)
+                && GameConditions.isDuringEitherPlayersPhase(game, Phase.DEPLOY)) {
+
+            PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
+            if (currentLocation != null) {
+                // Note: once-per-game relocate goes to any adjacent site, not restricted to habitat
+                Filter adjacentSite = Filters.adjacentSite(currentLocation);
+
+                if (GameConditions.canSpot(game, self, adjacentSite)) {
+                    final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, relocateActionId);
+                    action.setText("Relocate to adjacent site (once per game)");
                     action.setActionMsg("Relocate " + GameUtils.getCardLink(self) + " to an adjacent site");
 
-                    // Update usage limit
                     action.appendUsage(
                             new OncePerGameEffect(action));
 
-                    // Choose an adjacent site
                     action.appendEffect(
-                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to relocate to", adjacentValidSite) {
+                            new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to relocate to", adjacentSite) {
                                 @Override
                                 protected void cardSelected(PhysicalCard selectedCard) {
                                     action.appendEffect(

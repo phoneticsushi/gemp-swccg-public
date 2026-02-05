@@ -44,7 +44,7 @@ public class Card701_036 extends AbstractTransportVehicle {
         setLore("Constructed from a number of large animals, the Ewoks used their 'sky-gliders' to gain an advantage over the land-bound stormtroopers.");
         setGameText("May add 1 driver (must be an Ewok or a mountaineer). Once per game, may place in Used Pile and choose: Peek at top two cards of your Reserve Deck and take one into hand. OR Relocate Beezer from Apex to an exterior Endor site. If lost, driver may \"jump off\" (disembark).");
         addIcons(Icon.BEEZER_BOWL_2025);
-        addKeywords(Keyword.EWOK_GLIDER, Keyword.EWOK_VEHICLE);
+        addKeywords(Keyword.EWOK_VEHICLE);
         setDriverCapacity(1);
     }
 

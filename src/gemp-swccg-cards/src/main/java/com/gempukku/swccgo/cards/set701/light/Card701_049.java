@@ -42,7 +42,6 @@ public class Card701_049 extends AbstractAlien {
         setGameText("Deploys only on Endor or Phantom. Adds 2 to power of anything he pilots. Once per game, may [upload] one speeder bike. During your control phase, if piloting a speeder bike at a battleground site, may retrieve 1 Force.");
         addPersona(Persona.PAPLOO);
         addIcons(Icon.PILOT, Icon.BEEZER_BOWL_2025);
-        addKeywords(Keyword.MOUNTAINEER);
         setSpecies(Species.EWOK);
     }
 

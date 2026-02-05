@@ -24,8 +24,10 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.OptionalGameTextTriggerAction;
+import com.gempukku.swccgo.logic.decisions.MultipleChoiceAwaitingDecision;
 import com.gempukku.swccgo.logic.effects.DrawDestinyEffect;
 import com.gempukku.swccgo.logic.effects.LoseForceEffect;
+import com.gempukku.swccgo.logic.effects.PlayoutDecisionEffect;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.TotalBattleDestinyModifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
@@ -40,7 +42,7 @@ public class Card701_043 extends AbstractAlien {
     public Card701_043() {
         super(Side.LIGHT, 3, 2, 2, 2, 4, "Latara", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Best friends with princess Kneesaa. Uses her flirtatious personality to get what she wants. Musician and fashion expert.");
-        setGameText("Deploys only on Endor. Your total battle destiny at same site is +1 for each of your Ewok/Rebel pairs present. Permanent device is \u2022Latara's Flute (if an attack was just initiated at same site, may draw destiny; if destiny < 3, attack is canceled and you must lose 1 Force).");
+        setGameText("Deploys only on Endor. Your total battle destiny at same site is +1 for each of your Ewok/Rebel pairs present. Permanent device is \u2022Latara's Flute (if an attack was just initiated at same site, may draw destiny; if destiny > 3, attack is canceled and you must hum five notes or lose 1 Force).");
         addIcons(Icon.PERMANENT_DEVICE, Icon.BEEZER_BOWL_2025);
         setSpecies(Species.EWOK);
         addKeyword(Keyword.MUSICIAN);
@@ -72,6 +74,9 @@ public class Card701_043 extends AbstractAlien {
             action.setText("Draw destiny to cancel attack");
             action.setActionMsg("Draw destiny to cancel the attack");
 
+            // Log that player is humming five notes
+            game.getGameState().sendMessage(playerId + " must hum or whistle five notes due to the attack just being initiated");
+
             // Draw destiny
             action.appendEffect(
                     new DrawDestinyEffect(action, playerId) {
@@ -85,12 +90,26 @@ public class Card701_043 extends AbstractAlien {
 
                             gameState.sendMessage("Destiny: " + totalDestiny);
 
-                            if (totalDestiny < 3) {
+                            if (totalDestiny > 3) {
                                 gameState.sendMessage("Result: Attack canceled");
                                 // Cancel the attack
                                 action.appendEffect(new CancelAttackEffect(action));
-                                // Must lose 1 Force
-                                action.appendEffect(new LoseForceEffect(action, playerId, 1));
+                                // Must hum five notes or lose 1 Force
+                                action.appendEffect(
+                                        new PlayoutDecisionEffect(action, playerId,
+                                                new MultipleChoiceAwaitingDecision("Choose: Hum five notes or lose 1 Force", new String[]{"Hum or whistle five notes", "Lose 1 Force"}) {
+                                                    @Override
+                                                    protected void validDecisionMade(int index, String result) {
+                                                        if (index == 0) {
+                                                            game.getGameState().sendMessage(playerId + " chooses to hum or whistle five notes");
+                                                        } else {
+                                                            game.getGameState().sendMessage(playerId + " chooses to lose 1 Force");
+                                                            action.appendEffect(new LoseForceEffect(action, playerId, 1));
+                                                        }
+                                                    }
+                                                }
+                                        )
+                                );
                             } else {
                                 gameState.sendMessage("Result: Attack not canceled");
                             }
