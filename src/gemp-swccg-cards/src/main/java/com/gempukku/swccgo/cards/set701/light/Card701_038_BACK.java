@@ -1,8 +1,10 @@
 package com.gempukku.swccgo.cards.set701.light;
 
 import com.gempukku.swccgo.cards.AbstractCreature;
+import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
+import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.ModelType;
 import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
@@ -13,16 +15,20 @@ import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
+import com.gempukku.swccgo.game.state.GameState;
 import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
+import com.gempukku.swccgo.logic.conditions.Condition;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromTableEffect;
 import com.gempukku.swccgo.logic.effects.RetrieveForceEffect;
 import com.gempukku.swccgo.logic.modifiers.DefinedByGameTextFerocityModifier;
 import com.gempukku.swccgo.logic.modifiers.ForceRetrievalImmuneToSecretPlansModifier;
-import com.gempukku.swccgo.logic.modifiers.MayNotMoveModifier;
+import com.gempukku.swccgo.logic.modifiers.KeywordModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
+import com.gempukku.swccgo.logic.modifiers.MovedOnlyByOpponentModifier;
+import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
 
@@ -61,6 +67,7 @@ public class Card701_038_BACK extends AbstractCreature {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<>();
+        final int permCardId = self.getPermanentCardId();
 
         // Ferocity = 10 + destiny
         modifiers.add(new DefinedByGameTextFerocityModifier(self, 10, 1));
@@ -68,9 +75,23 @@ public class Card701_038_BACK extends AbstractCreature {
         // Force retrieval from defeating The Great Devourer is immune to Secret Plans
         modifiers.add(new ForceRetrievalImmuneToSecretPlansModifier(self, self));
 
-        // Dark Side player controls movement - block all normal movement
-        // (DS moves via explicit relocate actions hosted on Card701_050 Pile of Bones)
-        modifiers.add(new MayNotMoveModifier(self));
+        // Dark Side player controls movement - opponent controls all normal movement
+        // DS can move The Great Devourer using landspeed (boosted by Pile of Bones) during their move phase
+        modifiers.add(new MovedOnlyByOpponentModifier(self, Filters.sameCardId(self)));
+
+        // Display "Suspicion" keyword if it was gained on the front side.
+        // WhileInPlayData persists across flips on the same physical card.
+        Condition hasSuspicionCondition = new Condition() {
+            @Override
+            public boolean isFulfilled(GameState gameState, ModifiersQuerying modifiersQuerying) {
+                PhysicalCard self = gameState.findCardByPermanentId(permCardId);
+                if (self == null) {
+                    return false;
+                }
+                return GameConditions.cardHasWhileInPlayDataEquals(self, true);
+            }
+        };
+        modifiers.add(new KeywordModifier(self, self, hasSuspicionCondition, Keyword.SUSPICION));
 
         return modifiers;
     }

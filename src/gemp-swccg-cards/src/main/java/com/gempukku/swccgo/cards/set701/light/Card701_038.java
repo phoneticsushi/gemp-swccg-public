@@ -4,6 +4,7 @@ import com.gempukku.swccgo.cards.AbstractCreature;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
+import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.ModelType;
 import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.PlayCardOptionId;
@@ -22,12 +23,15 @@ import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.conditions.Condition;
+import com.gempukku.swccgo.logic.conditions.NotCondition;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
 import com.gempukku.swccgo.logic.effects.RetrieveForceEffect;
+import com.gempukku.swccgo.logic.modifiers.KeywordModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotAttackModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotMoveModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
+import com.gempukku.swccgo.logic.modifiers.MovedOnlyByOpponentModifier;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 import com.gempukku.swccgo.logic.timing.results.DefeatedResult;
@@ -74,9 +78,11 @@ public class Card701_038 extends AbstractCreature {
     }
 
     /**
-     * Helper method to check if Gorax currently has suspicion (Light Side presence at its location).
+     * Helper method to check if Light Side player currently has presence at Gorax's location.
+     * This is the live check used to TRIGGER suspicion. Once suspicion is gained, it is permanent
+     * and tracked via WhileInPlayData.
      */
-    private boolean hasSuspicion(SwccgGame game, PhysicalCard self) {
+    private boolean hasLightSidePresence(SwccgGame game, PhysicalCard self) {
         PhysicalCard location = game.getModifiersQuerying().getLocationHere(game.getGameState(), self);
         if (location == null) {
             return false;
@@ -90,25 +96,30 @@ public class Card701_038 extends AbstractCreature {
         List<Modifier> modifiers = new LinkedList<>();
         final int permCardId = self.getPermanentCardId();
 
-        // Condition: Light Side player does NOT have presence at Gorax's location (no suspicion)
-        Condition noSuspicionCondition = new Condition() {
+        // Condition: Gorax has permanently gained suspicion (stored in WhileInPlayData)
+        Condition hasSuspicionCondition = new Condition() {
             @Override
             public boolean isFulfilled(GameState gameState, ModifiersQuerying modifiersQuerying) {
                 PhysicalCard self = gameState.findCardByPermanentId(permCardId);
                 if (self == null) {
-                    return true;
+                    return false;
                 }
-                PhysicalCard location = modifiersQuerying.getLocationHere(gameState, self);
-                if (location == null) {
-                    return true;
-                }
-                String lightPlayer = gameState.getLightPlayer();
-                return !Filters.canSpot(gameState.getGame(), self, Filters.and(Filters.owner(lightPlayer), Filters.at(location), Filters.hasAbilityOrHasPermanentPilotWithAbility));
+                return GameConditions.cardHasWhileInPlayDataEquals(self, true);
             }
         };
 
-        // Gorax may never use normal movement - Dark Side controls via explicit relocate when suspicion active
+        // Inverse: no suspicion yet
+        Condition noSuspicionCondition = new NotCondition(hasSuspicionCondition);
+
+        // Display "Suspicion" keyword on card info when suspicion has been gained
+        modifiers.add(new KeywordModifier(self, self, hasSuspicionCondition, Keyword.SUSPICION));
+
+        // Unless Gorax has suspicion, Gorax may not move
         modifiers.add(new MayNotMoveModifier(self, noSuspicionCondition));
+
+        // When suspicion is active, movement is controlled by opponent (Dark Side)
+        // DS player can move Gorax using landspeed during their move phase and DS pays
+        modifiers.add(new MovedOnlyByOpponentModifier(self, Filters.sameCardId(self), hasSuspicionCondition));
 
         // Unless Gorax has suspicion, Gorax may not attack
         modifiers.add(new MayNotAttackModifier(self, noSuspicionCondition, self));
@@ -153,19 +164,16 @@ public class Card701_038 extends AbstractCreature {
             }
         }
 
-        // Suspicion state change notification + flip check
+        // Suspicion gain check + flip check
         if (TriggerConditions.isTableChanged(game, effectResult)) {
 
-            // Check and announce suspicion state changes
-            boolean currentSuspicion = hasSuspicion(game, self);
-            boolean previousSuspicion = GameConditions.cardHasWhileInPlayDataEquals(self, true);
+            // Check if Light Side now has presence at Gorax's location.
+            // Once suspicion is gained, it is permanent for the remainder of the game.
+            boolean alreadyHasSuspicion = GameConditions.cardHasWhileInPlayDataEquals(self, true);
 
-            if (currentSuspicion && !previousSuspicion) {
+            if (!alreadyHasSuspicion && hasLightSidePresence(game, self)) {
                 self.setWhileInPlayData(new WhileInPlayData(true));
-                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " gains suspicion â€” movement now controlled by Dark Side player");
-            } else if (!currentSuspicion && previousSuspicion) {
-                self.setWhileInPlayData(new WhileInPlayData(false));
-                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " loses suspicion â€” may not attack or move");
+                game.getGameState().sendMessage(GameUtils.getCardLink(self) + " gains suspicion \u2014 movement now controlled by Dark Side player for remainder of game");
             }
 
             // Flip this card if there are three or more cards beneath Pile of Bones

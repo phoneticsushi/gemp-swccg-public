@@ -198,6 +198,7 @@ public enum Keyword implements Filterable {
     STARSHIP_WEAPON_THAT_DEPLOYS_ON_CAPITALS("Starship weapon that deploys on capitals", false),
     STARSHIP_WEAPON_THAT_DEPLOYS_ON_STARFIGHTERS("Starship weapon that deploys on starfighters", false),
     STORMTROOPER("Stormtrooper", true, true),
+    SUSPICION("Suspicion", true),
     SWAMP("Swamp", true),
     SWOOP("Swoop", true),
     TAUNTAUN("Tauntaun", true),
