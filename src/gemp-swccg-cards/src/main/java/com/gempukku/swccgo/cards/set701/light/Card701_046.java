@@ -52,7 +52,7 @@ public class Card701_046 extends AbstractSite {
     protected List<Modifier> getGameTextLightSideWhileActiveModifiers(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
-        // Rifles here (any player's) may fire at targets at any exterior Endor site
+        // ANY rifle here (light or dark) may fire at targets at any exterior Endor site
         Filter riflesHere = Filters.and(Filters.rifle, Filters.here(self));
         modifiers.add(new MayTargetAtAnyExteriorSiteOnPlanetModifier(self, riflesHere, Title.Endor));
 
@@ -66,6 +66,10 @@ public class Card701_046 extends AbstractSite {
     protected List<Modifier> getGameTextDarkSideWhileActiveModifiers(String playerOnDarkSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
+        // ANY rifle here (light or dark) may fire at targets at any exterior Endor site
+        Filter riflesHere = Filters.and(Filters.rifle, Filters.here(self));
+        modifiers.add(new MayTargetAtAnyExteriorSiteOnPlanetModifier(self, riflesHere, Title.Endor));
+
         // Dark Side Force drains here are immune to Battle Plan
         modifiers.add(new ForceDrainImmuneToBattlePlanModifier(self, self, game.getDarkPlayer()));
 
@@ -73,8 +77,31 @@ public class Card701_046 extends AbstractSite {
     }
 
     @Override
+    protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredAfterTriggers(String playerOnLightSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
+        // ANY combat vehicles and starships here (light or dark) are lost
+        if (TriggerConditions.isTableChanged(game, effectResult)) {
+            Filter combatVehiclesAndStarshipsHere = Filters.and(
+                    Filters.or(Filters.combat_vehicle, Filters.starship),
+                    Filters.here(self)
+            );
+
+            Collection<PhysicalCard> cardsToLose = Filters.filterActive(game, self, combatVehiclesAndStarshipsHere);
+            if (!cardsToLose.isEmpty()) {
+                RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
+                action.setSingletonTrigger(true);
+                action.setText("Make combat vehicles and starships lost");
+                action.setActionMsg("Make combat vehicles and starships here lost");
+                action.appendEffect(
+                        new LoseCardsFromTableEffect(action, cardsToLose));
+                return Collections.singletonList(action);
+            }
+        }
+        return null;
+    }
+
+    @Override
     protected List<RequiredGameTextTriggerAction> getGameTextDarkSideRequiredAfterTriggers(String playerOnDarkSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        // Combat vehicles and starships here are lost (any player's)
+        // ANY combat vehicles and starships here (light or dark) are lost
         if (TriggerConditions.isTableChanged(game, effectResult)) {
             Filter combatVehiclesAndStarshipsHere = Filters.and(
                     Filters.or(Filters.combat_vehicle, Filters.starship),

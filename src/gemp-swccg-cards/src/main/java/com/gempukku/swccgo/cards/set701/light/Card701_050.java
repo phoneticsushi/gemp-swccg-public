@@ -3,6 +3,7 @@ package com.gempukku.swccgo.cards.set701.light;
 import com.gempukku.swccgo.cards.AbstractEffect;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.cards.effects.usage.OncePerGameEffect;
+import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.cards.evaluators.StackedEvaluator;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
@@ -77,9 +78,11 @@ public class Card701_050 extends AbstractEffect {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<>();
-        // Gorax is ferocity +1 for each card stacked here (front side only: Gorax, The Mighty)
-        modifiers.add(new FerocityModifier(self, Filters.title(Title.Gorax_The_Mighty), null, new StackedEvaluator(self), false));
-        // The Great Devourer is landspeed +1 for each card stacked here
+        // Gorax, The Mighty (front side only) is ferocity +1 for each card stacked here
+        // Use persona filter but exclude The Great Devourer (back side) explicitly
+        Filter goraxFrontSide = Filters.and(Filters.persona(Persona.GORAX), Filters.not(Filters.title(Title.The_Great_Devourer)));
+        modifiers.add(new FerocityModifier(self, goraxFrontSide, null, new StackedEvaluator(self), false));
+        // The Great Devourer (back side) is landspeed +1 for each card stacked here
         modifiers.add(new LandspeedModifier(self, Filters.title(Title.The_Great_Devourer), new StackedEvaluator(self)));
         return modifiers;
     }
@@ -123,11 +126,11 @@ public class Card701_050 extends AbstractEffect {
                                     }
                                 }
 
-                                // Then stack the defeated card and its attachments on Pile of Bones
+                                // Then stack the defeated card and its attachments on Pile of Bones (as inactive/out of play)
                                 for (PhysicalCard card : cardsToStack) {
                                     if (card.getZone() != null) {
                                         gameState.removeCardFromZone(card);
-                                        gameState.stackCard(card, self, false, false, false);
+                                        gameState.stackCard(card, self, false, true, false);
                                     }
                                 }
                                 gameState.sendMessage(GameUtils.getCardLink(defeatedCard) + " and attachments stacked on " + GameUtils.getCardLink(self));
@@ -176,12 +179,59 @@ public class Card701_050 extends AbstractEffect {
                             @Override
                             protected void doPlayEffect(SwccgGame game) {
                                 game.getGameState().removeCardFromZone(cardToStack);
-                                game.getGameState().stackCard(cardToStack, self, false, false, false);
+                                game.getGameState().stackCard(cardToStack, self, false, true, false);
                                 game.getGameState().sendMessage(GameUtils.getCardLink(cardToStack) + " is stacked on " + GameUtils.getCardLink(self));
                             }
                         });
 
                 actions.add(action);
+            }
+        }
+
+        // During DS move phase, if Gorax (front side) has suspicion, DS may move it once per turn
+        // (This action is from Gorax, The Mighty's game text but hosted here since creatures don't support opponent actions)
+        PhysicalCard goraxTheMighty = Filters.findFirstActive(game, self, Filters.title(Title.Gorax_The_Mighty));
+
+        if (goraxTheMighty != null) {
+            // Check if Gorax has suspicion (latched via WhileInPlayData)
+            if (GameConditions.cardHasWhileInPlayDataEquals(goraxTheMighty, true)) {
+
+                GameTextActionId moveActionId = GameTextActionId.OTHER_CARD_ACTION_1;
+
+                if (GameConditions.isDuringYourPhase(game, playerId, Phase.MOVE)
+                        && GameConditions.isOncePerTurn(game, self, playerId, gameTextSourceCardId, moveActionId)) {
+
+                    PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), goraxTheMighty);
+                    if (currentLocation != null) {
+                        Filter adjacentValidSite = Filters.and(
+                                Filters.adjacentSite(currentLocation),
+                                Filters.exterior_site,
+                                Filters.Endor_site
+                        );
+
+                        if (GameConditions.canSpot(game, self, adjacentValidSite)) {
+                            final PhysicalCard creatureToMove = goraxTheMighty;
+                            final TopLevelGameTextAction action = new TopLevelGameTextAction(self, playerId, gameTextSourceCardId, moveActionId);
+                            action.setText("Move Gorax to adjacent site");
+                            action.setActionMsg("Move " + GameUtils.getCardLink(creatureToMove) + " to an adjacent exterior Endor site");
+
+                            action.appendUsage(
+                                    new OncePerTurnEffect(action));
+
+                            action.appendEffect(
+                                    new ChooseCardOnTableEffect(action, playerId, "Choose adjacent site to move Gorax to", adjacentValidSite) {
+                                        @Override
+                                        protected void cardSelected(PhysicalCard selectedCard) {
+                                            action.appendEffect(
+                                                    new RelocateBetweenLocationsEffect(action, creatureToMove, selectedCard));
+                                        }
+                                    }
+                            );
+
+                            actions.add(action);
+                        }
+                    }
+                }
             }
         }
 
@@ -200,8 +250,8 @@ public class Card701_050 extends AbstractEffect {
 
                 PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), greatDevourer);
                 if (currentLocation != null) {
-                    // Relocate restricted to adjacent exterior Endor sites (habitat)
-                    Filter adjacentSite = Filters.and(Filters.adjacentSite(currentLocation), Filters.exterior_site, Filters.Endor_site);
+                    // Once-per-game relocate goes to any adjacent site, not restricted to habitat
+                    Filter adjacentSite = Filters.adjacentSite(currentLocation);
 
                     if (GameConditions.canSpot(game, self, adjacentSite)) {
                         final PhysicalCard creatureToMove = greatDevourer;

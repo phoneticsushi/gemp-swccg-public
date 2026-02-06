@@ -20,7 +20,6 @@ import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.TriggerConditions;
-import com.gempukku.swccgo.logic.actions.OptionalGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.LoseCardsFromTableEffect;
 import com.gempukku.swccgo.logic.effects.choose.DeployCardFromOutsideTheGameEffect;
@@ -35,7 +34,7 @@ import com.gempukku.swccgo.logic.timing.EffectResult;
 public class Card701_047 extends AbstractSite {
     public Card701_047() {
         super(Side.LIGHT, Title.Goraxs_Lair, Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
-        setLocationLightSideGameText("When deployed, may take Gorax, The Mighty and Pile Of Bones into hand from outside your deck and deploy them simultaneously.");
+        setLocationLightSideGameText("When deployed, take Gorax, The Mighty and Pile Of Bones from outside your deck and deploy them here.");
         setLocationDarkSideGameText("Only deploys if Mt. Krana Pass on table. Vehicles and starships here are lost.");
         addIcon(Icon.DARK_FORCE, 1);
         addIcon(Icon.LIGHT_FORCE, 1);
@@ -49,54 +48,26 @@ public class Card701_047 extends AbstractSite {
     }
 
     @Override
-    protected List<OptionalGameTextTriggerAction> getGameTextLightSideOptionalAfterTriggers(String playerOnLightSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        GameTextActionId gameTextActionId = GameTextActionId.GORAXS_LAIR__DEPLOY_GORAX_AND_PILE_OF_BONES;
-
-        // When deployed, may take Gorax and Pile Of Bones into hand from outside your deck and deploy them simultaneously
-        if (TriggerConditions.justDeployed(game, effectResult, self)
-                && GameConditions.isOncePerGame(game, self, gameTextActionId)) {
-
-            OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, playerOnLightSideOfLocation, gameTextSourceCardId, gameTextActionId);
-            action.setText("Deploy Gorax, The Mighty and Pile Of Bones");
-            action.setActionMsg("Take Gorax, The Mighty and Pile Of Bones from outside deck and deploy them here");
-            action.appendUsage(
-                    new OncePerGameEffect(action));
-            action.appendEffect(
-                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Gorax_The_Mighty), Filters.sameLocation(self), 0));
-            action.appendEffect(
-                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Pile_Of_Bones), Filters.sameLocation(self), 0));
-
-            return Collections.singletonList(action);
-        }
-        return null;
-    }
-
-    @Override
-    protected List<OptionalGameTextTriggerAction> getGameTextDarkSideOptionalAfterTriggers(String playerOnDarkSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        GameTextActionId gameTextActionId = GameTextActionId.GORAXS_LAIR__DEPLOY_GORAX_AND_PILE_OF_BONES;
-
-        // When deployed, may take Gorax and Pile Of Bones into hand from outside your deck and deploy them simultaneously
-        // (Dark Side gets this option if Light Side declines)
-        if (TriggerConditions.justDeployed(game, effectResult, self)
-                && GameConditions.isOncePerGame(game, self, gameTextActionId)) {
-
-            OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, playerOnDarkSideOfLocation, gameTextSourceCardId, gameTextActionId);
-            action.setText("Deploy Gorax, The Mighty and Pile Of Bones");
-            action.setActionMsg("Take Gorax, The Mighty and Pile Of Bones from outside deck and deploy them here");
-            action.appendUsage(
-                    new OncePerGameEffect(action));
-            action.appendEffect(
-                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Gorax_The_Mighty), Filters.sameLocation(self), 0));
-            action.appendEffect(
-                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Pile_Of_Bones), Filters.sameLocation(self), 0));
-
-            return Collections.singletonList(action);
-        }
-        return null;
-    }
-
-    @Override
     protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredAfterTriggers(String playerOnLightSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
+        List<RequiredGameTextTriggerAction> actions = new LinkedList<RequiredGameTextTriggerAction>();
+
+        // When deployed, automatically deploy Gorax and Pile Of Bones from outside game (Light Side only)
+        GameTextActionId gameTextActionId = GameTextActionId.GORAXS_LAIR__DEPLOY_GORAX_AND_PILE_OF_BONES;
+        if (TriggerConditions.justDeployed(game, effectResult, self)
+                && GameConditions.isOncePerGame(game, self, gameTextActionId)) {
+
+            RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId, gameTextActionId);
+            action.setText("Deploy Gorax, The Mighty and Pile Of Bones");
+            action.setActionMsg("Take Gorax, The Mighty and Pile Of Bones from outside deck and deploy them here");
+            action.appendUsage(
+                    new OncePerGameEffect(action));
+            action.appendEffect(
+                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Gorax_The_Mighty), Filters.sameLocation(self), 0));
+            action.appendEffect(
+                    new DeployCardFromOutsideTheGameEffect(action, Filters.title(Title.Pile_Of_Bones), Filters.sameLocation(self), 0));
+            actions.add(action);
+        }
+
         // ANY vehicles and starships here (light or dark) are lost
         if (TriggerConditions.isTableChanged(game, effectResult)) {
             Filter vehiclesAndStarshipsHere = Filters.and(
@@ -112,10 +83,11 @@ public class Card701_047 extends AbstractSite {
                 action.setActionMsg("Make vehicles and starships here lost");
                 action.appendEffect(
                         new LoseCardsFromTableEffect(action, cardsToLose));
-                return Collections.singletonList(action);
+                actions.add(action);
             }
         }
-        return null;
+
+        return actions.isEmpty() ? null : actions;
     }
 
     @Override

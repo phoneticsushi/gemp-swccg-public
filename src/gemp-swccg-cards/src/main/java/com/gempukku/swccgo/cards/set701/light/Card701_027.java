@@ -48,15 +48,15 @@ public class Card701_027 extends AbstractDevice {
         GameTextActionId gameTextActionId = GameTextActionId.OTHER_CARD_ACTION_1;
 
         final Filter yourMountaineerHere = Filters.and(Filters.your(self), Keyword.MOUNTAINEER, Filters.here(self));
-        final Filter yourMountaineer = Filters.and(Filters.your(self), Keyword.MOUNTAINEER);
+        final Filter yourMountaineerOrHan = Filters.and(Filters.your(self), Filters.or(Keyword.MOUNTAINEER, Filters.Han));
         final Filter scrambledTransmission = Filters.and(Icon.BEEZER_BOWL_2025, Filters.title("Scrambled Transmission"));
-        final Filter scrambledTransmissionOnYourMountaineer = Filters.and(scrambledTransmission, Filters.attachedTo(yourMountaineer));
+        final Filter scrambledTransmissionAlreadyIntercepted = Filters.and(scrambledTransmission, Filters.attachedTo(yourMountaineerOrHan));
 
         // Check condition(s)
         if (GameConditions.isDuringYourTurn(game, self)
                 && GameConditions.canSpot(game, self, yourMountaineerHere)
                 && GameConditions.canSpot(game, self, scrambledTransmission)
-                && !GameConditions.canSpot(game, self, scrambledTransmissionOnYourMountaineer)) {
+                && !GameConditions.canSpot(game, self, scrambledTransmissionAlreadyIntercepted)) {
 
             final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
             action.setText("Attempt to 'intercept' transmission");

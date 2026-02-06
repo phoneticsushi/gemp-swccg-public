@@ -19,6 +19,7 @@ import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.OptionalGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.AddCardsToMoveUsingLandspeedSimultaneouslyEffect;
+import com.gempukku.swccgo.logic.effects.MoveUsingLocationTextEffect;
 import com.gempukku.swccgo.logic.effects.TargetCardsOnTableEffect;
 import com.gempukku.swccgo.logic.effects.UnrespondableEffect;
 import com.gempukku.swccgo.logic.modifiers.FireWeaponFiredAtCostModifier;
@@ -26,6 +27,7 @@ import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.TotalPowerModifier;
 import com.gempukku.swccgo.logic.timing.Action;
 import com.gempukku.swccgo.logic.timing.EffectResult;
+import com.gempukku.swccgo.logic.timing.results.MovingResult;
 import com.gempukku.swccgo.logic.timing.results.MovingUsingLandspeedResult;
 
 import java.util.Collection;
@@ -66,10 +68,12 @@ public class Card701_057 extends AbstractNormalEffect {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
         // Opponent must use +1 Force to fire a weapon targeting your Rebel present with your Ewok
+        // Using Filters.any for affectFilter and weaponFilter so this works for both regular weapons
+        // and permanent weapons (SwccgBuiltInCardBlueprint). The targetFilter provides the real constraint.
         modifiers.add(new FireWeaponFiredAtCostModifier(self,
-                Filters.and(Filters.opponents(playerId), Filters.or(Filters.weapon, Filters.hasPermanentWeapon)),
+                Filters.any,
                 1,
-                Filters.and(Filters.opponents(playerId), Filters.or(Filters.weapon, Filters.hasPermanentWeapon)),
+                Filters.any,
                 yourRebelPresentWithYourEwok));
 
         // At sites where you have an Ewok and a mountaineer, your total power is +2
@@ -85,19 +89,17 @@ public class Card701_057 extends AbstractNormalEffect {
         Filter yourEwoks = Filters.and(Filters.your(playerId), Filters.Ewok);
         Filter yourRebels = Filters.and(Filters.your(playerId), Filters.Rebel);
 
-        // Check if one of your Ewoks or Rebels is moving using landspeed
+        // ===== LANDSPEED MOVEMENT =====
         if (TriggerConditions.movingUsingLandspeed(game, effectResult, Filters.and(Filters.your(playerId), Filters.or(Filters.Ewok, Filters.Rebel)))) {
             final MovingUsingLandspeedResult movingResult = (MovingUsingLandspeedResult) effectResult;
             final PhysicalCard toLocation = movingResult.getMovingTo();
             Collection<PhysicalCard> cardsMoving = movingResult.getAllCardsMoving();
 
-            // Check if an Ewok is moving (and no Rebel is already moving with it)
             boolean ewokMoving = Filters.canSpot(cardsMoving, game, yourEwoks);
             boolean rebelMoving = Filters.canSpot(cardsMoving, game, yourRebels);
 
             // If Ewok moving without Rebel, allow Rebel to join
             if (ewokMoving && !rebelMoving) {
-                // Find Rebels that can join the move
                 PhysicalCard movingEwok = Filters.findFirstActive(game, self, Filters.and(yourEwoks, Filters.in(cardsMoving)));
                 if (movingEwok != null) {
                     Collection<PhysicalCard> rebelsToJoin = Filters.filterActive(game, self,
@@ -139,7 +141,6 @@ public class Card701_057 extends AbstractNormalEffect {
 
             // If Rebel moving without Ewok, allow Ewok to join
             if (rebelMoving && !ewokMoving) {
-                // Find Ewoks that can join the move
                 PhysicalCard movingRebel = Filters.findFirstActive(game, self, Filters.and(yourRebels, Filters.in(cardsMoving)));
                 if (movingRebel != null) {
                     Collection<PhysicalCard> ewoksToJoin = Filters.filterActive(game, self,
@@ -168,6 +169,87 @@ public class Card701_057 extends AbstractNormalEffect {
                                                     protected void performActionResults(Action targetingAction) {
                                                         action.appendEffect(
                                                                 new AddCardsToMoveUsingLandspeedSimultaneouslyEffect(action, targetedEwoks, movingResult));
+                                                    }
+                                                }
+                                        );
+                                    }
+                                }
+                        );
+                        actions.add(action);
+                    }
+                }
+            }
+        }
+
+        // ===== LOCATION TEXT MOVEMENT (e.g. Mt. Krana Pass, Generator Chamber) =====
+        // MoveUsingLocationTextEffect moves one card at a time, so we perform a separate free move for the companion.
+        // Recursion guard: MoveUsingLocationTextEffect calls regularMovePerformed() BEFORE emitting
+        // MovingUsingLocationTextResult, so hasNotPerformedRegularMove prevents the companion from re-triggering.
+        if (effectResult.getType() == EffectResult.Type.MOVING_USING_LOCATION_TEXT) {
+            final MovingResult movingResult = (MovingResult) effectResult;
+            final PhysicalCard cardMoving = movingResult.getCardMoving();
+            final PhysicalCard toLocation = movingResult.getMovingTo();
+
+            if (cardMoving != null && toLocation != null
+                    && Filters.and(Filters.your(playerId), Filters.or(Filters.Ewok, Filters.Rebel)).accepts(game, cardMoving)) {
+
+                boolean ewokMoving = yourEwoks.accepts(game, cardMoving);
+                boolean rebelMoving = yourRebels.accepts(game, cardMoving);
+
+                // If Ewok moving, allow a Rebel present to move free to same destination
+                if (ewokMoving) {
+                    Collection<PhysicalCard> rebelsToJoin = Filters.filterActive(game, self,
+                            Filters.and(yourRebels,
+                                    Filters.hasNotPerformedRegularMove,
+                                    Filters.present(cardMoving)));
+
+                    if (!rebelsToJoin.isEmpty()) {
+                        final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, gameTextSourceCardId);
+                        action.setText("Move Rebel with Ewok");
+                        action.appendTargeting(
+                                new TargetCardsOnTableEffect(action, playerId, "Choose Rebel to move with Ewok", 1, 1, Filters.in(rebelsToJoin)) {
+                                    @Override
+                                    protected void cardsTargeted(int targetGroupId, final Collection<PhysicalCard> targetedRebels) {
+                                        final PhysicalCard rebelToMove = targetedRebels.iterator().next();
+                                        action.addAnimationGroup(targetedRebels);
+                                        action.allowResponses("Move " + GameUtils.getCardLink(rebelToMove) + " with Ewok to " + GameUtils.getCardLink(toLocation),
+                                                new UnrespondableEffect(action) {
+                                                    @Override
+                                                    protected void performActionResults(Action targetingAction) {
+                                                        action.appendEffect(
+                                                                new MoveUsingLocationTextEffect(action, rebelToMove, toLocation, false, false));
+                                                    }
+                                                }
+                                        );
+                                    }
+                                }
+                        );
+                        actions.add(action);
+                    }
+                }
+
+                // If Rebel moving, allow an Ewok present to move free to same destination
+                if (rebelMoving) {
+                    Collection<PhysicalCard> ewoksToJoin = Filters.filterActive(game, self,
+                            Filters.and(yourEwoks,
+                                    Filters.hasNotPerformedRegularMove,
+                                    Filters.present(cardMoving)));
+
+                    if (!ewoksToJoin.isEmpty()) {
+                        final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, gameTextSourceCardId);
+                        action.setText("Move Ewok with Rebel");
+                        action.appendTargeting(
+                                new TargetCardsOnTableEffect(action, playerId, "Choose Ewok to move with Rebel", 1, 1, Filters.in(ewoksToJoin)) {
+                                    @Override
+                                    protected void cardsTargeted(int targetGroupId, final Collection<PhysicalCard> targetedEwoks) {
+                                        final PhysicalCard ewokToMove = targetedEwoks.iterator().next();
+                                        action.addAnimationGroup(targetedEwoks);
+                                        action.allowResponses("Move " + GameUtils.getCardLink(ewokToMove) + " with Rebel to " + GameUtils.getCardLink(toLocation),
+                                                new UnrespondableEffect(action) {
+                                                    @Override
+                                                    protected void performActionResults(Action targetingAction) {
+                                                        action.appendEffect(
+                                                                new MoveUsingLocationTextEffect(action, ewokToMove, toLocation, false, false));
                                                     }
                                                 }
                                         );

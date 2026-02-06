@@ -31,11 +31,11 @@ import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.effects.LoseForceEffect;
-import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
 import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.ShuffleReserveDeckEffect;
 import com.gempukku.swccgo.logic.decisions.ArbitraryCardsSelectionDecision;
 import com.gempukku.swccgo.logic.decisions.DecisionResultInvalidException;
+import com.gempukku.swccgo.logic.decisions.YesNoDecision;
 import com.gempukku.swccgo.logic.effects.PlayoutDecisionEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardsFromLostPileEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
@@ -153,7 +153,45 @@ public class Card701_044_BACK extends AbstractObjective {
             action.appendEffect(
                     new LoseForceEffect(action, opponent, 3));
 
-            // Note: "Opponent may relocate Gorax" is handled as opponent's optional trigger
+            // 6. Opponent may relocate Gorax to an exterior Endor site
+            action.appendEffect(
+                    new PassthruEffect(action) {
+                        @Override
+                        protected void doPlayEffect(SwccgGame game) {
+                            Filter goraxFilter = Filters.title("Gorax");
+                            Filter exteriorEndorSite = Filters.and(Filters.exterior_site, Filters.Endor_site);
+
+                            final PhysicalCard gorax = Filters.findFirstActive(game, self, goraxFilter);
+                            if (gorax != null) {
+                                PhysicalCard goraxLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), gorax);
+                                final Filter validDestination = Filters.and(exteriorEndorSite,
+                                        goraxLocation != null ? Filters.not(Filters.sameCardId(goraxLocation)) : Filters.any);
+
+                                if (GameConditions.canSpot(game, self, validDestination)) {
+                                    // Ask opponent if they want to relocate Gorax
+                                    action.appendEffect(
+                                            new PlayoutDecisionEffect(action, opponent,
+                                                    new YesNoDecision("Do you want to relocate Gorax to an exterior Endor site?") {
+                                                        @Override
+                                                        protected void yes() {
+                                                            action.appendEffect(
+                                                                    new ChooseCardOnTableEffect(action, opponent, "Choose exterior Endor site for Gorax", validDestination) {
+                                                                        @Override
+                                                                        protected void cardSelected(PhysicalCard selectedSite) {
+                                                                            action.appendEffect(
+                                                                                    new RelocateBetweenLocationsEffect(action, gorax, selectedSite));
+                                                                        }
+                                                                    });
+                                                        }
+                                                        @Override
+                                                        protected void no() {
+                                                            game.getGameState().sendMessage(opponent + " chooses not to relocate Gorax");
+                                                        }
+                                                    }));
+                                }
+                            }
+                        }
+                    });
 
             actions.add(action);
         }
@@ -243,45 +281,6 @@ public class Card701_044_BACK extends AbstractObjective {
                     new CancelForceDrainEffect(action));
 
             actions.add(action);
-        }
-
-        return actions;
-    }
-
-    @Override
-    protected List<OptionalGameTextTriggerAction> getOpponentsCardGameTextOptionalAfterTriggers(String playerId, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        List<OptionalGameTextTriggerAction> actions = new LinkedList<>();
-
-        // Opponent may relocate Gorax to an exterior Endor site (when card flips)
-        if (TriggerConditions.cardFlipped(game, effectResult, self)) {
-            Filter goraxFilter = Filters.title("Gorax");
-            Filter exteriorEndorSite = Filters.and(Filters.exterior_site, Filters.Endor_site);
-
-            PhysicalCard gorax = Filters.findFirstActive(game, self, goraxFilter);
-            if (gorax != null) {
-                // Check if Gorax can relocate to an exterior Endor site (different from current location)
-                PhysicalCard goraxLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), gorax);
-                Filter validDestination = Filters.and(exteriorEndorSite, Filters.not(Filters.sameCardId(goraxLocation)));
-
-                if (GameConditions.canSpot(game, self, validDestination)) {
-                    final PhysicalCard goraxToMove = gorax;
-
-                    OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, playerId, gameTextSourceCardId);
-                    action.setText("Relocate Gorax to exterior Endor site");
-                    action.setActionMsg("Relocate Gorax to an exterior Endor site");
-
-                    action.appendEffect(
-                            new ChooseCardOnTableEffect(action, playerId, "Choose exterior Endor site", validDestination) {
-                                @Override
-                                protected void cardSelected(PhysicalCard selectedCard) {
-                                    action.appendEffect(
-                                            new RelocateBetweenLocationsEffect(action, goraxToMove, selectedCard));
-                                }
-                            });
-
-                    actions.add(action);
-                }
-            }
         }
 
         return actions;
@@ -382,21 +381,29 @@ public class Card701_044_BACK extends AbstractObjective {
                                                             final PhysicalCard cardOutOfPlay = cardList.get(0).getCardId() == cardForUsedPile.getCardId() ? cardList.get(1) : cardList.get(0);
 
                                                             game.getGameState().sendMessage(opponent + " chooses to place " + GameUtils.getCardLink(cardForUsedPile) + " on " + playerId + "'s Used Pile");
-                                                            game.getGameState().sendMessage(GameUtils.getCardLink(cardOutOfPlay) + " is placed out of play");
 
-                                                            // Place one card on Used Pile (card is already off-table from Lost Pile selection)
+                                                            // Place one card on Used Pile (must remove from Lost Pile first since ChooseCardsFromLostPileEffect only selects, doesn't remove)
                                                             action.appendEffect(
                                                                     new PassthruEffect(action) {
                                                                         @Override
                                                                         protected void doPlayEffect(SwccgGame game) {
                                                                             GameState gameState = game.getGameState();
+                                                                            gameState.removeCardFromZone(cardForUsedPile);
                                                                             gameState.addCardToTopOfZone(cardForUsedPile, Zone.USED_PILE, playerId);
                                                                         }
                                                                     });
 
-                                                            // Place other card out of play
+                                                            // Place other card out of play (must remove from Lost Pile first)
                                                             action.appendEffect(
-                                                                    new PlaceCardOutOfPlayFromOffTableEffect(action, cardOutOfPlay));
+                                                                    new PassthruEffect(action) {
+                                                                        @Override
+                                                                        protected void doPlayEffect(SwccgGame game) {
+                                                                            GameState gameState = game.getGameState();
+                                                                            gameState.removeCardFromZone(cardOutOfPlay);
+                                                                            gameState.addCardToTopOfZone(cardOutOfPlay, Zone.OUT_OF_PLAY, cardOutOfPlay.getOwner());
+                                                                            game.getGameState().sendMessage(GameUtils.getCardLink(cardOutOfPlay) + " is placed out of play");
+                                                                        }
+                                                                    });
                                                         }
                                                     }));
                                 }
