@@ -3,6 +3,7 @@ package com.gempukku.swccgo.cards.set701.light;
 import com.gempukku.swccgo.cards.AbstractRebel;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.cards.effects.CancelForceDrainEffect;
+import com.gempukku.swccgo.cards.effects.usage.OncePerBattleEffect;
 import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
@@ -128,12 +129,16 @@ public class Card701_031_BACK extends AbstractRebel {
 
         // During battle with another mountaineer, may cancel one just drawn destiny
         if (TriggerConditions.isBattleDestinyJustDrawn(game, effectResult)
+                && GameConditions.isOncePerBattle(game, self, playerId, gameTextSourceCardId, gameTextActionId2)
                 && GameConditions.isInBattleWith(game, self, Filters.and(Filters.other(self), Keyword.MOUNTAINEER))
                 && GameConditions.canCancelDestiny(game, playerId)) {
 
             final OptionalGameTextTriggerAction action = new OptionalGameTextTriggerAction(self, gameTextSourceCardId, gameTextActionId2);
             action.setText("Cancel destiny");
             action.setActionMsg("Cancel a just drawn battle destiny");
+            // Update usage limit(s)
+            action.appendUsage(
+                    new OncePerBattleEffect(action));
             // Perform result(s)
             action.appendEffect(
                     new CancelDestinyEffect(action));

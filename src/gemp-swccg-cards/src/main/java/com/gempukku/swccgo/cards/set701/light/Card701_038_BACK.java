@@ -55,6 +55,7 @@ public class Card701_038_BACK extends AbstractCreature {
         addIcons(Icon.BEEZER_BOWL_2025, Icon.CREATURE);
         addModelType(ModelType.GIGANTIC_PREDATOR);
         addPersona(Persona.GORAX);
+        addPersona(Persona.THE_GREAT_DEVOURER);
         setMayNotBePlacedInReserveDeck(true);
     }
 

@@ -9,7 +9,6 @@ import com.gempukku.swccgo.cards.AbstractSite;
 import com.gempukku.swccgo.cards.GameConditions;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
-import com.gempukku.swccgo.common.Keyword;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -23,8 +22,8 @@ import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.LoseCardsFromTableEffect;
 import com.gempukku.swccgo.logic.modifiers.MayTargetAtAnyExteriorSiteOnPlanetModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
-import com.gempukku.swccgo.logic.modifiers.SatisfiesBattleOrderModifier;
-import com.gempukku.swccgo.logic.modifiers.SatisfiesBattlePlanModifier;
+import com.gempukku.swccgo.logic.modifiers.ForceDrainImmuneToBattleOrderModifier;
+import com.gempukku.swccgo.logic.modifiers.ForceDrainImmuneToBattlePlanModifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
 
 /**
@@ -36,13 +35,11 @@ import com.gempukku.swccgo.logic.timing.EffectResult;
 public class Card701_046 extends AbstractSite {
     public Card701_046() {
         super(Side.LIGHT, Title.Apex, Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
-        setLocationLightSideGameText("Deploys only if Gorax's Lair on table. Rifles here may fire at targets at any exterior Endor site. Either player occupying satisfies Battle Order.");
-        setLocationDarkSideGameText("Combat vehicles and starships here are lost. Either player occupying satisfies Battle Plan.");
+        setLocationLightSideGameText("Deploys only if Gorax's Lair on table. Rifles here may fire at targets at any exterior Endor site. Light Side Force drains here are immune to Battle Order.");
+        setLocationDarkSideGameText("Combat vehicles and starships here are lost. Dark Side Force drains here are immune to Battle Plan.");
         addIcon(Icon.DARK_FORCE, 1);
         addIcon(Icon.LIGHT_FORCE, 2);
         addIcons(Icon.BEEZER_BOWL_2025, Icon.EXTERIOR_SITE, Icon.MOUNTAIN_SITE, Icon.PLANET);
-        setAsHorizontal(false);
-        addKeyword(Keyword.MT_KRANA_SITE);
     }
 
     @Override
@@ -55,15 +52,12 @@ public class Card701_046 extends AbstractSite {
     protected List<Modifier> getGameTextLightSideWhileActiveModifiers(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
-        // Rifles here may fire at targets at any exterior Endor site
+        // Rifles here (any player's) may fire at targets at any exterior Endor site
         Filter riflesHere = Filters.and(Filters.rifle, Filters.here(self));
         modifiers.add(new MayTargetAtAnyExteriorSiteOnPlanetModifier(self, riflesHere, Title.Endor));
 
-        // Either player occupying satisfies Battle Order
-        modifiers.add(new SatisfiesBattleOrderModifier(self));
-
-        // Either player occupying satisfies Battle Plan (from dark side text, but applies to either player)
-        modifiers.add(new SatisfiesBattlePlanModifier(self));
+        // Light Side Force drains here are immune to Battle Order
+        modifiers.add(new ForceDrainImmuneToBattleOrderModifier(self, self, game.getLightPlayer()));
 
         return modifiers;
     }
@@ -72,18 +66,15 @@ public class Card701_046 extends AbstractSite {
     protected List<Modifier> getGameTextDarkSideWhileActiveModifiers(String playerOnDarkSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
-        // Either player occupying satisfies Battle Plan
-        modifiers.add(new SatisfiesBattlePlanModifier(self));
-
-        // Either player occupying satisfies Battle Order (from light side text, but applies to either player)
-        modifiers.add(new SatisfiesBattleOrderModifier(self));
+        // Dark Side Force drains here are immune to Battle Plan
+        modifiers.add(new ForceDrainImmuneToBattlePlanModifier(self, self, game.getDarkPlayer()));
 
         return modifiers;
     }
 
     @Override
     protected List<RequiredGameTextTriggerAction> getGameTextDarkSideRequiredAfterTriggers(String playerOnDarkSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
-        // Combat vehicles and starships here are lost
+        // Combat vehicles and starships here are lost (any player's)
         if (TriggerConditions.isTableChanged(game, effectResult)) {
             Filter combatVehiclesAndStarshipsHere = Filters.and(
                     Filters.or(Filters.combat_vehicle, Filters.starship),

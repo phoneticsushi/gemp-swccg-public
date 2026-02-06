@@ -34,6 +34,9 @@ import com.gempukku.swccgo.logic.effects.LoseForceEffect;
 import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromOffTableEffect;
 import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.ShuffleReserveDeckEffect;
+import com.gempukku.swccgo.logic.decisions.ArbitraryCardsSelectionDecision;
+import com.gempukku.swccgo.logic.decisions.DecisionResultInvalidException;
+import com.gempukku.swccgo.logic.effects.PlayoutDecisionEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardsFromLostPileEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.timing.EffectResult;
@@ -365,45 +368,37 @@ public class Card701_044_BACK extends AbstractObjective {
                                 if (selectedCards.size() == 2) {
                                     final List<PhysicalCard> cardList = new ArrayList<>(selectedCards);
 
-                                    // Let opponent choose one card to place on Used Pile
+                                    // Send message about the selected cards
+                                    game.getGameState().sendMessage(playerId + " selects " + GameUtils.getAppendedNames(cardList) + " from Lost Pile");
+
+                                    // Let opponent choose one card to place on Used Pile (using ArbitraryCardsSelectionDecision since cards are off-table)
                                     action.appendEffect(
-                                            new PassthruEffect(action) {
-                                                @Override
-                                                protected void doPlayEffect(SwccgGame game) {
-                                                    game.getGameState().sendMessage(playerId + " selects " + GameUtils.getAppendedNames(cardList) + " from Lost Pile");
+                                            new PlayoutDecisionEffect(action, opponent,
+                                                    new ArbitraryCardsSelectionDecision("Choose card to place on " + playerId + "'s Used Pile", cardList, 1, 1) {
+                                                        @Override
+                                                        public void decisionMade(String result) throws DecisionResultInvalidException {
+                                                            List<PhysicalCard> chosenCards = getSelectedCardsByResponse(result);
+                                                            final PhysicalCard cardForUsedPile = chosenCards.get(0);
+                                                            final PhysicalCard cardOutOfPlay = cardList.get(0).getCardId() == cardForUsedPile.getCardId() ? cardList.get(1) : cardList.get(0);
 
-                                                    // Create a subaction for opponent to choose
-                                                    action.appendEffect(
-                                                            new ChooseCardOnTableEffect(action, opponent, "Choose card to place on " + playerId + "'s Used Pile",
-                                                                    Filters.in(cardList)) {
-                                                                @Override
-                                                                protected boolean getUseShortcut() {
-                                                                    return false;  // Force opponent to choose
-                                                                }
-                                                                @Override
-                                                                protected void cardSelected(final PhysicalCard cardForUsedPile) {
-                                                                    final PhysicalCard cardOutOfPlay = cardList.get(0).getCardId() == cardForUsedPile.getCardId() ? cardList.get(1) : cardList.get(0);
+                                                            game.getGameState().sendMessage(opponent + " chooses to place " + GameUtils.getCardLink(cardForUsedPile) + " on " + playerId + "'s Used Pile");
+                                                            game.getGameState().sendMessage(GameUtils.getCardLink(cardOutOfPlay) + " is placed out of play");
 
-                                                                    game.getGameState().sendMessage(opponent + " chooses to place " + GameUtils.getCardLink(cardForUsedPile) + " on " + playerId + "'s Used Pile");
-                                                                    game.getGameState().sendMessage(GameUtils.getCardLink(cardOutOfPlay) + " is placed out of play");
+                                                            // Place one card on Used Pile (card is already off-table from Lost Pile selection)
+                                                            action.appendEffect(
+                                                                    new PassthruEffect(action) {
+                                                                        @Override
+                                                                        protected void doPlayEffect(SwccgGame game) {
+                                                                            GameState gameState = game.getGameState();
+                                                                            gameState.addCardToTopOfZone(cardForUsedPile, Zone.USED_PILE, playerId);
+                                                                        }
+                                                                    });
 
-                                                                    // Place one card on Used Pile (card is already off-table from Lost Pile selection)
-                                                                    action.appendEffect(
-                                                                            new PassthruEffect(action) {
-                                                                                @Override
-                                                                                protected void doPlayEffect(SwccgGame game) {
-                                                                                    GameState gameState = game.getGameState();
-                                                                                    gameState.addCardToTopOfZone(cardForUsedPile, Zone.USED_PILE, playerId);
-                                                                                }
-                                                                            });
-
-                                                                    // Place other card out of play
-                                                                    action.appendEffect(
-                                                                            new PlaceCardOutOfPlayFromOffTableEffect(action, cardOutOfPlay));
-                                                                }
-                                                            });
-                                                }
-                                            });
+                                                            // Place other card out of play
+                                                            action.appendEffect(
+                                                                    new PlaceCardOutOfPlayFromOffTableEffect(action, cardOutOfPlay));
+                                                        }
+                                                    }));
                                 }
                             }
                         });

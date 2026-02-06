@@ -36,7 +36,7 @@ public class Card701_041 extends AbstractRebel {
     public Card701_041() {
         super(Side.LIGHT, 3, 3, 3, 2, 4, "\u2022Janse, Sharpshooter", Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
         setLore("Human native of the planet Ukio. Left BlasTech Industries with a cache of A280 blaster rifles. Earned the rank of corporal in the Alliance Special Forces. Mountaineer.");
-        setGameText("During battle, opponent's characters are defense value -1 at same and adjacent sites. Permanent weapon is ••A280 Sharpshooter Rifle (may target a character or creature at same or adjacent site for free; draw destiny; target hit, and is forfeit = 0, if destiny +1 > defense value).");
+        setGameText("During battle, opponent's characters are defense value -1 at same and adjacent sites. Permanent weapon is â€¢â€¢A280 Sharpshooter Rifle (may target a character or creature at same or adjacent site for free; draw destiny; target hit, and is forfeit = 0, if destiny +1 > defense value).");
         addPersona(Persona.JANSE);
         addIcons(Icon.WARRIOR, Icon.PERMANENT_WEAPON, Icon.BEEZER_BOWL_2025);
         addKeywords(Keyword.MOUNTAINEER, Keyword.MALE, Keyword.CORPORAL);
@@ -72,6 +72,8 @@ public class Card701_041 extends AbstractRebel {
                 return null;
             }
         };
+        permanentWeapon.addKeyword(Keyword.RIFLE);
+        permanentWeapon.addKeyword(Keyword.BLASTER_RIFLE);
         return permanentWeapon;
     }
 }

@@ -77,8 +77,8 @@ public class Card701_050 extends AbstractEffect {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<>();
-        // Gorax is ferocity +1 for each card stacked here
-        modifiers.add(new FerocityModifier(self, Filters.persona(Persona.GORAX), null, new StackedEvaluator(self), false));
+        // Gorax is ferocity +1 for each card stacked here (front side only: Gorax, The Mighty)
+        modifiers.add(new FerocityModifier(self, Filters.title(Title.Gorax_The_Mighty), null, new StackedEvaluator(self), false));
         // The Great Devourer is landspeed +1 for each card stacked here
         modifiers.add(new LandspeedModifier(self, Filters.title(Title.The_Great_Devourer), new StackedEvaluator(self)));
         return modifiers;
@@ -200,8 +200,8 @@ public class Card701_050 extends AbstractEffect {
 
                 PhysicalCard currentLocation = game.getModifiersQuerying().getLocationHere(game.getGameState(), greatDevourer);
                 if (currentLocation != null) {
-                    // Once-per-game relocate goes to any adjacent site, not restricted to habitat
-                    Filter adjacentSite = Filters.adjacentSite(currentLocation);
+                    // Relocate restricted to adjacent exterior Endor sites (habitat)
+                    Filter adjacentSite = Filters.and(Filters.adjacentSite(currentLocation), Filters.exterior_site, Filters.Endor_site);
 
                     if (GameConditions.canSpot(game, self, adjacentSite)) {
                         final PhysicalCard creatureToMove = greatDevourer;

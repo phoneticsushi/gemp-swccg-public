@@ -6,6 +6,8 @@ import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgBuiltInCardBlueprint;
 import com.gempukku.swccgo.game.state.GameState;
+import com.gempukku.swccgo.logic.modifiers.ForceDrainImmuneToBattleOrderModifier;
+import com.gempukku.swccgo.logic.modifiers.ForceDrainImmuneToBattlePlanModifier;
 import com.gempukku.swccgo.logic.modifiers.MayTargetAtAnyExteriorSiteOnPlanetModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.ModifierType;
@@ -339,6 +341,35 @@ public interface Targeting extends BaseQuery, Weapons, Captives, CardTraits, Pil
 		for (Modifier modifier : getModifiersAffectingCard(gameState, modifierType, card)) {
 			if (modifier.getModifierType() == modifierType) {
 				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Determines if Force drains at the specified location by the specified player are immune to the specified modifier type.
+	 * @param gameState the game state
+	 * @param location the location
+	 * @param modifierType the modifier type (FORCE_DRAIN_IMMUNE_TO_BATTLE_ORDER or FORCE_DRAIN_IMMUNE_TO_BATTLE_PLAN)
+	 * @param playerId the player draining Force
+	 * @return true if immune, otherwise false
+	 */
+	default boolean isForceDrainImmuneToModifier(GameState gameState, PhysicalCard location, ModifierType modifierType, String playerId) {
+		for (Modifier modifier : getModifiersAffectingCard(gameState, modifierType, location)) {
+			if (modifierType == ModifierType.FORCE_DRAIN_IMMUNE_TO_BATTLE_ORDER) {
+				if (modifier instanceof ForceDrainImmuneToBattleOrderModifier) {
+					ForceDrainImmuneToBattleOrderModifier immuneModifier = (ForceDrainImmuneToBattleOrderModifier) modifier;
+					if (playerId.equals(immuneModifier.getPlayerDrainingForce())) {
+						return true;
+					}
+				}
+			} else if (modifierType == ModifierType.FORCE_DRAIN_IMMUNE_TO_BATTLE_PLAN) {
+				if (modifier instanceof ForceDrainImmuneToBattlePlanModifier) {
+					ForceDrainImmuneToBattlePlanModifier immuneModifier = (ForceDrainImmuneToBattlePlanModifier) modifier;
+					if (playerId.equals(immuneModifier.getPlayerDrainingForce())) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;
