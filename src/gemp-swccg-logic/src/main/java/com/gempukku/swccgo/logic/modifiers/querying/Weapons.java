@@ -245,6 +245,7 @@ public interface Weapons extends BaseQuery, Icons {
 		}
 		for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.FIRE_WEAPON_FIRED_AT_COST, weapon)) {
 			if (modifier.isAffectedTarget(gameState, query(), weapon)
+					&& target != null
 					&& ((FireWeaponFiredAtCostModifier)modifier).isAffectedFiredAtTarget(gameState, query(), target)) {
 				result += modifier.getValue(gameState, query(), cardFiringWeapon);
 			}
@@ -286,6 +287,7 @@ public interface Weapons extends BaseQuery, Icons {
 		}
 		for (Modifier modifier : getModifiers(gameState, ModifierType.FIRE_WEAPON_FIRED_AT_COST)) {
 			if (modifier.isAffectedTarget(gameState, query(), permanentWeapon)
+					&& target != null
 					&& ((FireWeaponFiredAtCostModifier)modifier).isAffectedFiredAtTarget(gameState, query(), target)) {
 				result += modifier.getValue(gameState, query(), cardFiringWeapon);
 			}
@@ -293,6 +295,54 @@ public interface Weapons extends BaseQuery, Icons {
 
 		result = Math.max(0, result);
 		return result;
+	}
+
+	/**
+	 * Gets the extra Force cost to fire a weapon at a specific target, due to "fired at" cost modifiers.
+	 * This method can be called independently of getFireWeaponCost() so that target-dependent
+	 * cost modifiers are evaluated even for weapons that normally fire for free.
+	 * @param gameState the game state
+	 * @param weapon the weapon card
+	 * @param cardFiringWeapon the card firing the weapon, or null if weapon is not fired by another card
+	 * @param target the card targeted by the weapon
+	 * @return the extra Force cost
+	 */
+	default float getExtraForceCostToFireWeaponAtTarget(GameState gameState, PhysicalCard weapon, PhysicalCard cardFiringWeapon, PhysicalCard target) {
+		float result = 0;
+		if (target == null) {
+			return result;
+		}
+		for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.FIRE_WEAPON_FIRED_AT_COST, weapon)) {
+			if (modifier.isAffectedTarget(gameState, query(), weapon)
+					&& ((FireWeaponFiredAtCostModifier)modifier).isAffectedFiredAtTarget(gameState, query(), target)) {
+				result += modifier.getValue(gameState, query(), cardFiringWeapon);
+			}
+		}
+		return Math.max(0, result);
+	}
+
+	/**
+	 * Gets the extra Force cost to fire a permanent weapon at a specific target, due to "fired at" cost modifiers.
+	 * This method can be called independently of getFireWeaponCost() so that target-dependent
+	 * cost modifiers are evaluated even for weapons that normally fire for free.
+	 * @param gameState the game state
+	 * @param permanentWeapon the permanent weapon
+	 * @param cardFiringWeapon the card firing the permanent weapon
+	 * @param target the card targeted by the permanent weapon
+	 * @return the extra Force cost
+	 */
+	default float getExtraForceCostToFireWeaponAtTarget(GameState gameState, SwccgBuiltInCardBlueprint permanentWeapon, PhysicalCard cardFiringWeapon, PhysicalCard target) {
+		float result = 0;
+		if (target == null) {
+			return result;
+		}
+		for (Modifier modifier : getModifiers(gameState, ModifierType.FIRE_WEAPON_FIRED_AT_COST)) {
+			if (modifier.isAffectedTarget(gameState, query(), permanentWeapon)
+					&& ((FireWeaponFiredAtCostModifier)modifier).isAffectedFiredAtTarget(gameState, query(), target)) {
+				result += modifier.getValue(gameState, query(), cardFiringWeapon);
+			}
+		}
+		return Math.max(0, result);
 	}
 
 	/**

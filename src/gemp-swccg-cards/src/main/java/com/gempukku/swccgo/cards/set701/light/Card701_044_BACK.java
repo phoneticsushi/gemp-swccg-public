@@ -15,6 +15,7 @@ import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Phase;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -158,7 +159,7 @@ public class Card701_044_BACK extends AbstractObjective {
                     new PassthruEffect(action) {
                         @Override
                         protected void doPlayEffect(SwccgGame game) {
-                            Filter goraxFilter = Filters.title("Gorax");
+                            Filter goraxFilter = Filters.persona(Persona.GORAX);
                             Filter exteriorEndorSite = Filters.and(Filters.exterior_site, Filters.Endor_site);
 
                             final PhysicalCard gorax = Filters.findFirstActive(game, self, goraxFilter);

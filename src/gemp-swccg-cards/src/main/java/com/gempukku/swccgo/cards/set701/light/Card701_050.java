@@ -25,6 +25,7 @@ import com.gempukku.swccgo.logic.GameUtils;
 import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
+import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.effects.RelocateBetweenLocationsEffect;
 import com.gempukku.swccgo.logic.effects.choose.ChooseCardOnTableEffect;
 import com.gempukku.swccgo.logic.modifiers.FerocityModifier;
@@ -136,6 +137,24 @@ public class Card701_050 extends AbstractEffect {
                                 gameState.sendMessage(GameUtils.getCardLink(defeatedCard) + " and attachments stacked on " + GameUtils.getCardLink(self));
                             }
                         });
+
+                // After stacking, check if Gorax should flip (3+ cards stacked on Pile of Bones)
+                action.appendEffect(
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                int stackedCount = game.getGameState().getStackedCards(self).size();
+                                if (stackedCount >= 3) {
+                                    PhysicalCard gorax = Filters.findFirstActive(game, self,
+                                            Filters.and(Filters.persona(Persona.GORAX), Filters.not(Filters.title(Title.The_Great_Devourer))));
+                                    if (gorax != null && GameConditions.canBeFlipped(game, gorax)) {
+                                        game.getGameState().sendMessage("Three or more cards stacked on " + GameUtils.getCardLink(self) + " — " + GameUtils.getCardLink(gorax) + " flips");
+                                        action.appendEffect(
+                                                new FlipCardEffect(action, gorax));
+                                    }
+                                }
+                            }
+                        });
                 return Collections.singletonList(action);
             }
         }
@@ -181,6 +200,24 @@ public class Card701_050 extends AbstractEffect {
                                 game.getGameState().removeCardFromZone(cardToStack);
                                 game.getGameState().stackCard(cardToStack, self, false, true, false);
                                 game.getGameState().sendMessage(GameUtils.getCardLink(cardToStack) + " is stacked on " + GameUtils.getCardLink(self));
+                            }
+                        });
+
+                // After stacking, check if Gorax should flip (3+ cards stacked on Pile of Bones)
+                action.appendEffect(
+                        new PassthruEffect(action) {
+                            @Override
+                            protected void doPlayEffect(SwccgGame game) {
+                                int stackedCount = game.getGameState().getStackedCards(self).size();
+                                if (stackedCount >= 3) {
+                                    PhysicalCard gorax = Filters.findFirstActive(game, self,
+                                            Filters.and(Filters.persona(Persona.GORAX), Filters.not(Filters.title(Title.The_Great_Devourer))));
+                                    if (gorax != null && GameConditions.canBeFlipped(game, gorax)) {
+                                        game.getGameState().sendMessage("Three or more cards stacked on " + GameUtils.getCardLink(self) + " — " + GameUtils.getCardLink(gorax) + " flips");
+                                        action.appendEffect(
+                                                new FlipCardEffect(action, gorax));
+                                    }
+                                }
                             }
                         });
 

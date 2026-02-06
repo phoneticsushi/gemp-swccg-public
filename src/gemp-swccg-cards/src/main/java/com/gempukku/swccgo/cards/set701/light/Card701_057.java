@@ -68,10 +68,12 @@ public class Card701_057 extends AbstractNormalEffect {
         List<Modifier> modifiers = new LinkedList<Modifier>();
 
         // Opponent must use +1 Force to fire a weapon targeting your Rebel present with your Ewok
-        // Using Filters.any for affectFilter and weaponFilter so this works for both regular weapons
-        // and permanent weapons (SwccgBuiltInCardBlueprint). The targetFilter provides the real constraint.
+        // affectFilter=Filters.weapon attaches modifier to regular weapon cards for getModifiersAffectingCard lookup.
+        // weaponFilter=Filters.any ensures isAffectedTarget matches both regular and permanent weapons.
+        // The actual cost is applied via getExtraForceCostToFireWeaponAtTarget() in Weapons.java,
+        // which is called from FireWeaponActionBuilder even for weapons that normally fire for free.
         modifiers.add(new FireWeaponFiredAtCostModifier(self,
-                Filters.any,
+                Filters.weapon,
                 1,
                 Filters.any,
                 yourRebelPresentWithYourEwok));

@@ -560,6 +560,19 @@ public interface Forfeit extends BaseQuery, Attributes, Destiny, Flags, Keywords
 			}
 		}
 
+		// Beezer Bowl 2025: Apply immunity change modifiers
+		// For "> X" immunity, we SUBTRACT the change (opposite of "< X" which adds)
+		// This is because lowering X makes you immune to MORE values
+		// e.g., "immune to > 2" + "adds 2 to immunity" = "immune to > 0" (now immune to 1, 2, 3...)
+		if (hasGreaterThanImmunity) {
+			for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.IMMUNITY_TO_ATTRITION_CHANGE, physicalCard)) {
+				if (sourceToIgnore == null || modifier.getSource(gameState) == null || !Filters.and(sourceToIgnore).accepts(gameState, query(), modifier.getSource(gameState))) {
+					result -= modifier.getImmunityToAttritionChangedModifier(gameState, query(), physicalCard);
+					modifierCollector.addModifier(modifier);
+				}
+			}
+		}
+
 		return result;
 	}
 
