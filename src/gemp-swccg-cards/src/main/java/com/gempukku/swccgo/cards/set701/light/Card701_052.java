@@ -24,8 +24,9 @@ import com.gempukku.swccgo.game.SwccgGame;
 import com.gempukku.swccgo.logic.actions.FireWeaponAction;
 import com.gempukku.swccgo.logic.actions.FireWeaponActionBuilder;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
-import com.gempukku.swccgo.logic.effects.choose.StealCardIntoHandFromLostPileEffect;
+import com.gempukku.swccgo.logic.effects.choose.StealCardAndAttachFromLostPileEffect;
 import com.gempukku.swccgo.logic.modifiers.MayDeployToTargetModifier;
+import com.gempukku.swccgo.logic.modifiers.MayUseWeaponModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 
 /**
@@ -42,14 +43,18 @@ public class Card701_052 extends AbstractRebel {
         addPersonas(Persona.JUNKIN);
     }
 
-    // Any stolen blaster may deploy on Junkin
+    // Any stolen blaster may deploy on Junkin and be fired by Junkin
+    @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new ArrayList<>();
+        // Any stolen blaster may deploy on Junkin
         modifiers.add(new MayDeployToTargetModifier(self, Filters.and(Filters.stolen, Filters.blaster), self));
+        // Junkin may use/fire any stolen blaster attached to him
+        modifiers.add(new MayUseWeaponModifier(self, self, Filters.and(Filters.stolen, Filters.blaster, Filters.attachedTo(self))));
         return modifiers;
     }
 
-    // Once per game, Junkin may steal a blaster from opponent’s Lost Pile
+    // Once per game, Junkin may steal a blaster from opponent's Lost Pile
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
         GameTextActionId gameTextActionId = GameTextActionId.SERGEANT_JUNKIN__STEAL_A_BLASTER;
@@ -60,13 +65,13 @@ public class Card701_052 extends AbstractRebel {
         ) {
             final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId, gameTextActionId);
             action.setText("Steal a blaster from opponent's Lost Pile");
-            action.setActionMsg("Steal a blaster from opponent's Lost Pile");
+            action.setActionMsg("Steal a blaster from opponent's Lost Pile and attach to Junkin");
             action.appendUsage(
                     new OncePerGameEffect(action)
             );
             // Perform result(s)
             action.appendEffect(
-                    new StealCardIntoHandFromLostPileEffect(action, playerId, Filters.blaster));
+                    new StealCardAndAttachFromLostPileEffect(action, playerId, self, Filters.blaster));
             return Collections.singletonList(action);
         }
 
@@ -79,7 +84,7 @@ public class Card701_052 extends AbstractRebel {
         AbstractPermanentWeapon permanentWeapon = new AbstractPermanentWeapon("Concussion Grenade") {
             @Override
             public List<FireWeaponAction> getGameTextFireWeaponActions(String playerId, SwccgGame game, PhysicalCard self, boolean forFree, int extraForceRequired, PhysicalCard sourceCard, boolean repeatedFiring, Filter targetedAsCharacter, Float defenseValueAsCharacter, Filter fireAtTargetFilter, boolean ignorePerAttackOrBattleLimit) {
-                FireWeaponActionBuilder actionBuilder = FireWeaponActionBuilder.startBuildPrep(playerId, game, sourceCard, self, forFree, extraForceRequired, repeatedFiring, targetedAsCharacter, defenseValueAsCharacter, fireAtTargetFilter, ignorePerAttackOrBattleLimit)
+                FireWeaponActionBuilder actionBuilder = FireWeaponActionBuilder.startBuildPrep(playerId, game, sourceCard, self, this, forFree, extraForceRequired, repeatedFiring, targetedAsCharacter, defenseValueAsCharacter, fireAtTargetFilter, ignorePerAttackOrBattleLimit)
                         .firesWithoutTargetingAtSameOrAdjacentSite().finishBuildPrep();
                 if (actionBuilder != null) {
                     // Build action using common utility

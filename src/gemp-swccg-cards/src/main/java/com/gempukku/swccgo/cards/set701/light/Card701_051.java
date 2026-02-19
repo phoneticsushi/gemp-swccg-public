@@ -21,7 +21,6 @@ import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.actions.TopLevelGameTextAction;
 import com.gempukku.swccgo.logic.effects.AttachCardFromTableEffect;
-import com.gempukku.swccgo.logic.effects.PlaceCardOutOfPlayFromTableEffect;
 import com.gempukku.swccgo.logic.modifiers.MayNotBeChokedModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.timing.EffectResult;
@@ -97,7 +96,7 @@ public class Card701_051 extends AbstractNormalEffect {
 
                 action.setText("Relocate to Mount Krana: Apex");
                 action.setActionMsg("Relocate " + GameUtils.getCardLink(self) + " to Mount Krana: Apex");
-                // Perform result(s)
+                // Prevent the original leave-table effect
                 action.appendEffect(
                         new PassthruEffect(action) {
                             @Override
@@ -108,8 +107,10 @@ public class Card701_051 extends AbstractNormalEffect {
                                 }
                             }
                         });
+                // FIX: Relocate to Apex by attaching to the Apex location (instead of placing out of play,
+                // which was causing an infinite loop by re-triggering "about to leave table")
                 action.appendEffect(
-                        new PlaceCardOutOfPlayFromTableEffect(action, self));
+                        new AttachCardFromTableEffect(action, self, mountKranaApex));
                 actions.add(action);
             } else {
                 game.getGameState().sendMessage("Unable to find Mount Krana: Apex; can't relocate " + GameUtils.getCardLink(self));
