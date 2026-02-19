@@ -40,6 +40,8 @@ public class RuleSet {
         new EffectsOfRevolutionRule(_actionsEnvironment).applyRule();
         new ExcludeBattleParticipantsRule(_actionsEnvironment).applyRule();
         new ExpandLocationGameTextRule(_actionsEnvironment).applyRule();
+        //adding generals orders for use with Beezer Bowl 2025 cardset 
+        new GeneralsOrderRule(_actionsEnvironment).applyRule();
         new HabitatRule(_actionsEnvironment).applyRule();
         new HitCardOutsideOfAttackOrBattleRule(_actionsEnvironment).applyRule();
         new FrozenCaptiveRule(_modifiersEnvironment).applyRule();
