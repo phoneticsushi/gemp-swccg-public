@@ -4216,6 +4216,7 @@ const fixedImages = {
 "701_55": "https://pub-56b484789f1c4698a152cb0e72ca68c8.r2.dev/beezer_bowl_2025/images/light/LS%20-%20Twilight%20Is%20Upon%20Us.png",
 "701_56": "https://pub-56b484789f1c4698a152cb0e72ca68c8.r2.dev/beezer_bowl_2025/images/light/LS%20-%20Wicket%20Warrick.png",
 "701_57": "https://pub-56b484789f1c4698a152cb0e72ca68c8.r2.dev/beezer_bowl_2025/images/light/LS%20-%20Yuf%20Tu%20Churi.png",
+"701_58": "http://localhost:8000/BeezerJunkinCombo/Beezer%20Junkin%20Combo.png",
 
 // Virtual Alternate Images
 "200_1ai":"https://res.starwarsccg.org/cards/VirtualAlternateImage-Light/hires/aaylasecura_ai.png",

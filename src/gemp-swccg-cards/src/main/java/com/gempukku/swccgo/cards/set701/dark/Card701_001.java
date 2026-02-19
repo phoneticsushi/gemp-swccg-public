@@ -16,18 +16,19 @@ import com.gempukku.swccgo.filters.Filter;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
+import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.modifiers.ForfeitModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
 import com.gempukku.swccgo.logic.modifiers.PowerModifier;
-import com.gempukku.swccgo.logic.timing.Effect;
+import com.gempukku.swccgo.logic.timing.EffectResult;
 
 /**
-* Set: BEEZER_BOWL_2025
-* Type: LOCATION_SITE
-* Title: Endor: Bright Tree Village
-*/
+ * Set: BEEZER_BOWL_2025
+ * Type: LOCATION_SITE
+ * Title: Endor: Bright Tree Village
+ */
 public class Card701_001 extends AbstractSite {
     public Card701_001() {
         super(Side.DARK, Title.Bright_Tree_Village, Title.Endor, Uniqueness.UNIQUE, ExpansionSet.BEEZER_BOWL_2025, Rarity.V);
@@ -40,16 +41,19 @@ public class Card701_001 extends AbstractSite {
     }
 
     @Override
-    protected List<RequiredGameTextTriggerAction> getGameTextDarkSideRequiredBeforeTriggers(String playerOnDarkSideOfLocation, SwccgGame game, Effect effect, PhysicalCard self, int gameTextSourceCardId) {
-        // Unless opponent controls...
-        if (!GameConditions.controls(game, game.getOpponent(playerOnDarkSideOfLocation), self)
-                // ...if Sorcery Test #3 completed...
-                && GameConditions.canSpot(game, self, Filters.and(Filters.completed_Sorcery_Test, Filters.Sorcery_Test_3))) {
+    protected List<RequiredGameTextTriggerAction> getGameTextDarkSideRequiredAfterTriggers(String playerOnDarkSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
+        // Check when game state changes
+        if (TriggerConditions.isTableChanged(game, effectResult)) {
+            // Unless opponent controls...
+            if (!GameConditions.controls(game, game.getOpponent(playerOnDarkSideOfLocation), self)
+                    // ...if Sorcery Test #3 completed...
+                    && GameConditions.canSpot(game, self, Filters.and(Filters.completed_Sorcery_Test, Filters.Sorcery_Test_3))) {
 
-            // ...flip this site
-            final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
-            action.appendEffect(new FlipCardEffect(action, self));
-            return Collections.singletonList(action);
+                // ...flip this site
+                final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
+                action.appendEffect(new FlipCardEffect(action, self));
+                return Collections.singletonList(action);
+            }
         }
         return null;
     }
@@ -58,13 +62,13 @@ public class Card701_001 extends AbstractSite {
     protected List<Modifier> getGameTextLightSideWhileActiveModifiers(String playerOnLightSideOfLocation, SwccgGame game, PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
         // Your Ewoks here
-        final Filter yourEowksHere = Filters.and(Filters.your(playerOnLightSideOfLocation), Filters.Ewok, Filters.here(self));
+        final Filter yourEwoksHere = Filters.and(Filters.your(playerOnLightSideOfLocation), Filters.Ewok, Filters.here(self));
         // are power and forfeit +1
-        modifiers.add(new PowerModifier(self, Filters.and(yourEowksHere, Filters.not(Filters.Shaman)), 1));
-        modifiers.add(new ForfeitModifier(self, Filters.and(yourEowksHere, Filters.not(Filters.Shaman)), 1));
+        modifiers.add(new PowerModifier(self, Filters.and(yourEwoksHere, Filters.not(Filters.Shaman)), 1));
+        modifiers.add(new ForfeitModifier(self, Filters.and(yourEwoksHere, Filters.not(Filters.Shaman)), 1));
         // (+2 if shaman)
-        modifiers.add(new PowerModifier(self, Filters.and(yourEowksHere, Filters.Shaman), 2));
-        modifiers.add(new ForfeitModifier(self, Filters.and(yourEowksHere, Filters.Shaman), 2));
+        modifiers.add(new PowerModifier(self, Filters.and(yourEwoksHere, Filters.Shaman), 2));
+        modifiers.add(new ForfeitModifier(self, Filters.and(yourEwoksHere, Filters.Shaman), 2));
         return modifiers;
     }
 }
