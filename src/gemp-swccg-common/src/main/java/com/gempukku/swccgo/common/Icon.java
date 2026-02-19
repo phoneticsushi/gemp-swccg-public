@@ -75,6 +75,8 @@ public enum Icon implements Filterable {
     EFFECT("Effect"),
     EPIC_EVENT("Epic Event"),
     FIRST_ORDER("First Order"),
+    // adding generals orders for Beezer Bowl 2025 cardset
+    GENERALS_ORDER("General's Order"),
     IMPERIAL("Imperial"),
     INTERRUPT("Interrupt"),
     JEDI_MASTER("Jedi Master"),

@@ -19,6 +19,7 @@ public enum Persona implements Filterable {
     BEAUMONT("Beaumont"),
     BECKETT("Beckett"),
     BEEDO("Beedo"),
+    BEEZER("Beezer"),
     BEN_SOLO("Ben Solo"),
     BEQ("Beq"),
     BIB("Bib Fortuna"),
@@ -42,6 +43,7 @@ public enum Persona implements Filterable {
     DACK("Dack Ralter"),
     DANNIK("Dannik Jerriko"),
     DASH("Dash"),
+    DELEVAR("Delevar"),
     DENGAR("Dengar"),
     DIN("Din"),
     DJ("DJ"),
@@ -94,12 +96,14 @@ public enum Persona implements Filterable {
     KAZUDA("Kazuda"),
     KETWOL("Ketwol"),
     KHURGEE("Khurgee"),
+    KNEESAA("Kneesaa"),
     KRENNIC("Krennic"),
     KURUK("Kuruk"),
     KYLO("Kylo"),
     L3_37("L3-37"),
     LADY_VADER("Lady Vader"),
     LANDO("Lando"),
+    LATARA("Latara"),
     LAUDICA("Laudica"),
     LEIA("Leia"),
     LOBOT("Lobot"),
@@ -118,12 +122,14 @@ public enum Persona implements Filterable {
     MAZ("Maz"),
     MCQUARRIE("McQuarrie"),
     MELSHI("Melshi"),
+    MIDGE("Midge"),
     MON_MOTHMA("Mon Mothma"),
     MORAG("Morag"),
     MOTTI("Motti"),
     NALAN_CHEEL("Nalan Cheel"),
     NARTHAX("Narthax"),
     NIEN_NUNB("Nien Nunb"),
+    NIK_SANT("Nik Sant"),
     OBIWAN("Obi-Wan"),
     OCHI("Ochi"),
     ODD_BALL("Odd ball"),
@@ -184,6 +190,7 @@ public enum Persona implements Filterable {
     VUL("Vul"),
     WEDGE("Wedge"),
     WES("Wes Janson"),
+    WICKET("Wicket"),
     WUHER("Wuher"),
     YODA("Yoda"),
     YULAREN("Yularen"),
@@ -191,9 +198,18 @@ public enum Persona implements Filterable {
     ZEV("Zev Senesca"),
     ZUCKUSS("Zuckuss"),
 
+    // Creatures
+    GORAX("Gorax"),
+    GORAX_THE_MIGHTY("Gorax, The Mighty"),
+    THE_GREAT_DEVOURER("The Great Devourer"),
+
     // Devices
+    BEEZERS_HELMET("Beezer's Helmet"),
+    BEEZERS_TWEEZERS("Beezer's Tweezers"),
     CRYSTAL_CLOAK("Crystal Cloak"),
     JADRUS_CRYSTAL_BALL("Jadru's Crystal Ball"),
+    LATARAS_FLUTE("Latara's Flute"),
+    WICKETS_BELT_OF_HONOR("Wicket's Belt of Honor"),
 
     // Starships
     BESTOON_LEGACY("Bestoon Legacy"),
@@ -257,6 +273,7 @@ public enum Persona implements Filterable {
     MAULS_DOUBLE_BLADED_LIGHTSABER("Maul's Double-Bladed Lightsaber"),
     QUIGON_JINNS_LIGHTSABER("Qui-Gon Jinn's Lightsaber"),
     SIDIOUS_LIGHTSABER("Sidious' Lightsaber"),
+    SMOKE_CANISTER("Smoke Canister"),
     SON_OF_VADERS_LIGHTSABER("Son Of Vader's Lightsaber"),
     VADERS_LIGHTSABER("Vader's Lightsaber"),
     ZUCKUSS_SNARE_RIFLE("Zuckuss' Snare Rifle"),
@@ -293,6 +310,9 @@ public enum Persona implements Filterable {
         if (equals(MARA_JADES_LIGHTSABER)) return MARA_SKYWALKERS_LIGHTSABER;
         if (equals(MARA_SKYWALKERS_LIGHTSABER)) return MARA_JADES_LIGHTSABER;
         if (equals(SON_OF_VADERS_LIGHTSABER)) return LUKES_LIGHTSABER;
+        if (equals(GORAX)) return GORAX_THE_MIGHTY;
+        if (equals(GORAX_THE_MIGHTY)) return GORAX;
+        if (equals(THE_GREAT_DEVOURER)) return GORAX;
         if (equals(VADERS_LIGHTSABER)) return ANAKINS_LIGHTSABER;
         return this;
     }

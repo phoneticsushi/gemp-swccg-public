@@ -60,7 +60,7 @@ public interface Title {
     String Anoat = "Anoat";
     String Antechamber = "Maz's Castle: Antechamber";
     String Any_Methods_Necessary = "Any Methods Necessary";
-    String Apex = "Mount Krana: Apex";
+    String Apex = "Mt. Krana: Apex";
     String Apology_Accepted = "Apology Accepted";
     String Ardon_Crell = "Ardon \"Vapor\" Crell";
     String Arleil = "Arleil Schous";
@@ -86,6 +86,7 @@ public interface Title {
     String Awwww_Cannot_Get_Your_Ship_Out = "Awwww, Cannot Get Your Ship Out";
     String Azure_Angel = "Azure Angel";
     String Back_Door = "Endor: Back Door";
+    String Back_To_Base = "Back To Base"; // Beezer Bowl 2025 Objective (Back)
     String Bacta_Tank = "Bacta Tank";
     String Bad_Feeling_Have_I = "Bad Feeling Have I";
     String Barada = "Barada";
@@ -386,6 +387,7 @@ public interface Title {
     String End_This_Destructive_Conflict = "End This Destructive Conflict";
     String Endor = "Endor";
     String Endor_Celebration = "Endor Celebration";
+    String Endor_Mt_Krana_Pass = "Endor: Mt. Krana Pass";
     String Endor_Occupation = "Endor Occupation";
     String Endor_Operations = "Endor Operations";
     String Endor_Shield = "Endor Shield";
@@ -474,6 +476,9 @@ public interface Title {
     String Gold_5 = "Gold 5";
     String Gold_6 = "Gold 6";
     String Goldenrod = "Goldenrod";
+    String Gorax = "Gorax";
+    String Goraxs_Lair = "Mt. Krana: Gorax's Lair";
+    String Gorax_The_Mighty = "Gorax, The Mighty";
     String Goo_Nee_Tay = "Goo Nee Tay";
     String Graak = "Graak";
     String Gravel_Storm = "Gravel Storm";
@@ -690,6 +695,7 @@ public interface Title {
     String Lateral_Damage = "Lateral Damage";
     String Launch_Bay = "Star Destroyer: Launch Bay";
     String Launching_The_Assault = "Launching The Assault";
+    String Leave_It_To_Beezer = "Leave It To Beezer";  // Beezer Bowl 2025 - Card 38 Objective (front)
     String Leave_Them_To_Me = "Leave Them To Me";
     String Leebo = "LE-BO2D9 (Leebo)";
     String Leia_Of_Alderaan = "Leia Of Alderaan";
@@ -1166,6 +1172,7 @@ public interface Title {
     String The_Force_Is_Strong_In_My_Family = "The Force Is Strong In My Family";
     String The_Force_Is_Strong_With_This_One = "The Force Is Strong With This One";
     String The_Galaxy_May_Need_A_Legend = "The Galaxy May Need A Legend";
+    String The_Great_Devourer = "The Great Devourer";
     String The_Hidden_Path = "The Hidden Path";
     String The_Hyperdrive_Generators_Gone = "The Hyperdrive Generator's Gone";
     String The_Mythrol = "The Mythrol";
