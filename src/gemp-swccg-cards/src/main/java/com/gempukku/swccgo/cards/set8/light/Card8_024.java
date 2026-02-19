@@ -46,7 +46,7 @@ public class Card8_024 extends AbstractAlien {
         setLore("Ewok scout. Son of Warok. Brave, adventurous thief. Stole an Imperial speeder bike to create a diversion. 'Not bad for a little furball.'");
         setGameText("Deploys only on Endor. Power and forfeit +1 for each light side icon at same Endor site. May pilot only speeder bikes. Once during each of your control phases, may take one Free Ride into hand from Reserve Deck; reshuffle.");
         addIcons(Icon.ENDOR, Icon.PILOT);
-        addKeywords(Keyword.SCOUT, Keyword.THIEF);
+        addKeywords(Keyword.SCOUT, Keyword.THIEF, Keyword.MALE);
         setSpecies(Species.EWOK);
         addPersona(Persona.PAPLOO);
     }

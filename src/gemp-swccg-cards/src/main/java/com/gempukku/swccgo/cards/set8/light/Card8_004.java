@@ -7,6 +7,7 @@ import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.GameTextActionId;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Phase;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
@@ -40,6 +41,8 @@ public class Card8_004 extends AbstractRebel {
         addIcons(Icon.ENDOR, Icon.WARRIOR);
         addKeywords(Keyword.SCOUT, Keyword.FEMALE);
         setSpecies(Species.ALDERAANIAN);
+        addPersona(Persona.BEEZER);
+
     }
 
     @Override
