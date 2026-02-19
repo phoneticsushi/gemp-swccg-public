@@ -310,6 +310,8 @@ public interface Modifier {
     float getImmunityToAttritionOfExactlyModifier(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard);
     float getImmunityToAttritionChangedModifier(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard);
     float getImmunityToAttritionCappedAtValue(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard);
+    // Beezer Bowl 2025: Added to support "immune to attrition > X" (immune to values above X, vulnerable to X or less)
+    float getImmunityToAttritionGreaterThanModifier(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard);
 
     boolean isExceptForceIconOrPresenceRequirement();
 

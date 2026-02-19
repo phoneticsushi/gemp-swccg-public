@@ -424,6 +424,23 @@ public interface PhysicalCard extends Filterable, Snapshotable<PhysicalCard> {
     void setImmunityToAttritionOfExactly(float immunity);
     float getImmunityToAttritionOfExactly();
 
+    // Beezer Bowl 2025: Added immunity to attrition greater than support
+    /**
+     * Sets the immunity to attrition greater than value for this card.
+     * For "immune to attrition > X", this stores X. The card is immune to attrition values
+     * greater than X (i.e., X+1, X+2, etc.) but vulnerable to attrition X or less.
+     * @param immunity the immunity threshold value, or -1 if no such immunity
+     */
+    void setImmunityToAttritionGreaterThan(float immunity);
+
+    /**
+     * Gets the immunity to attrition greater than value for this card.
+     * For "immune to attrition > X", this returns X. The card is immune to attrition values
+     * greater than X (i.e., X+1, X+2, etc.) but vulnerable to attrition X or less.
+     * @return the immunity threshold value, or -1 if no such immunity
+     */
+    float getImmunityToAttritionGreaterThan();
+
     void setMovementDirection(MovementDirection direction);
     MovementDirection getMovementDirection();
 

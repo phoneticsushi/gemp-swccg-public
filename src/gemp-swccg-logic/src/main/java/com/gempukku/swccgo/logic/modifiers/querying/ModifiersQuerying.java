@@ -1,5 +1,9 @@
 package com.gempukku.swccgo.logic.modifiers.querying;
 
+import com.gempukku.swccgo.game.PhysicalCard;
+import com.gempukku.swccgo.game.state.GameState;
+import com.gempukku.swccgo.logic.modifiers.ModifierType;
+
 /**
  * This interface defines tons of different ways to retrieve card state in a game-aware manner.  Rather than
  * naively ask a card what its own Ability is, for example, you can use the Ability-related functions in this interface
@@ -21,5 +25,17 @@ public interface ModifiersQuerying extends BaseQuery, Ability, Armor, Attacks, A
 		Piles, Piloting, Podracing, Politics, Power, Presence, Prohibited, Reacts, Sabacc, Ferocity, LocationControl,
 		Targeting, Values, Weapons,
 		ModifiersState {
+
+	/**
+	 * Checks if a card has a specific modifier type affecting it.
+	 * Used by conditions like OccupiesSatisfiesBattlePlanCondition and OccupiesSatisfiesBattleOrderCondition
+	 * to determine if a location satisfies Battle Plan or Battle Order requirements when occupied.
+	 *
+	 * @param gameState the game state
+	 * @param card the card to check
+	 * @param modifierType the modifier type to look for
+	 * @return true if the card has the specified modifier type affecting it
+	 */
+	boolean hasModifierType(GameState gameState, PhysicalCard card, ModifierType modifierType);
 
 }

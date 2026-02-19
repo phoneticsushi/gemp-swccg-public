@@ -327,7 +327,10 @@ public interface Forfeit extends BaseQuery, Attributes, Destiny, Flags, Keywords
 		}
 
 		if (!skipImmunityValueCheck) {
-			return (getImmunityToAttritionLessThan(gameState, card, sourceToIgnore, modifierCollector) > 0 || getImmunityToAttritionOfExactly(gameState, card, sourceToIgnore, modifierCollector) > 0);
+			// Beezer Bowl 2025: Added getImmunityToAttritionGreaterThan check for "immune to attrition > X"
+			return (getImmunityToAttritionLessThan(gameState, card, sourceToIgnore, modifierCollector) > 0 
+					|| getImmunityToAttritionOfExactly(gameState, card, sourceToIgnore, modifierCollector) > 0
+					|| getImmunityToAttritionGreaterThan(gameState, card, sourceToIgnore, modifierCollector) >= 0);
 		}
 
 		return true;
@@ -495,6 +498,82 @@ public interface Forfeit extends BaseQuery, Attributes, Destiny, Flags, Keywords
 			return lockedValue;
 		}
 		return Math.max(0, result);
+	}
+
+	// ==================================================================================
+	// Beezer Bowl 2025: Added getImmunityToAttritionGreaterThan methods below
+	// Supports "immune to attrition > X" - card is immune to attrition values above X
+	// but remains vulnerable to attrition X or less (opposite of "immune to attrition < X")
+	// ==================================================================================
+
+	/**
+	 * Gets the amount of attrition the specified card is immune to greater than.
+	 * @param gameState the game state
+	 * @param physicalCard a card
+	 * @return the immunity to attrition greater than value, or -1 if no such immunity
+	 */
+	default float getImmunityToAttritionGreaterThan(GameState gameState, PhysicalCard physicalCard) {
+		return getImmunityToAttritionGreaterThan(gameState, physicalCard, null, new ModifierCollectorImpl());
+	}
+
+	/**
+	 * Gets the amount of attrition the specified card is immune to greater than.
+	 * @param gameState the game state
+	 * @param physicalCard a card
+	 * @param modifierCollector collector of affecting modifiers
+	 * @return the immunity to attrition greater than value, or -1 if no such immunity
+	 */
+	default float getImmunityToAttritionGreaterThan(GameState gameState, PhysicalCard physicalCard, ModifierCollector modifierCollector) {
+		return getImmunityToAttritionGreaterThan(gameState, physicalCard, null, modifierCollector);
+	}
+
+	/**
+	 * Gets the amount of attrition the specified card is immune to greater than.
+	 * For "immune to attrition > X", this returns X. The card is immune to attrition values
+	 * greater than X (i.e., X+1, X+2, etc.) but vulnerable to attrition X or less.
+	 * @param gameState the game state
+	 * @param physicalCard a card
+	 * @param sourceToIgnore source card to ignore modifiers from
+	 * @param modifierCollector collector of affecting modifiers
+	 * @return the immunity to attrition greater than value, or -1 if no such immunity
+	 */
+	private float getImmunityToAttritionGreaterThan(GameState gameState, PhysicalCard physicalCard, Filterable sourceToIgnore, ModifierCollector modifierCollector) {
+		if (!hasAnyImmunityToAttrition(gameState, physicalCard, true, sourceToIgnore, modifierCollector)) {
+			return -1;
+		}
+
+		float result = -1;
+		boolean hasGreaterThanImmunity = false;
+
+		for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.IMMUNITY_TO_ATTRITION_GREATER_THAN, physicalCard)) {
+			if (sourceToIgnore == null || modifier.getSource(gameState) == null || !Filters.and(sourceToIgnore).accepts(gameState, query(), modifier.getSource(gameState))) {
+				float value = modifier.getImmunityToAttritionGreaterThanModifier(gameState, query(), physicalCard);
+				if (!hasGreaterThanImmunity) {
+					result = value;
+					hasGreaterThanImmunity = true;
+				} else {
+					// For "greater than" immunity, lower threshold is better (covers more cases)
+					// e.g., "immune to > 2" is better than "immune to > 5"
+					result = Math.min(result, value);
+				}
+				modifierCollector.addModifier(modifier);
+			}
+		}
+
+		// Beezer Bowl 2025: Apply immunity change modifiers
+		// For "> X" immunity, we SUBTRACT the change (opposite of "< X" which adds)
+		// This is because lowering X makes you immune to MORE values
+		// e.g., "immune to > 2" + "adds 2 to immunity" = "immune to > 0" (now immune to 1, 2, 3...)
+		if (hasGreaterThanImmunity) {
+			for (Modifier modifier : getModifiersAffectingCard(gameState, ModifierType.IMMUNITY_TO_ATTRITION_CHANGE, physicalCard)) {
+				if (sourceToIgnore == null || modifier.getSource(gameState) == null || !Filters.and(sourceToIgnore).accepts(gameState, query(), modifier.getSource(gameState))) {
+					result -= modifier.getImmunityToAttritionChangedModifier(gameState, query(), physicalCard);
+					modifierCollector.addModifier(modifier);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**

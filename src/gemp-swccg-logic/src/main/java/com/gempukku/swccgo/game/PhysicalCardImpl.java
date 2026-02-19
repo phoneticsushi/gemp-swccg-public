@@ -113,6 +113,8 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     private String _raceDestinyForPlayer;
     private float _immunityToAttritionLessThan;
     private float _immunityToAttritionOfExactly;
+    // Beezer Bowl 2025: Added immunity to attrition greater than support
+    private float _immunityToAttritionGreaterThan = -1;
     private int _parsec;
     private String _partOfSystem;
     private String _planetOrbited;
@@ -239,6 +241,8 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
         snapshot._raceDestinyForPlayer = _raceDestinyForPlayer;
         snapshot._immunityToAttritionLessThan = _immunityToAttritionLessThan;
         snapshot._immunityToAttritionOfExactly = _immunityToAttritionOfExactly;
+        // Beezer Bowl 2025: Added immunity to attrition greater than support
+        snapshot._immunityToAttritionGreaterThan = _immunityToAttritionGreaterThan;
         snapshot._parsec = _parsec;
         snapshot._partOfSystem = _partOfSystem;
         snapshot._planetOrbited = _planetOrbited;
@@ -1484,6 +1488,17 @@ public class PhysicalCardImpl implements PhysicalCard, Cloneable {
     @Override
     public float getImmunityToAttritionOfExactly() {
         return _immunityToAttritionOfExactly;
+    }
+
+    // Beezer Bowl 2025: Added immunity to attrition greater than support
+    @Override
+    public void setImmunityToAttritionGreaterThan(float immunity) {
+        _immunityToAttritionGreaterThan = immunity;
+    }
+
+    @Override
+    public float getImmunityToAttritionGreaterThan() {
+        return _immunityToAttritionGreaterThan;
     }
 
     @Override

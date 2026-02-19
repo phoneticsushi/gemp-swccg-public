@@ -48,6 +48,8 @@ public class BattleDamageSegmentAction extends SystemQueueAction {
                         for (PhysicalCard cardInBattle : battleState.getAllCardsParticipating()) {
                             cardInBattle.setImmunityToAttritionLessThan(modifiersQuerying.getImmunityToAttritionLessThan(gameState, cardInBattle));
                             cardInBattle.setImmunityToAttritionOfExactly(modifiersQuerying.getImmunityToAttritionOfExactly(gameState, cardInBattle));
+                            // Beezer Bowl 2025: Add immunity to attrition greater than
+                            cardInBattle.setImmunityToAttritionGreaterThan(modifiersQuerying.getImmunityToAttritionGreaterThan(gameState, cardInBattle));
                         }
 
                         // Set the damage segment as reached
@@ -234,6 +236,8 @@ public class BattleDamageSegmentAction extends SystemQueueAction {
                                 boolean allHaveSufficentImmunityToAttritionLessThan = true;
                                 // Immunity to attrition (exactly)
                                 boolean allHaveSufficentImmunityToAttritionOfExactly = true;
+                                // Beezer Bowl 2025: Immunity to attrition (greater than)
+                                boolean allHaveSufficientImmunityToAttritionGreaterThan = true;
 
                                 for (PhysicalCard eligibleCard : eligibleCards) {
                                     // Only check cards present at the battle
@@ -247,8 +251,24 @@ public class BattleDamageSegmentAction extends SystemQueueAction {
                                             }
                                         }
                                         else {
+                                            // Beezer Bowl 2025: Check immunity to attrition greater than first
+                                            // "Immune to attrition > X" means immune if attrition is greater than X
+                                            float immunityGreaterThan = modifiersQuerying.getImmunityToAttritionGreaterThan(gameState, eligibleCard);
+                                            if (immunityGreaterThan >= 0 && totalAttrition > immunityGreaterThan) {
+                                                // Card is immune - attrition is greater than the threshold
+                                                // Continue to next card (this card passes the immunity check)
+                                                continue;
+                                            }
+                                            
+                                            // Check standard "immune to attrition < X" 
                                             float immunityToLessThan = modifiersQuerying.getImmunityToAttritionLessThan(gameState, eligibleCard);
                                             if (immunityToLessThan <= totalAttrition) {
+                                                // Card does not have sufficient "less than" immunity
+                                                // But check if it has "greater than" immunity that doesn't apply
+                                                if (immunityGreaterThan >= 0) {
+                                                    // Has "greater than" immunity but attrition is not greater than threshold
+                                                    allHaveSufficientImmunityToAttritionGreaterThan = false;
+                                                }
                                                 allHaveSufficentImmunityToAttritionLessThan = false;
                                                 break;
                                             }

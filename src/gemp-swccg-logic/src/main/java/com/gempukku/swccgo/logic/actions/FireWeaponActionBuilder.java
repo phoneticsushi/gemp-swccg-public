@@ -77,8 +77,10 @@ import com.gempukku.swccgo.logic.effects.choose.ChooseCharacterOnTableToCaptureE
 import com.gempukku.swccgo.logic.effects.choose.StealCardToLocationEffect;
 import com.gempukku.swccgo.logic.effects.choose.TakeStackedCardsIntoHandEffect;
 import com.gempukku.swccgo.logic.modifiers.AddsDestinyToAttritionModifier;
+import com.gempukku.swccgo.logic.modifiers.EachWeaponDestinyModifier;
 import com.gempukku.swccgo.logic.modifiers.ImmunityToAttritionChangeModifier;
 import com.gempukku.swccgo.logic.modifiers.MayNotBeFiredModifier;
+import com.gempukku.swccgo.logic.modifiers.MayTargetAtAnyExteriorSiteOnPlanetModifier;
 import com.gempukku.swccgo.logic.modifiers.querying.ModifiersQuerying;
 import com.gempukku.swccgo.logic.modifiers.PowerModifier;
 import com.gempukku.swccgo.logic.timing.Action;
@@ -314,6 +316,12 @@ public class FireWeaponActionBuilder {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.nearestRelatedExteriorSite(_weaponOrCardWithPermanentWeapon)));
                             _proximityFilterList.set(i, proximityFilter);
                         }
+                        // Check if weapon may target at any exterior site on a specific planet
+                        Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, _permanentWeapon);
+                        if (planetSiteFilter != null) {
+                            proximityFilter = Filters.or(proximityFilter, Filters.presentAt(planetSiteFilter));
+                            _proximityFilterList.set(i, proximityFilter);
+                        }
                     } else {
                         if (modifiersQuerying.canWeaponTargetTwoSitesAway(gameState, _weaponOrCardWithPermanentWeapon)) {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.siteWithinDistance(_weaponOrCardWithPermanentWeapon, 2)));
@@ -325,6 +333,12 @@ public class FireWeaponActionBuilder {
                         }
                         if (modifiersQuerying.canWeaponTargetNearestRelatedExteriorSite(gameState, _weaponOrCardWithPermanentWeapon)) {
                             proximityFilter = Filters.or(proximityFilter, Filters.presentAt(Filters.nearestRelatedExteriorSite(_weaponOrCardWithPermanentWeapon)));
+                            _proximityFilterList.set(i, proximityFilter);
+                        }
+                        // Check if weapon may target at any exterior site on a specific planet
+                        Filter planetSiteFilter = modifiersQuerying.getWeaponTargetAnyExteriorSiteOnPlanetFilter(gameState, _weaponOrCardWithPermanentWeapon);
+                        if (planetSiteFilter != null) {
+                            proximityFilter = Filters.or(proximityFilter, Filters.presentAt(planetSiteFilter));
                             _proximityFilterList.set(i, proximityFilter);
                         }
                     }
@@ -354,16 +368,31 @@ public class FireWeaponActionBuilder {
                 }
                 else if (_forFree || _targetsForFree.get(i)) {
 
-                    if (_extraForceRequired <= forceAvailableToUse) {
+                    // Enumerate possible targets to check target-dependent "fired at" cost modifiers
+                    Set<PhysicalCard> validTargets = new HashSet<PhysicalCard>();
+                    Collection<PhysicalCard> possibleTargets = Filters.filterActive(_game, _sourceCard, null, targetingReasons, newTargetFilterable);
+                    possibleTargets = new LinkedList<PhysicalCard>(possibleTargets);
+                    // Also include stacked cards that can be targeted by weapons as if present
+                    possibleTargets.addAll(Filters.filter(Filters.filterStacked(_game, newTargetFilterable), _game, Filters.canBeTargetedByWeaponAsIfPresent));
+
+                    for (PhysicalCard possibleTarget : possibleTargets) {
                         for (PhysicalCard possibleWeaponUser : _possibleWeaponUsers) {
-                            // Check if valid target can be found
-                            if (Filters.canSpot(_game, _sourceCard, _numTargets, null, targetingReasons, Filters.and(newTargetFilterable, Filters.canBeTargetedByWeaponUser(possibleWeaponUser)))
-                                    || Filters.canSpotFromStacked(_game, _numTargets, Filters.and(newTargetFilterable, Filters.canBeTargetedByWeaponUser(possibleWeaponUser)))) {
-                                isValid = true;
-                                _validWeaponUsers.add(possibleWeaponUser);
+                            if (Filters.canBeTargetedByWeaponUser(possibleWeaponUser).accepts(gameState, modifiersQuerying, possibleTarget)) {
+                                float firedAtCost;
+                                if (_permanentWeapon != null)
+                                    firedAtCost = modifiersQuerying.getExtraForceCostToFireWeaponAtTarget(gameState, _permanentWeapon, possibleWeaponUser, possibleTarget);
+                                else
+                                    firedAtCost = modifiersQuerying.getExtraForceCostToFireWeaponAtTarget(gameState, _weaponOrCardWithPermanentWeapon, possibleWeaponUser, possibleTarget);
+
+                                if ((_extraForceRequired + firedAtCost) <= forceAvailableToUse) {
+                                    validTargets.add(possibleTarget);
+                                    _validWeaponUsers.add(possibleWeaponUser);
+                                }
                             }
                         }
                     }
+                    _targetFilterList.set(i, Filters.in(validTargets));
+                    isValid = (validTargets.size() >= _numTargets);
                 }
                 else {
 
@@ -931,8 +960,17 @@ public class FireWeaponActionBuilder {
         if (_repeatedFiring)
             return _game.getModifiersQuerying().getFireWeaponRepeatedlyCost(_game.getGameState(), _weaponOrCardWithPermanentWeapon);
 
-        if (_forFree)
-            return 0;
+        if (_forFree) {
+            // Weapon fires for free, but still check for target-dependent "fired at" cost modifiers
+            float firedAtCost = 0;
+            for (PhysicalCard cardTargeted : cardsTargeted) {
+                if (_permanentWeapon != null)
+                    firedAtCost += _game.getModifiersQuerying().getExtraForceCostToFireWeaponAtTarget(_game.getGameState(), _permanentWeapon, weaponUser, cardTargeted);
+                else
+                    firedAtCost += _game.getModifiersQuerying().getExtraForceCostToFireWeaponAtTarget(_game.getGameState(), _weaponOrCardWithPermanentWeapon, weaponUser, cardTargeted);
+            }
+            return firedAtCost;
+        }
 
         float firingCost = 0;
 
@@ -941,10 +979,18 @@ public class FireWeaponActionBuilder {
 
                 if (_targetFilterList.get(i).accepts(_game, cardTargeted)) {
                     if (!_targetsForFree.get(i)) {
+                        // Non-free targeting: getFireWeaponCost already includes FIRE_WEAPON_FIRED_AT_COST check
                         if (_permanentWeapon != null)
                             firingCost = Math.max(firingCost, _game.getModifiersQuerying().getFireWeaponCost(_game.getGameState(), _permanentWeapon, weaponUser, cardTargeted, _targetingUseForceCostMin.get(i)));
                         else
                             firingCost = Math.max(firingCost, _game.getModifiersQuerying().getFireWeaponCost(_game.getGameState(), _weaponOrCardWithPermanentWeapon, weaponUser, cardTargeted, _targetingUseForceCostMin.get(i)));
+                    }
+                    else {
+                        // Free targeting: still check for target-dependent "fired at" cost modifiers
+                        if (_permanentWeapon != null)
+                            firingCost += _game.getModifiersQuerying().getExtraForceCostToFireWeaponAtTarget(_game.getGameState(), _permanentWeapon, weaponUser, cardTargeted);
+                        else
+                            firingCost += _game.getModifiersQuerying().getExtraForceCostToFireWeaponAtTarget(_game.getGameState(), _weaponOrCardWithPermanentWeapon, weaponUser, cardTargeted);
                     }
                 }
             }
@@ -4941,7 +4987,7 @@ public class FireWeaponActionBuilder {
                         }
 
                         // Allow response(s)
-                        action.allowResponses("'Throw' " + GameUtils.getCardLink(action.getWeaponToFire()) + " at " + GameUtils.getCardLink(siteSelected),
+                        action.allowResponses(GameUtils.getCardLink(action.getCardFiringWeapon()) + " targets to 'throw' Concussion Grenade at " + GameUtils.getCardLink(siteSelected),
                                 new RespondableWeaponFiringEffect(action) {
                                     @Override
                                     protected void performActionResults(Action targetingAction) {
@@ -4966,11 +5012,13 @@ public class FireWeaponActionBuilder {
                                                                     new RefreshPrintedDestinyValuesEffect(action, cards) {
                                                                         @Override
                                                                         protected void refreshedPrintedDestinyValues() {
-                                                                            Collection<PhysicalCard> validToMakeLost = Filters.filter(cards, game, Filters.destinyEqualTo(totalDestiny));
-                                                                            if (!validToMakeLost.isEmpty()) {
+                                                                            Collection<PhysicalCard> validToHit = Filters.filter(cards, game, Filters.destinyEqualTo(totalDestiny));
+                                                                            if (!validToHit.isEmpty()) {
                                                                                 gameState.sendMessage("Result: Succeeded");
-                                                                                action.appendEffect(
-                                                                                        new LoseCardsFromTableEffect(action, validToMakeLost, true));
+                                                                                for (PhysicalCard cardToHit : validToHit) {
+                                                                                    action.appendEffect(
+                                                                                            new HitCardEffect(action, cardToHit, _weaponOrCardWithPermanentWeapon, _permanentWeapon, cardFiringWeapon));
+                                                                                }
                                                                             } else {
                                                                                 gameState.sendMessage("Result: No characters present with matching destiny number");
                                                                             }
@@ -7280,5 +7328,62 @@ public class FireWeaponActionBuilder {
 
         return action;
     }
+/**
+     * Builds a fire weapon action for Smoke Canister (DELEVARY- Delevar).
+     * Targets a character for free, no weapon destiny needed.
+     * For remainder of turn, target's power is -1 and target's weapon destiny draws are -1.
+     * @return the action
+     */
+    public FireSingleWeaponAction buildFireWeaponSmokeCanisterAction() {
 
+        final FireSingleWeaponAction action = new FireSingleWeaponAction(_sourceCard, _weaponOrCardWithPermanentWeapon, _permanentWeapon, _repeatedFiring, _targetedAsCharacter, _defenseValueAsCharacter, _fireAtTargetFilter, _ignorePerAttackOrBattleLimit);
+        action.setText("Fire " + action.getWeaponTitle(_game));
+
+        // Choose target(s)
+        action.appendTargeting(
+                new TargetCardOnTableEffect(action, _playerId, "Choose target", getTargetFiltersMap(action.getCardFiringWeapon())) {
+                    @Override
+                    protected boolean isIncludeStackedCardsTargetedByWeaponsAsIfPresent() {
+                        return true;
+                    }
+                    @Override
+                    protected void cardTargeted(final int targetGroupId, PhysicalCard cardTargeted) {
+                        action.addAnimationGroup(cardTargeted);
+                        _game.getGameState().getWeaponFiringState().setTarget(cardTargeted);
+
+                        // Pay cost(s)
+                        float forceToUse = getUseForceCost(action.getCardFiringWeapon(), cardTargeted);
+                        if (forceToUse > 0) {
+                            action.appendCost(
+                                    new UseForceEffect(action, _playerId, forceToUse));
+                        }
+
+                        // Allow response(s)
+                        action.allowResponses("Throw smoke canister " + GameUtils.getCardLink(action.getWeaponToFire()) + " at " + GameUtils.getCardLink(cardTargeted),
+                                new RespondableWeaponFiringEffect(action) {
+                                    @Override
+                                    protected void performActionResults(Action targetingAction) {
+                                        // Get the targeted card(s) from the action using the targetGroupId.
+                                        // This needs to be done in case the target(s) were changed during the responses.
+                                        final PhysicalCard cardFiredAt = targetingAction.getPrimaryTargetCard(targetGroupId);
+                                        _game.getGameState().getWeaponFiringState().setTarget(cardFiredAt);
+
+                                        // Perform result(s)
+                                        // Power -1 until end of turn
+                                        action.appendEffect(
+                                                new ModifyPowerUntilEndOfTurnEffect(action, cardFiredAt, -1));
+
+                                        // Weapon destiny draws -1 until end of turn when this character fires weapons
+                                        action.appendEffect(
+                                                new AddUntilEndOfTurnModifierEffect(action,
+                                                        new EachWeaponDestinyModifier(_weaponOrCardWithPermanentWeapon, Filters.weaponBeingFiredBy(Filters.sameCardId(cardFiredAt)), -1),
+                                                        "Makes " + GameUtils.getCardLink(cardFiredAt) + "'s weapon destiny draws -1"));
+                                    }
+                                });
+                    }
+                }
+        );
+
+        return action;
+    }
 }
