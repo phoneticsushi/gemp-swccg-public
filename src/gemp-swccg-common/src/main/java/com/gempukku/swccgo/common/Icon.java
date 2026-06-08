@@ -50,6 +50,7 @@ public enum Icon implements Filterable {
     VIRTUAL_SET_25("Set 25", true),
     VIRTUAL_SET_26("Set 26", true),
     VIRTUAL_SET_27("Set 27", true),
+    BEEZER_BOWL_2025("Beezer Bowl 2025", true),
 
     //Legacy expansions
     LEGACY_BLOCK_1("Block 1", true),
