@@ -65,6 +65,7 @@ public interface Title {
     String Anoat = "Anoat";
     String Antechamber = "Maz's Castle: Antechamber";
     String Any_Methods_Necessary = "Any Methods Necessary";
+    String Apex = "Mount Krana: Apex";
     String Apology_Accepted = "Apology Accepted";
     String Ardon_Crell = "Ardon \"Vapor\" Crell";
     String Arleil = "Arleil Schous";
