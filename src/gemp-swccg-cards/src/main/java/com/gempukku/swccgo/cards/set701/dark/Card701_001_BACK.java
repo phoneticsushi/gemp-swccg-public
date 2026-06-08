@@ -15,11 +15,12 @@ import com.gempukku.swccgo.common.Uniqueness;
 import com.gempukku.swccgo.filters.Filters;
 import com.gempukku.swccgo.game.PhysicalCard;
 import com.gempukku.swccgo.game.SwccgGame;
+import com.gempukku.swccgo.logic.TriggerConditions;
 import com.gempukku.swccgo.logic.actions.RequiredGameTextTriggerAction;
 import com.gempukku.swccgo.logic.effects.FlipCardEffect;
 import com.gempukku.swccgo.logic.modifiers.ForfeitModifier;
 import com.gempukku.swccgo.logic.modifiers.Modifier;
-import com.gempukku.swccgo.logic.timing.Effect;
+import com.gempukku.swccgo.logic.timing.EffectResult;
 
 /**
 * Set: BEEZER_BOWL_2025
@@ -45,13 +46,16 @@ public class Card701_001_BACK extends AbstractSite {
     }
 
     @Override
-    protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredBeforeTriggers(String playerOnLightSideOfLocation, SwccgGame game, Effect effect, PhysicalCard self, int gameTextSourceCardId) {
+    protected List<RequiredGameTextTriggerAction> getGameTextLightSideRequiredAfterTriggers(String playerOnLightSideOfLocation, SwccgGame game, EffectResult effectResult, PhysicalCard self, int gameTextSourceCardId) {
+        // Check when game state changes
+        if (TriggerConditions.isTableChanged(game, effectResult)) {
         // if you control...
         if (GameConditions.controls(game, playerOnLightSideOfLocation, self)) {
             // ...flip this site
             final RequiredGameTextTriggerAction action = new RequiredGameTextTriggerAction(self, gameTextSourceCardId);
             action.appendEffect(new FlipCardEffect(action, self));
             return Collections.singletonList(action);
+            }
         }
         return null;
     }
