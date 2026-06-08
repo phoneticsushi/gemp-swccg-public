@@ -6,6 +6,7 @@ import com.gempukku.swccgo.cards.conditions.OnCondition;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Title;
@@ -35,6 +36,7 @@ public class Card9_011 extends AbstractRebel {
         setGameText("Adds 1 to each of his character weapon destiny draws (2 when firing a rifle and all your ability here is provided by scouts). While on Endor, adds 1 to your Force drains at your exterior Endor sites where you have a scout of ability > 2 (and no Ewoks).");
         addIcons(Icon.DEATH_STAR_II, Icon.WARRIOR);
         addKeywords(Keyword.SCOUT);
+        addPersona(Persona.MIDGE);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.gempukku.swccgo.cards.effects.usage.OncePerTurnEffect;
 import com.gempukku.swccgo.common.ExpansionSet;
 import com.gempukku.swccgo.common.Icon;
 import com.gempukku.swccgo.common.Keyword;
+import com.gempukku.swccgo.common.Persona;
 import com.gempukku.swccgo.common.Rarity;
 import com.gempukku.swccgo.common.Side;
 import com.gempukku.swccgo.common.Uniqueness;
@@ -40,6 +41,7 @@ public class Card8_005 extends AbstractRebel {
         setGameText("Prevents your characters from having their forfeit reduced at same location (and at Hoth sites if Delevar is at Echo Med Lab). When with your FX droid, once per turn allows your character just forfeited from same site to be placed in Used Pile.");
         addIcons(Icon.ENDOR, Icon.WARRIOR);
         addKeywords(Keyword.SCOUT);
+        addPersona(Persona.DELEVAR);
     }
 
     @Override
