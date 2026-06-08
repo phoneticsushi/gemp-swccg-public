@@ -129,6 +129,8 @@ public enum Keyword implements Filterable {
     MISTRYL("Mistryl", true),
     MOFF("Moff", true),
     MON_CALAMARI("Mon Calamari", true),
+    MOUNT_KRANA_SITE("Mount Krana Site", false),
+    MOUNTAINEER("Mountaineer", true),
     MUSICIAN("Musician", true, true),
     MUST_BE_FORFEITED_IN_BATTLE("Must be forfeited in battle", false),
     MUST_BE_FORFEITED_BEFORE_OTHER_CHARACTERS("Must be forfeited before other characters", false),
