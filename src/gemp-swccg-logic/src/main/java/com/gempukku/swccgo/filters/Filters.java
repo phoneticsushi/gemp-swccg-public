@@ -12401,6 +12401,40 @@ public class Filters {
         };
     }
 
+    /**
+     * Filter that accepts apprentices that are targeted by a Sorcery Test,
+     * the latter of which is also targeting Zarrak as the mentor.
+     *
+     * Assumptions are:
+     * - this refers to the apprentice(s) that Zarrak is Mentoring for.
+     * - there may be more than one
+     * - Zarrak can only become a "Mentor" via a Sorcery Test
+     * @return Filter
+     */
+    public static Filter zarraks_apprentice() {
+        return new Filter() {
+           @Override
+           public boolean accepts(GameState gameState, ModifiersQuerying modifiersQuerying, PhysicalCard physicalCard) {
+                final Collection<PhysicalCard> sorceryTests = Filters.filterActive(gameState.getGame(), null, Filters.Sorcery_Test);
+
+                // mentor-apprentice relationships are determined by active sorcery tests...
+                for (PhysicalCard sorceryTest : sorceryTests) {
+                    final PhysicalCard mentor = sorceryTest.getTargetedCard(gameState, TargetId.SORCERY_TEST_MENTOR);
+                    final PhysicalCard apprentice = sorceryTest.getTargetedCard(gameState, TargetId.SORCERY_TEST_APPRENTICE);
+                    
+                    if (mentor != null && apprentice != null) {
+                        if (Filters.Zarrak.accepts(gameState, modifiersQuerying, mentor) && apprentice == physicalCard) {
+                            return true;
+                        }
+                    }
+                }
+
+                // checked all possible mentor-apprentice relationships...
+                return false;
+            }
+        };
+    }
+
     //
     //
     // Filters for 'blown away'

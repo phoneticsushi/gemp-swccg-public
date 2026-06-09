@@ -79,23 +79,17 @@ public class Card701_011 extends AbstractAlien {
     @Override
     protected List<Modifier> getGameTextWhileActiveInPlayModifiers(SwccgGame game, final PhysicalCard self) {
         List<Modifier> modifiers = new LinkedList<Modifier>();
+        
         // When mentor, opponent may not target your apprentice with weapons or interrupts
-        // Assumption is:
-        //   this refers to the apprentice(s) that Zarrak is Mentoring for.
-        //   there may be more than one
-        //   Zarrak can only become a "Mentor" via a Sorcery Test
-        final Collection<PhysicalCard> sorceryTestsInPlay = Filters.filterActive(game, self, Filters.Sorcery_Test);
-        for (PhysicalCard sorceryTest : sorceryTestsInPlay) {
-            final PhysicalCard mentor = sorceryTest.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_MENTOR);
-            final PhysicalCard apprentice = sorceryTest.getTargetedCard(game.getGameState(), TargetId.SORCERY_TEST_APPRENTICE);
-
-            if (mentor != null && apprentice != null) {
-                if (mentor == self) {
-                    modifiers.add(new MayNotBeTargetedByWeaponsModifier(self, apprentice));
-                    modifiers.add(new MayNotBeTargetedByModifier(self, apprentice, Filters.Interrupt));
-                }
-            }
-        }
+        modifiers.add(new MayNotBeTargetedByModifier(
+            self,
+            Filters.zarraks_apprentice(),
+            null,
+            Filters.and(
+                Filters.opponents(self.getOwner()),
+                Filters.or(Filters.weapon, Filters.Interrupt)
+            )
+        ));
 
         // Opponent may draw no more than one battle destiny here
         modifiers.add(new MayNotDrawMoreThanBattleDestinyModifier(self, Filters.here(self), 1, game.getOpponent(self.getOwner())));
