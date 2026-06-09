@@ -60,7 +60,10 @@ public class Card701_016 extends AbstractCreatureVehicle {
 
     @Override
     protected List<TopLevelGameTextAction> getGameTextTopLevelActions(final String playerId, final SwccgGame game, final PhysicalCard self, int gameTextSourceCardId) {
-        if (GameConditions.isDuringBattle(game) && GameConditions.canDrawDestiny(game, playerId)) {
+        if (
+            GameConditions.isOncePerBattle(game, self, playerId, gameTextSourceCardId)
+            && GameConditions.canDrawDestiny(game, playerId)
+        ) {
             // During battle may 'Quarf'
             final TopLevelGameTextAction action = new TopLevelGameTextAction(self, gameTextSourceCardId);
             action.setText("'Quarf'");
